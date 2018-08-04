@@ -1,0 +1,138 @@
+$themeColor:#00a0e9;
+@mixin redius-shape($radius,$border,$bg:initial){
+	width:$radius;
+	height:$radius;
+	border-radius:$radius;
+	@if $border!=none {
+		border:$border;
+	}
+	
+	background: $bg;
+}
+.search-wrap{
+	position: relative;
+	width:fit-content;
+	.input-box{
+		position: relative;
+		display: inline-block;
+		width: 40px;
+		height: 40px;
+		line-height:40px;
+		overflow: hidden;
+		transition: all .4s ease-in-out;
+		padding:0 15px;
+		box-sizing:border-box;
+	}
+	.search-btn{
+		position: absolute;
+		right:0;
+		top:0;
+		width: 40px;
+		height: 40px;
+		background:white;
+		transition: all .4s ease-out;
+		z-index:2;
+		&:hover .search-icon{
+			transform:rotate(-45deg);
+		}
+	}
+
+	.search-icon{
+		position: relative;
+		display:inline-block;
+		width: 22px;
+		height: 22px;
+	    vertical-align: middle;
+	    transform:rotate(45deg);
+	    transition: all .4s cubic-bezier(.65,-.6,.24,1.65);
+		&:before{
+			position: absolute;
+   			content: '';
+   			width: 4px;
+   			height: 11px;
+   			background: $themeColor;
+   			bottom:-8px;
+   			left:9px;
+   			border-radius:2px;
+		}
+		&:after{
+			position: absolute;
+   			content: '';
+			@include redius-shape(14px, 4px solid $themeColor);
+			left:0;
+		}
+	}
+
+	.search-inp{
+		opacity:0;
+		padding: 0 5px;
+		width:100%;
+	    transform: translate(0,60px);
+	    background: transparent;
+		transition: all .4s  cubic-bezier(0,.105,.035,1.57) .3s;
+	}
+	.search-close{
+		cursor: pointer;
+		position: absolute;
+		top:4px;
+		right:15px;
+		transition: all .3s cubic-bezier(.285,-.45,.935,.11);
+		transition-delay: .2s;
+		color:$themeColor;
+		.fa{
+			transition: transform .3s ease-out;
+		}
+		
+		&:hover .fa{
+			transform: scale(1.5);
+		}
+	}
+	
+}
+
+@keyframes allRotate {
+    0% {
+        transform: rotate(-45deg);
+    }
+
+    100% {
+       transform: rotate(315deg);
+    }
+}
+
+.search-wrap.active-search{
+	.search-btn{
+		//@include redius-shape(40px,none,white);
+		right:10px;
+		&:hover .search-icon{
+			animation:allRotate  2.5s linear infinite both;
+		}
+		
+	}
+	.search-btn:active .search-icon{
+		animation-play-state:paused;
+	}
+	.search-icon{
+		transform:rotate(-45deg);
+
+	}
+	.input-box{
+		width: 450px;
+		padding-right:60px;
+		//background: rgba(0,0,0,.5);
+		background: white;
+
+		border-radius:40px;
+	}
+	.search-inp{
+		opacity:1;
+		 transform: translate(0,0) ;
+	}
+	.search-close{
+		right:-55px;
+		transform: rotate(360deg);
+		transition: all .6s cubic-bezier(0,.105,.035,1.57);
+	    transition-delay: .7s;
+	}
+}
+

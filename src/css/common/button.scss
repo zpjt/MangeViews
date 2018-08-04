@@ -1,0 +1,50 @@
+$themeColor:#00a0e9;
+.s-btn{
+	min-width: 30px;
+	min-height: 20px;
+	padding:5px 8px;
+    border-radius: 4px;
+    outline: none;
+	font-size: 14px;
+	text-align: center;
+	color: #fff;
+	border: 0;
+	cursor: pointer;
+}
+.sure-btn{
+	color:white;
+	background:$themeColor;
+}
+
+.cancel-btn{
+	color:$themeColor;
+	background:white;
+}
+
+
+.s-Naira{
+	overflow: hidden;
+	position: relative;
+	height:20px;
+	line-height:20px;
+	$color:#37474f;
+	color:$themeColor ;
+    border:1px solid  $themeColor;
+    &:hover{
+		i{
+			transform: translateY(0);
+	    }
+	} 
+    i{
+    	color:white;
+    	background: $themeColor;
+    	position: absolute;
+    	top:0;
+    	left:0;
+    	width: 100%;	
+		height:100%;	
+		transform:translate3d(0,-110%,0);	
+		transition: transform .3s ease ;
+		line-height:30px;
+    }
+}

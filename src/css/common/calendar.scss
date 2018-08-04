@@ -1,0 +1,202 @@
+$themeColor:#00a0e9;
+$slectColor:#aee6ff;
+.dataTime{
+	min-height:280px;
+    z-index:20;
+	background: white;
+	border-radius:8px;
+	border:1px solid $themeColor;
+	position: absolute;
+	display:none;
+	top:30px;
+	left:0;
+}
+.s-calendar-title{
+	display:flex;
+	justify-content:space-between;
+	padding:4px 8px;
+	background: $themeColor;
+	align-items:center;
+	@at-root{
+		.frequemcy-box{
+				$w:90px;
+				display:block;
+				position: relative;
+				cursor: pointer;
+				.frequemcy-sel{
+					width:$w;
+					color:$themeColor;
+					background: #fff ;
+				}
+				.calendar-frequemcy{
+					position: absolute;
+					border-radius:5px ;
+					background: $slectColor;
+					box-shadow: 0 0 27px 1px $themeColor;
+					width:$w;
+					top:40px;
+					color:$themeColor;
+					display:none;
+					&:after{
+						content:"";
+						position: absolute;
+						top:-25px;
+						right:5px;
+						height:0;
+						width:0;
+						border:10px solid transparent;
+						border-bottom:15px solid $slectColor;
+						pointer-events:none;
+					}
+					&>li{
+						text-align:center;
+						
+						padding:4px 0;
+						border-bottom:1px solid $themeColor;
+
+					}
+					.frequemcy-active{
+						background: $themeColor;
+						color:white;
+					}
+				}
+			}
+	}
+	
+	
+	.showSel-box{
+		color:white;
+		font:{
+			weight:bolder;
+		}
+	}
+	.sure-btn{
+		color:$themeColor;
+		background:white;
+	}
+}
+.calendar-container{
+	display:flex;
+	.calendar-view{
+		width:260px;
+
+		padding:0 10px;	
+	}
+
+}
+.calendar-item{
+	display:none;
+	color:$themeColor;
+	cursor: pointer;
+	@at-root{
+		.week-group{
+			display:flex;
+			color:black;
+			font:{
+				weight:bolder;
+			}
+			&>li{
+				width:14.28% ;
+				text-align:center;
+				padding:8px 0;
+			}
+		}
+		.data-group{
+			display:flex;
+			&>li{
+				width:14.28% ;
+				text-align:center;
+				padding:8px 0;
+			}
+			.view-item{
+				cursor: pointer;
+				&:hover{
+					background:$themeColor;
+					color:white;
+					border-radius:50%;
+				}
+			}
+			
+		}
+		.year-group , .mon-group{
+			display:flex;
+			.view-item{	
+				width:33.3%;
+				text-align:center;
+				padding:15px 0;
+				&:hover{
+					background:$themeColor;
+					color:white;
+					border-radius:50%;
+				}
+			}
+		}
+		.mon-grop{
+			.calendar-sel{
+				border-radius:20%;
+			}
+		}
+		
+		.searson-group{
+			display:flex;
+			.view-item{	
+				width:50%;
+				text-align:center;
+				padding:30px 0;
+				&:hover{
+					background:$themeColor;
+					color:white;
+					border-radius:50%;
+				}
+			}
+		}
+	}
+	
+	.last-year{
+		width:33.3%;
+		margin:auto;
+		text-align:center;
+		padding:15px 0;
+	}
+	.calendar-today{
+		border-radius:50%;
+		border:1px solid $themeColor;
+		
+	}
+	.day-disabled{
+				color:grey;
+				cursor: not-allowed;
+	}
+	.calendar-sel{
+		border-radius:50%;
+		background: $themeColor;
+		color:white;
+	}
+	
+}
+.calendar-item.calendar-active{
+	display:block;
+}
+	
+.s-calendar-time{
+	height:30px;
+	
+	border-bottom:1px solid $themeColor;
+	display:flex;
+	justify-content: space-between;
+	align-items: center;
+	.time-box{
+		cursor: pointer;
+		.timeType{
+			&:hover{
+				color:$themeColor;
+			}
+			
+		}
+	}
+}
+
+
+
+
+

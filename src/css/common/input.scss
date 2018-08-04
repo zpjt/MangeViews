@@ -1,0 +1,250 @@
+$themeColor:#00a0e9;
+$inpBg:white;
+$height:30px;
+$default:#766e6e;// //#ECECEC
+$width:350px;
+$slectColor:#aee6ff;
+.inp-tip{
+		color:red;
+}
+
+.s-inpBox{
+	position: relative;
+	padding:15px 0;
+	.inp-Yoshiko{
+		padding:4px 8px;
+		width: $width;	
+		box-sizing:content-box;
+		background:$inpBg;
+		border-radius:4px;
+	}
+	.s-inp{
+		border:1px solid red;
+	}
+	.lab-Yoshiko{
+		color:$default;
+		position: absolute;
+		left:10px;
+		top:26px;
+		transition: all  .3s ease;
+		font:{
+			weight:bolder;
+		}
+	}
+	.inp-tip{
+		opacity:0;
+	}
+}
+
+.inp-fill{
+	.inp-tip{
+		opacity:1;
+	}
+	.lab-Yoshiko{
+		top:-5px;
+		color:$themeColor;
+	}
+	
+	.combo-box{
+		display:block;
+	}
+	.s-inp{
+		border:none;
+	}
+
+}
+
+.s-comboBox{
+	position: relative;
+	padding:15px 0;
+	  
+	.inp-combobox{
+			cursor: pointer;
+			height:$height;
+			line-height:$height;
+			font:{
+				weight:bolder;
+			}
+			position: relative;
+			padding:4px 8px;
+			width: $width	;
+			box-sizing:content-box;
+			background:$inpBg;
+			border-radius:4px;
+		}
+
+	.inp-combobox-icon{
+		position: absolute;
+		right:10px;
+		top:5px;
+		color:$themeColor;
+		width: 24px;
+	    height: 24px;
+	    text-align: center;
+	    line-height: 24px;
+	    pointer-events: none;
+	    transition: transform .3s linear;
+	}
+	.combo-lab{
+		color:$themeColor;
+		position: absolute;
+		top:-5px;
+		left:10px;
+	}
+
+	.combo-box{
+		width:100%;
+		top:$height*1.9;
+		position: absolute;
+		visibility:hidden;
+		opacity:0;
+		max-height:200px;
+		background:$inpBg;
+		border:1px solid $default;
+		box-shadow: 0 0 28px 0 $default; 
+		border-radius:4px ;
+		padding:8px;
+		box-sizing:border-box;
+		z-index:2;
+		color:$themeColor;
+		cursor: pointer;
+		transform:translateY(-80%);
+		transition: all  .5s cubic-bezier(.31,1.47,.81,1.47);
+		.combo-item{
+			padding:5px 10px;
+			
+		}
+		.combo-item-active{
+			background:$slectColor;
+			color:white;
+		}
+	}
+}
+
+.combo-active{
+	.combo-box{
+		visibility:visible;
+		opacity:1;
+		transform:translateY(0);
+	}
+	.inp-combobox-icon{
+		transform: rotate(-180deg);
+	}
+}
+
+/* 滑块 */
+.s-switch{
+	$active:#329043;
+	$off: #666;
+	$h:32px;
+	position: relative;
+	display:inline-block;
+	width:80px;
+	height:$h;
+	line-height:$h;
+	&:after{
+		content: attr(echo-text);
+		position: absolute;
+	    color:$off;
+	    right: 8px;
+	}
+	label{
+		box-sizing:border-box;
+		background: none;
+		position: absolute;
+		border:3px solid $off;
+		top:0;
+		left:0;
+		width:100%;
+	    height:100%;
+		border-radius:$h;
+		transition:.4s;
+		&:before{
+			$before-h:$h*2/3;
+			content: attr(echo-text);
+			position: absolute;
+			height:$before-h;
+			line-height:$before-h;
+			width:40%;
+			background:$off;
+			top:2px;
+			left:auto;
+			right: 4px;
+			border-radius:$before-h;
+			z-index:2;
+			text-align:center;
+			text-indent:100px;
+			overflow:hidden;
+			margin-right:50%;
+			transition: all 0.4s 0.2s, width 0.2s linear,text-indent 0.4s linear;
+		}
+	}
+	input{
+		position: absolute;
+	    left: 0;
+	    top: 0;
+	    width: 100%;
+	    height: 100%;
+	    z-index: 5;
+	    opacity: 0;
+	    cursor: pointer;
+	}
+	input:checked + label{
+		border:3px solid $active;
+		&:before{
+			text-indent:0;
+			color:white;
+			width: calc(100% - 8px);
+			background: $active;
+			margin-right:0;
+			transition: all 0.4s, width 0.2s linear 0.4s, text-indent 0.3s linear 0.4s;
+		}
+	}
+	
+	
+}
+
+/* 动画checkbox */
+
+.s-checkbox{
+	position: relative;
+	display:inline-block;
+	width:20px;
+	input{
+		position: absolute;
+		opacity:0;
+		z-index:10;
+		width: 100%;
+		cursor: pointer;
+	}
+	label{
+		font-size:18px;
+		color:$themeColor;
+		&:after{
+			content:"\f14a";
+			position: absolute;
+			transform:translateX(-100%) scale(0);
+			transition: transform .3s ease;
+		}
+		&:before{
+			transition: opacity .3s ease;
+		}
+	}
+	label.has-chec{
+		&:before{
+			content:"\f192";
+		}
+	}
+
+	input:checked+label{
+		&:after{
+			opacity:1;
+			transform:translateX(-100%) scale(1);
+		}
+		&:before{
+			opacity:0;
+		}
+		
+	}
+
+}

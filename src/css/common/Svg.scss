@@ -1,0 +1,30 @@
+
+.svg-status{
+	width: 100px;
+	height: 100px;
+	margin:auto;
+	.draw-stroke{
+		 stroke-dasharray: 100;
+		 stroke-dashoffset: 100;
+		 stroke-width:5;
+	 	 stroke-linecap:round;
+	 	 transition: all 1s ease-out;
+	}
+
+	.g-status{
+		 stroke-dashoffset: 0;
+	}
+
+
+}
+#g-out{
+	 stroke-width:4;
+	 fill:none;
+	 z-index: 3;
+}
+#g-load{
+	stroke-dasharray: 60;
+ 	stroke-dashoffset: 0;
+}
+
+

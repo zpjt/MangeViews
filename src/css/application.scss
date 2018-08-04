@@ -1,0 +1,169 @@
+@import "funText.css", "loading_1.css","button.css","input.css","modal.css","calendar.css","common.css";
+
+
+.datagrid-row-selected td[field="address"]{color: white;}
+td[field="address"]{color:#0092DC; }
+.datagrid-header-row td[field="address"]{color:white;}
+
+.btn-box{margin-left: 20px; z-index: 50; }
+.drop-box{margin-right: 42px; } 
+.optBox {padding: 15px 0 15px ; display: flex; justify-content: flex-end;}
+
+.easy-tabBox .panel-body{background-color: #EBECE6; color: #000000; font-size: 13px; border-radius: 15px;border-top-width:4px;}
+
+.datagrid-header td, .datagrid-body td, .datagrid-footer td {border-color:#0092DC;border-style: solid;}
+/*表格操作按钮 */
+.tabBtnBox>div{display: inline-block;}
+.tabBtnBox {display: flex;justify-content: space-around;}
+/* .md-content{font-size: 15px;} */
+.tab-checkbox input{position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 5; opacity: 0; cursor: pointer;} 
+.tab-checkbox input:checked + label:before{content: "\f046"; }
+.tab-checkbox span[checkedStatus="on"]:before{content: "\f046"; }
+div[bgcol]{display:block;}
+div[bgcol="page1"] .cd-modal-bg , div[bgcol="page1"] .morphing-btn {background-image: linear-gradient(25deg, #4c8dd1, #7da5d7, #a5bedd, #cad8e2);transition:visibility 0s 0.5s;}
+div[bgcol="page2"] .cd-modal-bg ,div[bgcol="page2"] .morphing-btn{background-image: linear-gradient(42deg, #dc9e99, #b9b0a7, #8bbfb5, #37ccc4); transition:visibility 0s 0.5s;}
+div[bgcol="page3"] .cd-modal-bg ,div[bgcol="page3"] .morphing-btn{background-image: linear-gradient(25deg, #df9737, #d2aa73, #bbbeab, #91d1e4);transition:visibility 0s 0.5s;}
+div[bgcol="page4"] .cd-modal-bg ,div[bgcol="page4"] .morphing-btn{background-image: linear-gradient(25deg, #36a343, #5cae76, #78b8a7, #8ec2d9);transition:visibility 0s 0.5s;}
+.btn_1-ujarak{border: 2px solid;line-height:0.9em;}
+.moreItem:nth-child(1){color:red;}
+.moreItem:nth-child(2){color:#45EBA5;}
+.moreItem:nth-child(3){color:#429FFD;}
+.moreItem:nth-child(4){color:#64A36F;}
+.moreItem:nth-child(5){color:#011F3F;}
+.cd-modal .cd-modal-content {padding: 4em;}
+.pageDes{text-indent: 1em}
+
+.calendarBox>div{position: relative;margin: 0.5em;}
+.calendarBox label{font-size: 13px; }
+
+
+        
+/* 自定义动画 */
+
+
+
+.sekin {
+	animation-name: zoomInDownName;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+	display: block;
+}
+.zoomOutUp {
+	animation-name: zoomOutUp;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+	display: block;
+}
+.bounceInRight {
+	animation-name: bounceInRight;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+	display: block;
+}
+.bounceInLeft{
+	animation-name: bounceInLeft;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+	display: block;
+}
+
+@keyframes shake {
+    0%,to {
+        transform: translateZ(0)
+    }
+
+    10%,30%,50%,70%,90% {
+        transform: translate3d(-10px,0,0)
+    }
+
+    20%,40%,60%,80% {
+        transform: translate3d(10px,0,0)
+    }
+}
+
+@keyframes zoomInDownName 
+{
+    0% {
+        opacity: 0;
+        transform: scale3d(.1,.1,.1) translate3d(0,-1000px,0);
+        animation-timing-function: cubic-bezier(.55,.055,.675,.19)
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale3d(.475,.475,.475) translate3d(0,60px,0);
+        animation-timing-function: cubic-bezier(.175,.885,.32,1)
+    } 
+}
+
+@keyframes zoomOutUp 
+{
+    40% {
+        opacity: 1;
+        transform: scale3d(.475,.475,.475) translate3d(0,60px,0);
+        animation-timing-function: cubic-bezier(.55,.055,.675,.19)
+    }
+
+    to {
+        opacity: 0;
+        transform: scale3d(.1,.1,.1) translate3d(0,-2000px,0);
+        transform-origin: center bottom;
+        animation-timing-function: cubic-bezier(.175,.885,.32,1)
+    }
+}
+@keyframes bounceInRight 
+{
+    0%,60%,75%,90%,to {
+        animation-timing-function: cubic-bezier(.215,.61,.355,1)
+    }
+
+    0% {
+        opacity: 0;
+        transform: translate3d(3000px,0,0)
+    }
+
+    60% {
+        opacity: 1;
+        transform: translate3d(-25px,0,0)
+    }
+
+    75% {
+        transform: translate3d(10px,0,0)
+    }
+
+    90% {
+        transform: translate3d(-5px,0,0)
+    }
+
+    to {
+        transform: none
+    }
+}
+@keyframes bounceInLeft 
+{
+    0%,60%,75%,90%,to {
+        animation-timing-function: cubic-bezier(.215,.61,.355,1)
+    }
+
+    0% {
+        opacity: 0;
+        transform: translate3d(-3000px,0,0)
+    }
+
+    60% {
+        opacity: 1;
+        transform: translate3d(25px,0,0)
+    }
+
+    75% {
+        transform: translate3d(-10px,0,0)
+    }
+
+    90% {
+        transform: translate3d(5px,0,0)
+    }
+
+    to {
+        transform: none
+    }
+}

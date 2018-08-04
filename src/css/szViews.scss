@@ -1,0 +1,418 @@
+@import "./common/search.scss";
+
+$themeColor:#00a0e9;
+$themeBlendent1:white;
+$height: 150px;
+$slectColor:#aee6ff;
+.card-box{
+	display: flex;
+	background:$themeBlendent1;
+	border-bottom:2px solid $themeColor;
+	height:50px;
+	align-items:center;
+	padding:0 8px;
+	@at-root{
+		.tab-card{
+			display:flex;
+			flex:auto;
+			.card{
+				cursor: pointer;
+			//	padding:0 8px;
+				&:hover{
+					color:$themeColor;
+				}
+			}
+		}
+		.style-box{
+			.style-item {
+				padding:0 5px;
+				cursor: pointer;
+			}
+			.style-sel{
+				color:$themeColor;
+			}
+		}
+	}
+}
+
+.delBtn{
+	height: 34px;
+	background: $themeColor;
+}
+
+
+.tab-node{
+	cursor: pointer;
+	font-size:14px;
+	i{
+		color:$themeColor;
+		font:{
+			size:16px;
+		}
+	}
+}
+
+.section{
+	position: relative;
+	.style-view{
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		visibility:hidden;
+		opacity:0;
+		background: $themeBlendent1;
+		transition: all .5s ease-out .2s; 
+		border-radius:8px;
+	}
+	.style-active{
+		visibility:visible;
+		opacity:1;
+	}
+	.cata-container{
+		display:flex;
+		flex-direction: column;
+	}
+	
+
+	.icon-active{
+		visibility:visible;
+		opacity:1;
+		transform:translateX(0);
+	}
+	
+	@at-root{
+		$padding:28px 40px ;
+		.icon-box{
+			$footerH:50px;
+			position: absolute;
+			visibility:hidden;
+			background: $themeBlendent1;
+			opacity:0;
+			width:280px;
+			border:1px solid $themeColor;
+			border-right:none;
+			border-radius:8px   0 8px 8px;
+			right:0;
+			top: 40px;
+			bottom:0;
+			color:$themeColor;
+			transform:translateX(100%);
+			transition: all .3s cubic-bezier(.25,.5,.5,.9);
+			.icon-content{
+				height: calc(100% - #{$footerH});
+				//overflow:auto;
+			}
+			.icons-footer{
+				height:$footerH;
+				border-top:1px solid $themeColor;
+				display:flex;
+				&>p{
+					width:50%;
+					text-align:center;
+					cursor: pointer;
+					line-height:$footerH;
+				}
+				&>p:first-child{
+					border-right:1px solid $themeColor;
+				}
+			}
+			.icon-sel{
+				border-radius:4px;
+				color:$themeBlendent1;
+				background: saturate( $slectColor, 40%);
+				&:after{
+					content:"\f058";
+					font: normal normal normal 14px/1 FontAwesome;
+					position: absolute;
+					top:2px;
+				}
+			}
+			.iconBox-item{
+				padding:10px;
+				display:flex;
+				flex-wrap:wrap;
+				span{
+					position: relative;
+					width:25%;
+					padding:15px 0;
+					text-align:center;
+					cursor: pointer;
+					font:{
+						size:30px;
+					}
+					transition: all .3s ease;
+					&:hover{
+						background:$themeColor;
+						border-radius:4px;
+						color:white;
+						transform: scale(1.35);
+					}
+				}
+			}
+		}
+		.catalogueBox{
+				height: calc(100% - #{$height - 50px});
+				display:flex;
+				flex-wrap: wrap;
+				padding: $padding ;
+				box-sizing:border-box;
+				overflow:auto;
+				overflow-x:hidden;
+				.catalogue-item{
+					position: relative;
+					width: 16.6%;
+					height:$height;
+				}
+
+				.view-show{
+					cursor: pointer;
+					width: 70%;
+					border-radius:100%;
+					margin:auto;
+					text-align:center;
+					padding:15px 0;
+				 	margin-top:$height/2;
+				    transform: translateY(-50%); 
+				    color:$themeColor;
+				  
+				    i{
+				    	font-size:60px;
+				    	 transition: all .3s linear;
+				    }
+				    .catalogue-name{
+				    	padding-top:8px;
+				    	overflow: hidden;
+   						text-overflow: ellipsis;
+				    }
+				}
+				.view-opt{
+					top:0;
+					left:0;
+					position: absolute;
+					width: 0;
+					height: 0;
+					top:50%;
+					left:50%;
+					visibility:hidden;
+					span{
+						font:{
+							size:25px;
+						}
+					}
+					.rotate-btn{
+						position: absolute;
+						top: -15px;
+				    	left: -15px;
+						border-radius:30px;
+						color:$themeColor;
+						cursor: pointer;
+						&:after{
+							content: attr(echo-text);
+							position: absolute;
+							top: -18px;
+				      	    left:0;
+				      	    width:60px;
+							visibility:hidden;
+						}
+					}
+					.rotate-rename{
+						&:after{
+				      	    left: -.5em;
+						}
+					}
+					
+				}
+
+				.catalogue-item-sel{
+					.view-show{
+						background:$themeColor;
+						border-radius:100%;
+						color:white;
+						width: 60px;
+						 i{
+				    		font-size:30px;
+				    	}
+						.catalogue-name{
+					    	display:none;		
+				   		}
+					}
+					.view-opt{
+						visibility:visible;
+					}
+					.rotate-btn:hover{
+						&:after{
+							visibility:visible;
+						}
+					}
+				}
+				
+		}
+
+		.cata-footer{
+			height:$height - 50px;
+			padding:$padding;
+			box-sizing:border-box;
+			width:100%;
+			border-top:2px solid #DDDDDD;
+			display:flex;
+			.footer-item{
+			   line-height:22px;
+			}
+			.footer-item:last-child{
+			   padding-right:0;
+			}
+			.cata-info{
+				width:35%;
+				display:flex;
+				.sicon{
+					padding-right:10px;
+					font:{
+						size:40px;
+					}
+				}
+			}
+		}
+	}
+	
+}
+
+.tab-type{
+	color:$themeColor;
+	font:{
+		weight:bolder;
+	}
+}
+
+.issue-item{
+	z-index: 1;
+	margin-bottom:15px;
+	&:first-child{
+		z-index: 10;
+	}
+	position: relative;
+	.search-wrap.active-search .input-box{
+		width:300px;
+	}
+	.calendar-inpTxt{
+		width:320px;
+		text-align:center;
+	}
+	.time-inpbox{
+		margin-left:30px;
+		transition: all .3s ease-out;
+		overflow:hidden;
+		width:0;
+		visibility:hidden;
+		opacity:0;
+	}
+	.active{
+		visibility:visible;
+		opacity:1;
+		
+	}
+	&:first-child{
+		.active{
+			width:320px;
+		}
+	}
+	&:nth-child(2){
+		.active{
+			height:250px;
+		}
+	}
+
+	.item-status{
+		display:flex;
+		align-items:center;
+		&>b{
+			padding-right:10px;
+			width:100px;
+			text-align:right;
+		}
+	}
+}
+.org-box{
+	margin-top:10px;
+	min-width:500px;
+	height:0px;
+	transition: all .3s ease-out;
+	overflow:hidden;
+	visibility:hidden;
+	opacity:0;
+	.org-title{
+		background: $themeColor;
+		height:48px;
+		padding:0 10px;
+		border-radius:4px;
+		display:flex;
+		justify-content: space-between;
+		align-items:center;
+		color:white;
+		.search-close{
+			color:white;
+		}
+	}
+	.org-content{
+		display:flex;
+		background: #fff ;
+		height: calc(100% -  48px);
+
+	}
+	@at-root{
+		.org-item{
+				height:100%;
+				overflow:auto;
+				.par-menu{
+					overflow:hidden;
+				}
+				.menuItem{
+					$paddingH:8px;
+					position:relative;
+					padding: $paddingH 0;
+					border-bottom:1px solid grey;
+					
+					.slide-icon{
+						position:absolute;
+						padding:$paddingH/2 8px;
+						top:$paddingH/2;
+						right:$paddingH;
+						background:$themeColor ;
+						color:white;
+						border-radius:100%;
+						cursor:pointer;
+						transition: all .3s ease ;
+					}
+					
+				}
+				.org-active{
+						.slide-icon{
+							transform: rotate(-180deg);
+						}
+						.fa-folder-open-o:before{
+							content:"\f114";
+						}
+						
+				}
+				.sel-item{
+					padding-left:10px;
+					.fa{
+						font-size:18px;
+					}
+				}
+		}
+		.org-item:first-child{
+			width:65%;
+			border-right:1px solid grey;
+		}
+		.org-item:last-child{
+			width:35%;
+			
+		}
+	}
+}
+
+
+
+.indent{
+	padding:0 8px;
+}

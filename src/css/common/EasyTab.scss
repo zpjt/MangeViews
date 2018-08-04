@@ -1,0 +1,131 @@
+$slectColor:#aee6ff;
+.datagrid-row
+{
+    height: 40px;
+}
+.datagrid-header .datagrid-cell span
+{
+    font-size: 14px ;
+}
+.datagrid-header .datagrid-cell .fa-lg
+{
+    font-size: 1.3em;
+}
+.datagrid-header-row
+{
+    height: 40px;
+}
+
+.datagrid-header
+{
+   // color: white;
+    //background: #0092dc;
+}
+
+.datagrid-htable
+{
+   // color: white;
+}
+/* 表格行选中 */
+.datagrid-row-selected {
+  background: $slectColor;
+    
+}
+.datagrid-row-over,
+  {
+  background: #E6F7FF;
+}
+.datagrid-header td.datagrid-header-over{
+  background: none;
+}
+/* 表头 */
+.datagrid-header{
+  //  border-color: $slectColor;
+}
+.datagrid-header, .datagrid-td-rownumber{
+    background:none; 
+
+}
+.tab-checkbox
+{
+    font-size: 14px;
+
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+}
+.easy-tabBox .panel-body
+{
+    font-size: 14px;
+
+    color: #000;
+    border:none;
+ //   border-top-width: 4px;
+    border-radius:0 0 8px  8px ;
+    //background-color: #ebece6;
+}
+
+.datagrid-header td,
+.datagrid-body td,
+.datagrid-footer td
+{
+    border:none;
+   // border-style: solid;
+  //  border-color: #0092dc;
+}
+
+/*表格操作按钮 */
+.tabBtnBox
+{
+    display: flex;
+
+    justify-content: flex-start;
+
+    width:380px;
+    margin:auto;
+    &>div{
+      margin:0 8px;
+    }
+
+}
+.tab-checkbox input
+{
+
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    
+
+    opacity: 0;
+}
+.tab-checkbox .checkSingle{
+  cursor: pointer;
+}
+.tab-checkbox .dis-check{
+  cursor: not-allowed;
+}
+.tab-checkbox input:checked + label:before
+{
+    content: '\f046';
+}
+.tab-checkbox .dis-check + label:before
+{
+    color:grey;
+
+}
+.tab-checkbox span[checkedStatus='on']:before
+{
+    content: '\f046';
+}
+
+/* 表格边框 */
+.datagrid-body td
+{
+  //  border-right: 1px dotted transparent;
+}
