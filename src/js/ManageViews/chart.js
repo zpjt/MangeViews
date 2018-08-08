@@ -1,5 +1,6 @@
 import {api} from "api/ManageViews.js";
 
+
 /*
 	chartType:用来区分图形类别
 	3:表格

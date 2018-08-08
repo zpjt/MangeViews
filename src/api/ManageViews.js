@@ -23,6 +23,9 @@ class API {
 				data:JSON.stringify(obj),
 		}));
 	}
+	getTableData(chartId){
+		return Promise.resolve($.post(URL_V+"getTableData",{chartId}));
+	}
 
 
 	

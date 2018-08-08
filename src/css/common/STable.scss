@@ -1,0 +1,59 @@
+.s-tableBox{
+	position: relative;
+	color:white;
+	width:95%;
+	margin:auto;
+	.tab-list{
+		width: 100%;
+		height: 100%;
+		border: 1px solid green;
+		border-collapse: collapse;
+		border-spacing: 0;
+		table-layout:fixed;
+		position: relative;
+		td{
+			text-align: center;
+			vertical-align: cemter;
+			border: 1px solid green;
+			padding: 5px 0;
+		}
+		th{
+			text-align: center;	
+			vertical-align: center;
+			border: 1px solid green;
+			padding: 8px 0;
+		}
+		.gutter{
+			width: 16px;
+			display:none;
+		}	
+	}
+
+	.table-body-wrap{
+		width:100%;
+		overflow: auto;
+		overflow-x: hidden;
+		margin-top: -1px;
+	}
+
+}
+		
+.fix-tab:before{
+ content: "";
+ position: absolute;
+ top:0;
+ bottom:0;
+ right: 0;
+ border-right: 1px solid green;
+
+}
+.fix-tab:after{
+ content: "";
+ position: relative;
+ display: block;
+ width: 100%;
+ top: -1px;
+ height: 0;
+ border-bottom: 1px solid green;
+
+}

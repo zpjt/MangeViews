@@ -1,6 +1,6 @@
 import "css/ManageViews.scss";
 import {api} from "api/ManageViews.js";
-import {View,Border} from "./view.js";
+import {View,Border,STable} from "./view.js";
 
 /*Jq对象*/
 const $container= $("#viewsContent"),
@@ -35,27 +35,26 @@ class App{
 					const str = `
 
 						<div class="view-template theme2" id="template">
-						    <div class="view-item" echo-id="3" style="grid-row:1/2;grid-column:1/3">
+						    <div class="view-item" echo-type="chart" echo-id="3" style="grid-row:1/2;grid-column:1/3">
 						        <div class="bgSvg" echo-w="2" echo-y="1" echo-type="1"></div>
 						        <div class="view-content" >
 						        	
 						        </div>
 						    </div>
-						    <div class="view-item" echo-id="11" style="grid-column:3/4;grid-row:1/4;">
+						    <div class="view-item" echo-type="chart" echo-id="4" style="grid-column:3/4;grid-row:1/4;">
 						        <div class="bgSvg" echo-w="1" echo-y="3" echo-type="3"></div>
 						        <div class="view-content" >
 						        	
 						        </div>
 						    </div>
-						    <div class="view-item" echo-id="6" style="grid-column: 1 / 3;grid-row:2/4">
-						       
+						    <div class="view-item" echo-type="table" echo-id="7" style="grid-column: 1 / 3;grid-row:2/4">
+						     	<div class="bgSvg" echo-w="2" echo-y="2" echo-type="2"></div>
 						        <div class="view-content" >
-						             
 						        </div>
 						    </div>
 						</div>
 					`
-					$container.html(res.model);
+					$container.html(str);
 					const url = $("#template").css("backgroundImage");
 					$maxWindow.css("backgroundImage",url);
 
@@ -73,7 +72,7 @@ class App{
 
 	MaxView(config){
 
-		const {id,borderType,option,index,title} = config;
+		const {id,borderType,option,index,viewTitle,viewType} = config;
 		const poitionClass = borderType === 2 ? "border3-opt" : "";	
 
 		const templateStr=`
@@ -97,27 +96,48 @@ class App{
 						    </div>
 							`
 		$maxWindow.html(templateStr);
-		
 		const chartDom = $maxWindow.find(".chart");
-		let myChart= echarts.init(chartDom[0]); 
-			myChart.setOption(option);
+		if(viewType=="table"){
+				
+			new STable(chartDom,{id},function(){
+					
+			});
 
+			
+		}else if(viewType=="chart"){
+			let myChart= echarts.init(chartDom[0]); 
+			    myChart.setOption(option);
+		}
 		if(borderType){
-
-			 new  Border($maxWindow.find(".bgSvg"),{id:"max",title});
+			 new  Border($maxWindow.find(".bgSvg"),{id:"max",title:viewTitle});
 		}	
 	}
 
-	Toexcel(option,config){
+	Toexcel(option,viewType,config){
+
+		let tableArr = [];
+
+		const {WdArr,viewTitle,chartType} = config;
+		let body=[], head=[];
+
+		if(viewType=="table"){
+				
+			const {row_wd,col_wd} = chartType;
+			const addArr = col_wd.reverse();
+			row_wd.map((row,item)=>{
+				addArr.map((val,index)=>{
+					option[item].unshift(WdArr[+val]);
+				});
+			});
+			
 		
-		const {xAxis,series,Dim,legend,radar}= option;
-		const {chartType,WdArr,title}= config;
+			tableArr = option;
 
-			let tableArr = [];
-
-			let body=[],
-				head=[];
-
+			
+		}else if(viewType=="chart"){
+			
+			const {xAxis,series,Dim,legend,radar}= option;
+			
 			switch(chartType){
 				
 				case "4": // line 或 bar 
@@ -159,8 +179,11 @@ class App{
 
 					break;
 			}
-				
-			api.getExeclld({data:tableArr,fileName:title}).then(res=>{
+
+		}
+		
+		
+			api.getExeclld({data:tableArr,fileName:viewTitle}).then(res=>{
 
 				if(res){
 					window.location.href = baseUrl+"Expo/getExecl?id="+res;
@@ -232,11 +255,41 @@ $app.on("click",".view-btn",function(){
 	const par = $(this).parent();
 	const index = par.attr("echo-index");
 	const view = page.items[+index];
-	const {chart:{Box,type:chartType,title}} = view;
-	const Mychart = echarts.getInstanceByDom(Box);
-	const option = Mychart.getOption();
 
-	const WdArr=["","时间","科室","维度值","指标"];
+	console.log(view);
+	const {type:viewType} = view ;
+
+
+	let option = null,
+		$el =null,
+		chartType =null,
+		viewTitle =null,
+		WdArr = null;
+	
+	if(viewType==="table"){
+
+		const {table:{container,title,data,config}} = view;
+
+		$el = container ;
+		viewTitle= title;
+		option = data;
+		chartType = config;
+	    WdArr=["","时间", "科室", "指标", "维度值"];
+
+	}else if(viewType==="chart"){
+
+		const {chart:{Box,type:_chartType,title}} = view;
+		const Mychart = echarts.getInstanceByDom(Box);
+
+		$el = Box ;
+		chartType = _chartType;
+		viewTitle= title;
+		option = Mychart.getOption();
+		WdArr=["","时间","科室","维度值","指标"];
+
+	}
+
+
 	console.log(option);
 
 	switch(type){
@@ -245,7 +298,7 @@ $app.on("click",".view-btn",function(){
 		
 			break;
 		case "excel":
-			page.Toexcel(option,{WdArr,chartType,title});
+			page.Toexcel(option,viewType,{WdArr,chartType,viewTitle});
 			break;
 		case "expand":
 			const borderType = view.border && view.border.type || 0 ;
@@ -256,7 +309,8 @@ $app.on("click",".view-btn",function(){
 					borderType,
 					index,
 					id:view.id,
-					title,
+					viewTitle,
+					viewType,
 				});
 			});
 			

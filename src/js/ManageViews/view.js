@@ -1,10 +1,13 @@
 import {Border} from "./svgBorder.js";
 import {Chart} from "./chart.js";
+import {STable} from "./STable.js";
+
 
 class View {
 
 	constructor($el,index){
 		this.container=$el;
+		this.type= $el.attr("echo-type");
 		this.id = this.container.attr("echo-id");
 		this.index = index;
 		this.init();
@@ -12,10 +15,15 @@ class View {
 
 	init(){
 
+		const method = {"table":"initTable","chart":"initChart","realTime":"initRealTime"}
+
 		const chartBox = this.container.children(".view-content");
 		chartBox.html(this.renderContent());
+
 		const chartDom = chartBox.children(".chart");
-		this.initChart(chartDom);
+
+		this[method[this.type]](chartDom);
+
 	}
 
 
@@ -24,6 +32,18 @@ class View {
 			const borderDom = this.container.children(".bgSvg");
 			borderDom.length && this.initBorder(borderDom,title);
 		});
+	}
+
+	initTable($el){
+		this.table = new STable($el,{id:this.id},(title)=>{
+			const borderDom = this.container.children(".bgSvg");
+			borderDom.length && this.initBorder(borderDom,title);
+		});
+	}
+
+	initRealTime($el){
+		
+
 	}
 
 	initBorder($el,title){
@@ -57,4 +77,4 @@ class View {
 
 }
 
-export {View,Border} ;
+export {View,Border,STable} ;
