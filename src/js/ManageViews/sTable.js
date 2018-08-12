@@ -46,6 +46,8 @@ class STable {
 				wrap.css("height", totalH - this.container.find(".tab-head").height()-15);		
 
 				const is_overflow = wrap.height() - wrap.children("table").height() > 0 ;
+
+				
 				!is_overflow && this.container.find(".gutter").show();
 				callback(this.title);
 
@@ -74,7 +76,7 @@ class STable {
 		return api.getTableData(this.chartId).then(res=>{
 
 			if(res){
-				const {tabInfo:{chartName,row_wd,col_wd},data} = res_test;
+				const {tabInfo:{chartName,row_wd,col_wd},data} = res;
 				this.data =data;
 				this.title =chartName;
 				this.config = {

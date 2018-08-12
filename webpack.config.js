@@ -4,6 +4,7 @@ const PATHS = {
 	login:path.join(__dirname,"./src/login.js"),
 	ManageViews:path.join(__dirname,"./src/js/ManageViews/index.js"),
 	szViews:path.join(__dirname,"./src/js/szViews/index.js"),
+	editTemplate:path.join(__dirname,"./src/js/editTemplate/index.js"),
 	build:path.join(__dirname,"dist"),
 	publicPath:"/",
 };
@@ -46,7 +47,6 @@ module.exports=function(env,argv){
 	            hash:false,
 				template:"./src/router/ManageViews.html",
 				chunks:["ManageViews","vendor","manifest",],//对应关系,main.js对应的是index.html
-				//excludeChunks:["login"],//对应关系,main.js对应的是index.html
 			}),
 			new htmlPlugin({
 				title: "视图分类",
@@ -55,7 +55,14 @@ module.exports=function(env,argv){
 	            hash:false,
 				template:"./src/router/szViews.html",
 				chunks:["szViews","vendor","manifest",],//对应关系,main.js对应的是index.html
-				//excludeChunks:["login"],//对应关系,main.js对应的是index.html
+			}),
+			new htmlPlugin({
+				title: "编辑器",
+				filename:'editTemplate.html',
+	            inject:'body',
+	            hash:false,
+				template:"./src/router/editTemplate.html",
+				chunks:["editTemplate","vendor","manifest",],//对应关系,main.js对应的是index.html
 			}),
 			new CleanWebpackPlugin(['dist']), //清除打包后的目录
 			new extractPlugin({
@@ -116,6 +123,7 @@ module.exports=function(env,argv){
 				login: PATHS.login,
 				ManageViews: PATHS.ManageViews,
 				szViews: PATHS.szViews,
+				editTemplate: PATHS.editTemplate,
 			},
 			mode:env,
 			output: {

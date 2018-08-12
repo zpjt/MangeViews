@@ -59,6 +59,7 @@ $slectColor:#aee6ff;
 		height: 100%;
 		position: absolute;
 		visibility:hidden;
+		display:none;
 		opacity:0;
 		background: $themeBlendent1;
 		transition: all .5s ease-out .2s; 
@@ -67,6 +68,7 @@ $slectColor:#aee6ff;
 	.style-active{
 		visibility:visible;
 		opacity:1;
+		display:block;
 	}
 	.cata-container{
 		display:flex;
@@ -88,6 +90,7 @@ $slectColor:#aee6ff;
 			visibility:hidden;
 			background: $themeBlendent1;
 			opacity:0;
+			display:none;
 			width:280px;
 			border:1px solid $themeColor;
 			border-right:none;
@@ -411,8 +414,17 @@ $slectColor:#aee6ff;
 	}
 }
 
+/* 输入框 */
+.s-inp{
+	width:300px;
+}
 
-
-.indent{
-	padding:0 8px;
+/*创建模态框 */
+#add-MView{
+	.m-content{
+		width:450px;
+	}
+	.s-title{
+		width:80px;
+	}
 }

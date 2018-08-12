@@ -1,17 +1,17 @@
-import "css/common/common.scss";
 import "css/szViews.scss";
 import "css/common/dropMenu.scss";
-import "css/common/button.scss";
-import "css/common/modal.scss";
 import "css/common/Svg.scss";
-import "css/common/input.scss";
-import { EasyUITab } from "js/common/EasyUITab.js";
-import { Calendar } from "js/common/calendar.js";
-import { Unit } from "js/common/Unit.js";
-import {API} from "api/szViews.js";
-import RotateMenu from "js/common/rotateMenu.js";
 
-const {user_id} = window.jsp_config;
+
+import RotateMenu from "js/common/rotateMenu.js";
+import { EasyUITab } from "js/common/EasyUITab.js";
+import {Unit,SCombobox,SModal,Calendar,Tree} from "js/common/Unit.js";
+import {API} from "api/szViews.js";
+
+
+
+
+const {user_id,catalogSrc} = window.jsp_config;
 
 //工具类实例
 const UnitOption = new Unit();
@@ -47,7 +47,7 @@ const $menuBox=$("#menuBox"),
 const $inpName = $("#name"),
 	  $parName = $("#parName");
 
-
+console.log(3);
 //初始化页面类
 class InitPage extends EasyUITab{
 	dropMenuConfig=[
@@ -67,10 +67,27 @@ class InitPage extends EasyUITab{
 		this.tabCardInit([{layout_name:"我的创建",index:0,layout_id:-2}]);
 		this.InitIconBox($iconBox);
 		this.orgBoxInit();
+		this.initUnit();
+		
+    }
+
+    initUnit(){
+    	// 日历
 		this.calendar = new Calendar($(".dataTime"),$("#viewShowTime"),{
 			rotate:4,
 			style:2
 		});
+		// 目录选择下拉框
+		this.parCatalogSel = new SCombobox($("#parName"),{
+			"textField":"layout_name",
+			"idField":"layout_id",
+			"prompt":"请选择所属分类...",
+			"width":300,
+		});
+
+		this.modal = new SModal();
+
+
     }
 
     InitIconBox($el){
@@ -366,8 +383,8 @@ class InitPage extends EasyUITab{
 
 		const  index = $this.index();
 
-		$(".style-active").removeClass("style-active");
-		$styleView.eq(index).addClass("style-active");
+		page.modal.close($styleView.eq(1-index),"style-active");
+		page.modal.show($styleView.eq(index),"style-active");
 
 		$this.addClass("style-sel").siblings(".style-item").removeClass("style-sel");
 
@@ -399,7 +416,7 @@ class InitPage extends EasyUITab{
 					  return  val.index ;
 				}) ;
 				 this.tabInit(menuIndexArr,style);
-				 UnitOption.closeModal($addMView);
+				 page.modal.close($addMView);
 			}else{
 			}
 
@@ -616,10 +633,31 @@ $tabCard.on("click",".card",function(){
 });
 
 //  进入目录
-
 $tabContainer.on("click",".node-catalogue",function(){
 	const $this = $(this);
 	page.changeTabcard($this);
+
+});
+
+// 进入模板编辑器
+$tabContainer.on("click",".node-file",function(){
+	const $this = $(this);
+
+	const index = +$this.attr("echo-data");
+
+	const style = $(".style-sel").index();
+	const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
+
+
+	$("#content",window.parent.document).addClass("no-head");
+	$("#slide",window.parent.document).animate({"width":0},500,function(){
+	//	window.location.href="editTemplate";
+		window.location.href="./editTemplate.html";
+				
+	});
+
+	
+	
 
 });
 
@@ -682,25 +720,23 @@ $menuBox.on("click",".menu-item",function(e){
 
 	const type =$this.attr("sign");
 	$addMBtn.attr({"type":type,"method":"create"});
-
-	$parName.parent().show();
 	$inpName.val(null);
 		
 	const curCatalogueArr = $tab.datagrid("getData").rows.reduce(function(total,curVal){
 			// layout_type : 1 目录 ，0：文件
-			const {layout_name:text,layout_id:id,layout_type} = curVal;
-			layout_type === 1 && total.push({text,id});
+			const {layout_name,layout_id,layout_type} = curVal;
+			layout_type === 1 && total.push({layout_name,layout_id});
 			 return total;
-
 	},[]);
 	
 	const menuArr = $tabCard.data("menuArr");
+	const curId = menuArr[menuArr.length-1].layout_id;
+	curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
+	
+	page.parCatalogSel.loadData(curCatalogueArr);
+	page.parCatalogSel.setValue(curId);
+	page.modal.show($addMView);
 
-	curCatalogueArr.unshift({"text":"当前分类","id":menuArr[menuArr.length-1].layout_id});
-
-	const $comboBox = $parName.siblings(".combo-box");
-	UnitOption.initCombobox(curCatalogueArr,$comboBox);
-	UnitOption.showModal($addMView);
 });
 
 //模态框确定按钮
@@ -709,9 +745,10 @@ $addMBtn.click(function(){
 	const type = $(this).attr("type");
 	const method = $(this).attr("method");
 	const name = $inpName.val().trim();
-	const par_id = method==="create" ? $parName.children(".combo-value").val() : $ViewContainer.attr("curid");
+	const par_id = method==="create" ? page.parCatalogSel.getValue() : $ViewContainer.attr("curid");
 	const style = $(".style-sel").index() ? "catalogue":"tab";
-	
+
+
 	if(name){
 		method==="create" ? page.addCatalogue(type,{name,par_id},style) : API_szViews.updataName({name,id:par_id}).then(res=>{
 
@@ -720,7 +757,7 @@ $addMBtn.click(function(){
 							  return  val.index ;
 						}) ;
 						 page.tabInit(menuIndexArr,style);
-						 UnitOption.closeModal($addMView);
+						 page.modal.close($addMView);
 				}else{
 					alert("重名");
 				}
@@ -744,7 +781,7 @@ $("#delBtn").click(function(){
 		return ;
 	}
 	const id = selArr.join(",");
-	UnitOption.showModal($confirmMView);
+	page.modal.show($confirmMView);
 	$confirmBtn.attr("delArr",id);
 	
 });
@@ -800,7 +837,7 @@ $ViewContainer.on("click",".tab-opt",function(e){
 			  	API_szViews.showReleaseLayout(layout_id).then(res=>{
 								if(res){
 									
-									UnitOption.showModal($issueMView);
+									page.modal.show($issueMView);
 									const {user,starttime,endtime,release} = res;
 								
 								  	[].slice.call($issueMView.find(".s-switch input")).map((val,index)=>{
@@ -845,15 +882,11 @@ $ViewContainer.on("click",".tab-opt",function(e){
 									  });
 								}
 				});
-
-			
-
-
 			break;
 		case "copy":
 			break;
 		case "rename":
-			UnitOption.showModal($addMView);
+			page.modal.show($addMView);
 			$parName.parent().hide();
 			$addMBtn.attr({"method":"modify"});
 			 $inpName.val(layout_name);
@@ -870,7 +903,7 @@ $ViewContainer.on("click",".tab-opt",function(e){
 			$(".icon-sel").removeClass("icon-sel");
 			$iconBox.find("."+layout_icon_name.trim()).addClass("icon-sel");
 
-		  !status || last_layoutId !== layout_id ?  $parContainer.addClass("icon-active"): $parContainer.removeClass("icon-active");
+		  !status || last_layoutId !== layout_id ? page.modal.show($parContainer,"icon-active") :page.modal.close($parContainer,"icon-active") ;
 			break;
 	}
 
@@ -898,7 +931,7 @@ $("#iconFooter").on("click","p",function(){
 			API_szViews.updataIcon({icon_id,id}).then(res=>{
 
 				if(res){
-					$iconBox.parent().removeClass("icon-active");
+					page.modal.close($parContainer,"icon-active") ;
 					const menuIndexArr = $tabCard.data("menuArr").map(val=>{
 					  return  val.index ;
 					}) ;
@@ -913,10 +946,9 @@ $("#iconFooter").on("click","p",function(){
 
 			break;
 		case "close":
-			$parContainer .removeClass("icon-active");
+			page.modal.close($parContainer,"icon-active") ;
 			break;
 	}
-
 });
 
 $("#iconContainer").on("click",function(e){
@@ -973,7 +1005,7 @@ $("#issueBtn").click(function(){
 					  return  val.index ;
 			}) ;
 			page.tabInit(menuIndexArr);
-			UnitOption.closeModal($issueMView);
+			page.modal.close($issueMView);
 		}else{
 			alert("发布失败！");
 		}

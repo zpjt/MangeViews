@@ -1,0 +1,198 @@
+$themeColor:#00a0e9;
+$title:80px;
+$border:#E9E9E9;
+#app{
+	width:100%;
+	height:100%;
+	position: relative;
+}
+@mixin shadow-space($radius:4px) {
+	background-color: #ffffff;
+	box-shadow: 2px 3px 18px 0px rgba(0, 0, 0, 0.16);
+	border-radius: $radius;
+}
+header.header{
+	height: $title;
+	position: relative;
+	background-color: #000000;
+	color:white;
+	display:flex;
+	justify-content: space-between;
+	align-items:center;
+	padding: 0 20px;
+	font-size:18px;
+
+	@at-root{
+		.opt-box{
+			&>span{
+				text-align:center;
+				padding:0 15px;
+				&:after{
+					content: attr(echo-text);
+					display:block;
+					padding-top:5px;
+					font-size:12px;
+				}
+			}		
+		}
+		.global-box{
+			position: absolute;
+			left:160px;
+			top:70px;
+			width:320px;
+			background: #fff;
+			z-index:10;
+			font-size:14px;
+			color:black;
+			@include shadow-space(8px);
+			&:before{
+				content:"";
+				position: absolute;
+				top:-16px;
+				left:30px;
+				width: 0;
+				height: 0;
+				border:8px solid transparent;
+				border-bottom-color:white;
+
+			}
+			
+			.cate-title{
+				position: relative;
+				padding: 8px 15px;
+				border-top:2px solid $border;
+				border-bottom:2px solid $border;
+			}
+			.theme-container{
+				width:90%;
+				margin:10px auto;
+				padding:10px ;
+				border-radius:8px;
+				box-sizing:border-box;
+				background: #eff1f3;
+			}
+			.theme-box{
+				display:flex;
+				flex-wrap:wrap;
+				justify-content: space-around;
+				margin:10px 0;
+				.theme-item{
+					width:28%;
+					height:50px;
+					background: red;
+				}
+			}
+
+			.list-arr{
+			  width:100%;
+			  box-sizing:border-box;
+			  display:flex;
+			  padding:12px 8px;
+			  justify-content: space-around;
+			  &>li{
+				 width:30%;
+			     height:60px;
+			 	 background: green;
+			  }	
+			}
+			.footer{
+				border-top:2px solid $border;
+				text-align:right;
+				padding:8px 20px;
+			}
+
+		}
+	}
+	
+	.opt-box{
+		display:flex;	
+		align-items:center;
+	}
+	#backHistory{
+		color:#00b0e4;
+		font:{
+			size:40px;
+		}
+	}
+
+}
+.container{
+	height: calc(100% - #{$title});
+	position: relative;
+	overflow:hidden;
+	box-sizing:border-box;
+	display:flex;
+
+	aside{
+		width:80px;
+		height:100%;
+
+		background: white ;
+		
+	}
+	section{
+		flex:auto;
+		padding:0 15px;
+		border:1px solid green;
+	}
+	.component-title{
+		$h:40px;
+		text-align:center;
+		height:$h;
+		line-height:$h;
+		border-bottom:2px solid $themeColor;
+	}
+
+	@at-root{
+	.components{
+			padding:15px 10px;
+			box-sizing:border-box;
+			display:flex;
+			flex-direction:column;
+			.component-item{
+				text-align:center;
+				font-size:0;
+				padding:15px 0;
+				cursor: pointer;
+				&:hover{
+					@include shadow-space;
+				}
+			}
+			
+			.sicon{
+				font-size:32px;
+			}
+		}
+		.template-box{
+			position: relative;
+			
+		}
+	}
+}
+
+
+.s-inp{
+	background: none;
+}
+.calendar-inpTxt{
+	border-radius: 4px;
+	border: solid 2px #e3e3e3;
+	width:300px;
+	height:40px;
+}
+.calendar-time{
+	position: relative;
+}
+#componentName{
+	width:260px;
+}
+.set-component{
+	display:flex;
+
+	.zbBox{
+		width:56%
+	}
+	.setBox{
+		width:44%
+	}
+}

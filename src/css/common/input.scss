@@ -1,12 +1,46 @@
 $themeColor:#00a0e9;
 $inpBg:white;
-$height:30px;
-$default:#766e6e;// //#ECECEC
-$width:350px;
+$height:40px;
+$default:#ececec;
+$width:200px;
 $slectColor:#aee6ff;
-.inp-tip{
-		color:red;
+
+/* 输入框 */
+.s-inp{
+	height: 100%;
+	min-width:$width;
+	text-indent:1em;
+	border:0;
+	outline:0;
+	font:{
+		weight:bolder;
+	};
+	box-sizing:border-box;
 }
+.inp-tip{
+  color:red;
+}
+
+
+
+.s-inp-box{
+	height:$height;
+	position: relative;
+	box-sizing:border-box;
+	&:hover{
+	  .normal-inp{
+	  	border-color:$themeColor;
+	  }
+	}
+   .normal-inp{
+	 border-radius: 4px;
+	 border: solid 2px #e3e3e3;
+   }
+}
+
+
+
+
 
 .s-inpBox{
 	position: relative;
@@ -56,7 +90,6 @@ $slectColor:#aee6ff;
 
 .s-comboBox{
 	position: relative;
-	padding:15px 0;
 	  
 	.inp-combobox{
 			cursor: pointer;
@@ -247,4 +280,118 @@ $slectColor:#aee6ff;
 		
 	}
 
+}
+
+/* 动画radio */
+
+.s-radio{
+	appearance:none;
+	border: 2px solid #4caf50;
+	width: 20px;
+	height: 20px;
+	border-radius:50%;
+	position: relative;
+    vertical-align: -0.8rem;
+    cursor: pointer;
+    display: inline-block;
+    margin: .4rem;
+    outline: none;
+    &:after{
+    	content: "";
+	    display: block;
+	    width: 70%;
+	    height: 70%;
+	    border-radius: 50%;
+	    transform:  scale(0) ;
+	    margin:2px;
+	    transition: all ease-out 250ms;
+    }
+    &:checked:after{
+    	transform: scale(1);
+    	background: #4caf50;
+    }
+}
+
+
+
+
+
+/* 下拉框 */
+.s-comboBox{
+	$height:40px;
+	position: relative;
+	cursor: pointer;
+	&:hover{
+		.combo-inp{
+			border-color: $themeColor;
+		}
+	}
+	.combo-inp{
+		border-radius:4px;
+		box-sizing:border-box;
+		border: solid 2px #ececec;
+		height:$height;
+		line-height:$height - 4px;
+		.combo-text{
+			width: calc(100% - 30px);
+			text-indent:1em;
+		//	pointer-events:none;
+			cursor: pointer;
+		}
+		.slide-icon{
+			color:#a8afbd;
+			padding:0 4px;
+			transition: transform .3s linear;
+		}
+		
+	}
+	.combo-drop{
+		width:100%;
+		top:$height + 4;
+		position: absolute;
+		visibility:hidden;
+		opacity:0;
+		display:none;
+		max-height:300px;
+		overflow:auto;
+		background:$inpBg;
+		border:1px solid $default;
+		box-shadow: 2px 3px 18px 0px rgba(0, 0, 0, 0.16);
+		border-radius:4px ;
+		padding:8px;
+		box-sizing:border-box;
+		z-index:2;
+		transform:translateY(-80%);
+		transition: all  .3s cubic-bezier(.31,1.47,.81,1.47);
+		.drop-item {
+			padding:4px 8px;
+		}
+		.drop-item.active {
+			background-color: #aee6ff;
+			border-radius: 2px;
+		}
+	}
+
+}
+
+.s-comboBox.active{
+	.slide-icon{
+		transform: rotate(-180deg);
+	}
+	.combo-drop{
+		visibility:visible;
+		opacity:1;
+		transform:translateY(0);
+	}
+}
+/* 文本框 */
+.s-textarea{
+  padding-top:10px;
+  box-sizing:border-box;
+  height: 100%;
+  resize: none;
+  vertical-align: middle;
+  border:none;
+  background: none;
+  outline:none;
 }

@@ -54,7 +54,7 @@ class App{
 						    </div>
 						</div>
 					`
-					$container.html(str);
+					$container.html(res.model);
 					const url = $("#template").css("backgroundImage");
 					$maxWindow.css("backgroundImage",url);
 

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>编辑模板</title>
+	<script src="assert/js/modernizr.custom.63321.js"></script>
+	<link rel="stylesheet" href="assert/css/normalize.css">
+	<link rel="stylesheet" href="assert/font/css/font-awesome.min.css">
+	<link rel="stylesheet" href="assert/sekin-font/style.css">
+</head>
+<body>
+	<div id="app">
+		<header class="header">
+			<div class="opt-box">
+				<span><i class="fa fa-chevron-circle-left" id="backHistory"></i></span>
+				<span echo-text="全局过滤"><i class="fa fa-filter"></i></span>
+				<span echo-text="全局样式"><i class="fa fa-th-large"></span></i>
+			</div>
+			<div class="opt-box">
+				<span echo-text="预览"><i class="fa  fa-eye"></i></span>
+				<span echo-text="导出"><i class="fa fa-download"></i></span>
+			</div>
+			<div class="global-box" id="globalBox">
+				<ul class="cate-content">
+					<li >
+						<p class="cate-title" style="border-top:none;">背景样式:</p>
+						<div class="theme-container">
+							<div class="theme-box">
+								<div class="theme-item">1</div>
+								<div class="theme-item">2</div>
+								<div class="theme-item">3</div>
+							</div>
+							<div class="theme-box">
+								<div class="theme-item">4</div>
+								<div class="theme-item">5</div>
+								<div class="theme-item">6</div>
+							</div>
+						</div>
+					</li>
+					<li class="list-box">
+						<p class="cate-title">边框样式:</p>
+						<ul class="list-arr">
+							<li></li>
+							<li></li>
+							<li></li>
+						</ul>
+					</li>
+				</ul>
+				<div class="footer" id="globalOpt">
+					<button class="s-btn">确定</button>
+					<button class="s-btn">关闭</button>
+				</div>
+			</div>
+		</header>
+		<div class="container">
+			<aside>
+				<p class="component-title">表单控件</p>
+				<div class="components">
+				    <div class="component-item " draggable="true"><i class="sicon sicon-table"></i></div>
+				    <div class="component-item" draggable="true"><span class="sicon sicon-bar">
+				                <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span>
+				        </span>
+				    </div>
+				    <div class="component-item" draggable="true"><span class="sicon sicon-line">
+				                <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>
+				        </span>
+				    </div>
+				    <div class="component-item" draggable="true"><i class="sicon sicon-pie"></i></div>
+				    <div class="component-item" draggable="true">
+				    	<span class="sicon sicon-scatter">
+		                <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span><span class="path9"></span>
+		                </span>
+		            </div>
+				    <div class="component-item" draggable="true">
+				    	<span class="sicon sicon-rader">
+		                <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span><span class="path9"></span><span class="path10"></span><span class="path11"></span><span class="path12"></span>
+		                </span>
+		            </div>
+				    <div class="component-item" draggable="true">
+				        <span class="sicon sicon-component">
+			                <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+		                </span>
+				    </div>
+				    <div class="component-item" draggable="true"><i class="sicon sicon-text"></i></div>
+				    <div class="component-item" draggable="true"><i class="sicon sicon-img"></i></div>
+				</div>
+			</aside>
+			<section id="templateBox" class="template-box">
+				<div class="s-comboBox same" id="test">
+							
+				</div>
+				<div class="s-comboBox same" id="test">
+							
+				</div>
+			</section>
+		</div>
+		
+	</div>
+	<!-- 数据选择模态框 -->
+		<div class="s-modal s-effect-2" id="setComponentMd" >
+			<div class="m-content" style="width:1100px;height:600px">
+				<div class="m-title">
+					<span class="m-txt">组件数据设置</span>
+					<span class="m-close m-close-icon" >
+						<i  class="fa fa-times fa-lg"></i>
+					</span>
+				</div>
+				<div class="m-action set-component">
+					<div class="zbBox">
+						<div class="sel-item">
+							<p class="s-title"><b class="inp-tip">*</b>组件名称:</p>
+							<div class="s-inp-box">
+								<input type="text" id="componentName" class="s-inp normal-inp" placeholder="填写组件名称" >
+							</div>
+						</div>
+						<div class="sel-item">
+							<p class="s-title">选择监测指标:</p>
+							<div>
+								<button><span class="fa fa-plus">&nbsp;</span>添加（多选）</button>
+							</div>
+						</div>
+						<div class="sel-item">
+							<p class="s-title">指标名称:</p>
+							<div>
+								
+							</div>
+						</div>
+						
+					</div>
+					<div class="setBox">
+						
+						<div class="sel-item">
+							<p class="s-title">横轴维度:</p>
+							<div class="s-comboBox">
+							
+							</div>
+						</div>
+						<div class="sel-item">
+							<p class="s-title">纵轴维度:</p>
+							<div class="s-comboBox">
+							
+							</div>
+						</div>
+						<div class="sel-item">
+							<p class="s-title">机构维度:</p>
+							<div class="s-comboBox">
+							
+							</div>
+						</div>
+						<div class="sel-item">
+							<p class="s-title">主题维度:</p>
+							<div class="s-comboBox">
+							
+							</div>
+						</div>
+						<div class="sel-item">
+							<p class="s-title">时间筛选:</p>
+							<div  id="calendarTime" class="calendar-time">
+								<input type="text" id="viewShowTime"  read="read"  class="calendar-inpTxt s-inp " readonly="readonly" >
+								<div class="dataTime" id="calendarTime"></div>
+							</div>
+						</div>
+
+						<div class="sel-item" >	
+							<p class="s-title">表格样式:</p>
+							<div>
+								<span><input type="radio" class="s-radio" name="tab-style"><label>是</label></span>
+								<span><input type="radio"  class="s-radio" name="tab-style"><label>否</label></span>
+							</div>
+						</div>
+					</div>		
+				</div>
+				<div class="m-foot">
+					<button class="s-btn sure-btn" id="issueBtn">确定</button>
+					<span>&nbsp;&nbsp;&nbsp;</span>
+					<button class="s-btn cancel-btn m-close" >取消</button>
+				</div>
+			</div>
+		</div>
+	<div class="s-md-overlay"></div>	
+	<script src="assert/js/jquery.min.js"></script>
+	<script type="text/javascript" >
+		window.jsp_config={
+			baseUrl:'/ManageViews/',
+			base:'main/',
+			user_id:"10",
+			role_id:"70000",
+		};
+	</script>
+</body>
+</html>

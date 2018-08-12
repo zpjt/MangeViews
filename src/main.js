@@ -87,13 +87,6 @@ class Menu{
 		const  indent =new Array(+data.lev).fill(`<span class="indent"></span>`).join("");
 		let {sys_param,url,id}= data;
 
-		/*
-			fa fa-trash  视图回收站 
-			fa fa-adjust  智能预警设置
-			fa-newspaper-o 预警记录
-			fa fa-gear 权限管理 
-			fa-commenting-o 消息中心
-		*/
 
 		const icon = url.includes("ManageViews") && "sicon " ||  "fa ";
 		return (`
@@ -198,7 +191,7 @@ $userOptions.on("click","li",function(){
 			break;
 		case "power": //退出登录
 			//window.location.href=baseUrl+"login/logOut";
-			window.location.href="login.html";
+			 window.location.href="login.html";
 			break;
 	}
 });
