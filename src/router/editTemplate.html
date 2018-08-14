@@ -10,15 +10,19 @@
 </head>
 <body>
 	<div id="app">
-		<header class="header">
-			<div class="opt-box">
-				<span><i class="fa fa-chevron-circle-left" id="backHistory"></i></span>
-				<span echo-text="全局过滤"><i class="fa fa-filter"></i></span>
-				<span echo-text="全局样式"><i class="fa fa-th-large"></span></i>
-			</div>
-			<div class="opt-box">
-				<span echo-text="预览"><i class="fa  fa-eye"></i></span>
-				<span echo-text="导出"><i class="fa fa-download"></i></span>
+		<header >
+			<div id="headOpt" class="header">
+				<div class="opt-box">
+					<span class="head-btn" sign="back"><i class="fa fa-chevron-circle-left back" ></i></span>
+					<span echo-text="全局过滤" sign="filter" class="head-btn"><i class="fa fa-filter"></i></span>
+					<span echo-text="全局样式" sign="style" class="head-btn"><i class="fa fa-th-large"></span></i>
+				</div>
+				<div class="opt-box">
+					<span echo-text="预览" sign="pre" class="head-btn"><i class="fa  fa-eye"></i></span>
+					<span echo-text="保存" sign="save" class="head-btn"><i class="fa fa-download"></i></span>
+					<span echo-text="另存为" sign="save-as" class="head-btn"><i class="fa fa-download"></i></span>
+					<span echo-text="导出" sign="export" class="head-btn"><i class="fa fa-download"></i></span>
+				</div>
 			</div>
 			<div class="global-box" id="globalBox">
 				<ul class="cate-content">
@@ -26,23 +30,23 @@
 						<p class="cate-title" style="border-top:none;">背景样式:</p>
 						<div class="theme-container">
 							<div class="theme-box">
-								<div class="theme-item">1</div>
-								<div class="theme-item">2</div>
-								<div class="theme-item">3</div>
+								<div class="theme-item"></div>
+								<div class="theme-item"></div>
+								<div class="theme-item"></div>
 							</div>
 							<div class="theme-box">
-								<div class="theme-item">4</div>
-								<div class="theme-item">5</div>
-								<div class="theme-item">6</div>
+								<div class="theme-item"></div>
+								<div class="theme-item"></div>
+								<div class="theme-item"></div>
 							</div>
 						</div>
 					</li>
 					<li class="list-box">
 						<p class="cate-title">边框样式:</p>
 						<ul class="list-arr">
-							<li></li>
-							<li></li>
-							<li></li>
+							<li class="border-item"></li>
+							<li class="border-item"></li>
+							<li class="border-item"></li>
 						</ul>
 					</li>
 				</ul>
@@ -86,97 +90,119 @@
 				</div>
 			</aside>
 			<section id="templateBox" class="template-box">
-				<div class="s-comboBox same" id="test">
-							
-				</div>
-				<div class="s-comboBox same" id="test">
-							
-				</div>
+				
 			</section>
 		</div>
 		
 	</div>
 	<!-- 数据选择模态框 -->
-		<div class="s-modal s-effect-2" id="setComponentMd" >
-			<div class="m-content" style="width:1100px;height:600px">
-				<div class="m-title">
-					<span class="m-txt">组件数据设置</span>
-					<span class="m-close m-close-icon" >
-						<i  class="fa fa-times fa-lg"></i>
-					</span>
-				</div>
-				<div class="m-action set-component">
+	<div class="s-modal s-effect-2" id="setComponentMd" >
+		<div class="m-content">
+			<div class="m-title">
+				<span class="m-tab">指标选择</span>
+				<span class="m-tab">属性设置</span>
+				<span class="m-close m-close-icon" >
+					<i  class="fa fa-times fa-lg"></i>
+				</span>
+			</div>
+			<div class="m-action set-component">
+				<div class="wrap">
 					<div class="zbBox">
 						<div class="sel-item">
-							<p class="s-title"><b class="inp-tip">*</b>组件名称:</p>
-							<div class="s-inp-box">
-								<input type="text" id="componentName" class="s-inp normal-inp" placeholder="填写组件名称" >
+							<p class="s-title" style="width:100px" >选择监测指标:</p>
+							<div style="position: relative;">
+								<button class="s-btn"  id="selZb"><span class="fa fa-plus">&nbsp;</span>添加（多选）</button>
+								<div  class="zb-box" id="zbTreeBox">
+									<p class="cate-title">指标选择</p>
+									<div id="zbTree"></div>
+									<div id="zbOpt" class="zb-opt">
+										<button class="s-btn">确定</button>
+										<button class="s-btn">取消</button>
+									</div>
+								</div>
 							</div>
 						</div>
-						<div class="sel-item">
-							<p class="s-title">选择监测指标:</p>
-							<div>
-								<button><span class="fa fa-plus">&nbsp;</span>添加（多选）</button>
-							</div>
-						</div>
-						<div class="sel-item">
-							<p class="s-title">指标名称:</p>
-							<div>
+						<div class="cata-item">
+							<p class="cate-title" >所选指标名称:</p>
+							<div class="cate-box" id="selZbs">
 								
 							</div>
 						</div>
-						
 					</div>
 					<div class="setBox">
-						
-						<div class="sel-item">
-							<p class="s-title">横轴维度:</p>
-							<div class="s-comboBox">
-							
+						<div class="cata-item">
+							<p class="cate-title" >属性设置:</p>
+							<div class="cate-box">
+								<div class="sel-item">
+									<div class="sel-item">
+										<p class="s-title">横轴维度:</p>
+										<div class="s-comboBox" id="XAxis">
+										
+										</div>
+									</div>
+									<div class="sel-item">
+										<p class="s-title" >纵轴维度:</p>
+										<div class="s-comboBox" id="YAxis">
+										
+										</div>
+									</div>
+								</div>
+								<div class="sel-item">
+									
+									<div class="sel-item">
+										<p class="s-title">时间筛选:</p>
+										<div  id="calendarTime" class="calendar-time">
+											<span class="calendar-inp-icon"><i class="fa fa-calendar">&nbsp;</i></span>
+											<input type="text" id="viewShowTime"  read="read"  class="calendar-inpTxt s-inp " readonly="readonly" >
+											<div class="dataTime" id="calendarTime"></div>
+										</div>
+									</div>
+									<div class="sel-item">
+										<p class="s-title">机构维度:</p>
+										<div class="s-comboBox" id="orgWd">
+										
+										</div>
+									</div>
+								</div>
+								<div class="sel-item">
+									
+									<div class="sel-item">
+										<p class="s-title">组件名称:</p>
+										<div class="s-inp-box">
+											<input type="text" id="componentName" class="s-inp normal-inp no-fill" placeholder="填写组件名称" >
+										</div>
+									</div>
+									<div class="sel-item">
+										<p class="s-title">主题维度:</p>
+										<div class="s-comboBox" id="dimWd">
+										
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
-						<div class="sel-item">
-							<p class="s-title">纵轴维度:</p>
-							<div class="s-comboBox">
-							
+						<div class="cata-item">
+							<p class="cate-title" >样式设置:</p>
+							<div class="cate-box">
+								<div class="sel-item">
+								    <p class="s-title">表格样式:</p>
+								    <div>
+								        <span><input type="radio" class="s-radio" name="tab-style"><label>是</label></span>
+								        <span><input type="radio"  class="s-radio" name="tab-style"><label>否</label></span>
+								    </div>
+								</div>
 							</div>
 						</div>
-						<div class="sel-item">
-							<p class="s-title">机构维度:</p>
-							<div class="s-comboBox">
-							
-							</div>
-						</div>
-						<div class="sel-item">
-							<p class="s-title">主题维度:</p>
-							<div class="s-comboBox">
-							
-							</div>
-						</div>
-						<div class="sel-item">
-							<p class="s-title">时间筛选:</p>
-							<div  id="calendarTime" class="calendar-time">
-								<input type="text" id="viewShowTime"  read="read"  class="calendar-inpTxt s-inp " readonly="readonly" >
-								<div class="dataTime" id="calendarTime"></div>
-							</div>
-						</div>
-
-						<div class="sel-item" >	
-							<p class="s-title">表格样式:</p>
-							<div>
-								<span><input type="radio" class="s-radio" name="tab-style"><label>是</label></span>
-								<span><input type="radio"  class="s-radio" name="tab-style"><label>否</label></span>
-							</div>
-						</div>
-					</div>		
-				</div>
-				<div class="m-foot">
-					<button class="s-btn sure-btn" id="issueBtn">确定</button>
-					<span>&nbsp;&nbsp;&nbsp;</span>
-					<button class="s-btn cancel-btn m-close" >取消</button>
+					</div>
 				</div>
 			</div>
+			<div class="m-foot">
+				<button class="s-btn sure-btn" id="issueBtn">确定</button>
+				<span>&nbsp;&nbsp;&nbsp;</span>
+				<button class="s-btn cancel-btn m-close" >取消</button>
+			</div>
 		</div>
+	</div>
 	<div class="s-md-overlay"></div>	
 	<script src="assert/js/jquery.min.js"></script>
 	<script type="text/javascript" >

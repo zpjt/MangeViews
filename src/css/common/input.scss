@@ -32,10 +32,14 @@ $slectColor:#aee6ff;
 	  	border-color:$themeColor;
 	  }
 	}
+
    .normal-inp{
 	 border-radius: 4px;
 	 border: solid 2px #e3e3e3;
    }
+   .no-fill.s-inp{
+		border-color:red;
+	}
 }
 
 
@@ -248,6 +252,7 @@ $slectColor:#aee6ff;
 		opacity:0;
 		z-index:10;
 		width: 100%;
+		height:100%;
 		cursor: pointer;
 	}
 	label{
@@ -344,6 +349,9 @@ $slectColor:#aee6ff;
 			transition: transform .3s linear;
 		}
 		
+	}
+	.combo-inp.no-fill{
+		border-color: red;	
 	}
 	.combo-drop{
 		width:100%;
