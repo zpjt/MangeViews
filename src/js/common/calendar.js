@@ -434,6 +434,10 @@ class Calendar{
 
 	}
 
+	changeStyle(style){
+		
+	}
+
 	init(){
 	
 		const view =`
@@ -446,6 +450,8 @@ class Calendar{
 		this.frequemcy=this.container.find(".calendar-frequemcy");
 		this.rotateShow=this.container.find(".calendar-rotate");
 		this.upInp();
+
+		
 		const views =Array.from(this.container.children().children(".calendar-view"));
 		
 		const selTime=this.CurTime,

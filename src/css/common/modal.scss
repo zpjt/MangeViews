@@ -32,10 +32,10 @@ $duration:.3s;
 		min-width:300px;
 		min-height:200px;
 		border-radius:6px;
-	//	background: $active;
-	    border: 2px solid transparent;
-		  border-image: linear-gradient(to top, #F80, #2ED);
-		  border-image-slice: 10;
+		background: $active;
+	    /* border: 2px solid transparent;
+    		border-image: linear-gradient(to top, #F80, #2ED);
+    		border-image-slice: 10; */
 		box-shadow: 2px 2px 27px #ddd;
 		&>div{
 			width:100%;

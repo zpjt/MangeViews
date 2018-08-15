@@ -243,11 +243,22 @@ class SCombobox {
 		this.box.on("click",".drop-item",function(){
 
 			const $this= $(this);
+			let status = null ;
+			const is_self = $this.hasClass("active");
 			if(self.config.multiply){
+
+				
 			
-				$this.hasClass("active") &&  $this.removeClass("active")|| $this.addClass("active");
+				 is_self &&  $this.removeClass("active")|| $this.addClass("active");
+				 status	= is_self;
+
 		
 			}else{
+
+				if(is_self){
+					return ;
+				}
+				status = $this.siblings(".active");
 				$this.addClass("active").siblings().removeClass("active");
 			}
 
@@ -255,14 +266,14 @@ class SCombobox {
 			
 			const node = self.config.data.find(val=>{
 
-				return val == id ;
+				return val[self.config.idField] == id ;
 			})
 
 			const par = $this.parent();
 
 			self.updateInpBox(par);
 
-			self.config.clickCallback && self.config.clickCallback(node,self);
+			self.config.clickCallback && self.config.clickCallback(node,self,status);
 
 		});
 
@@ -386,6 +397,12 @@ class Tree{
 		const str = this.renderOrgJson(data,0);
 		this.box.html(`<ul class="s-tree">${str.join("")}</ul>`);
 		this.handle();
+	}
+
+	changeType(checkbox){
+		this.config.checkbox = checkbox;
+		this.box.unbind();
+		this.init();
 	}
 
 
@@ -576,8 +593,6 @@ class Tree{
 			}
 			
 			const node = self.findNode( +$this.val());
-
-			console.log(node);
 			checkCallback(node, $this);
     	});
 
@@ -588,11 +603,11 @@ class Tree{
 		});
 	}
 
-	getValue(fieldCount,$el=this.box,){
+	getValue(fieldCount,$el=this.box){
 		
 		if(this.config.checkbox){
 			return $.map(this.box.find(".child-checkinp:checked"),val=>{
-			 	  const id = +val.value ;
+			 	  const id = val.value ;
 					return fieldCount === "id" && id || this.findNode(id);
 			});
 
@@ -618,7 +633,7 @@ class Tree{
 
 		function findFn(arr){
 			return arr.find(val=>{
-				const status = val[idField] === id ;
+				const status = val[idField] == id ;
 				if(status){
 					node = val ;
 				}
@@ -701,6 +716,12 @@ class SComboTree {
 
 	  this.tree.setValue($el,values);
 	  this.updateInpBox($el,values);
+	}
+
+	getValue(){
+			
+		return this.tree.getValue("all");
+		
 	}
 
 	updateInpBox($drop,node){

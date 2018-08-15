@@ -296,7 +296,7 @@ $slectColor:#aee6ff;
 	height: 20px;
 	border-radius:50%;
 	position: relative;
-    vertical-align: -0.8rem;
+    vertical-align: -0.7rem;
     cursor: pointer;
     display: inline-block;
     margin: .4rem;
@@ -308,7 +308,7 @@ $slectColor:#aee6ff;
 	    height: 70%;
 	    border-radius: 50%;
 	    transform:  scale(0) ;
-	    margin:2px;
+	    margin:2.5px;
 	    transition: all ease-out 250ms;
     }
     &:checked:after{
