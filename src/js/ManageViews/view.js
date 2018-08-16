@@ -1,6 +1,6 @@
 import {Border} from "./svgBorder.js";
 import {Chart} from "./chart.js";
-import {STable} from "./STable.js";
+import {STable} from "./sTable.js";
 
 
 class View {

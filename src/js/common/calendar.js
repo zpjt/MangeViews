@@ -435,44 +435,27 @@ class Calendar{
 	}
 
 	changeStyle(style){
+		this.style = style; 
+		this.selTime = this.initSelTime();
+		this.showSelBox.html(this.renderTimeStr().join(""));
+		this.initViewsContent();
 		
+
+		console.log(this);
 	}
 
+	
 	init(){
 	
-		const view =`
-					<div class="calendar-container">
-						${this.initContent().join("")}
-					</div>
-					`;
-		this.container.html(this.initHead() + view);
+		const str =`${this.initHead()} <div class="calendar-container"> </div> `;
+		this.container.html(str);
+
+		this.calendarViewBox = this.container.children(".calendar-container");
 		this.showSelBox =this.container.find(".showSel-box"); 
 		this.frequemcy=this.container.find(".calendar-frequemcy");
 		this.rotateShow=this.container.find(".calendar-rotate");
-		this.upInp();
-
+		this.initViewsContent();
 		
-		const views =Array.from(this.container.children().children(".calendar-view"));
-		
-		const selTime=this.CurTime,
-			  CurTime=this.CurTime,
-			  rotate=this.rotate;
-
-		let config= {CurTime,rotate,Calendar:()=>{
-			return this ;
-		}};
-
-		const {year,mon,searson,day} = CurTime;
-
-	
-		views.map((val,index)=>{
-
-		//	config.selTime =Object.assign({},this.selTime[index]);
-			config.selTime = this.selTime[index]; // 共享地址
-
-			this["view_"+index] = new View($(val),config);
-
-		});
 	}
 	getCurTime(){
 		const time = new Date();
@@ -524,12 +507,40 @@ class Calendar{
 				`
 	}
 
-	initContent(){
+	initViewsContent(){
 	
-		return new Array(this.style).fill("").map(val=>{
-
+		const viewStr =  new Array(this.style).fill("").map(val=>{
 			   return `<div class="calendar-view"></div>`;
-		})
+		});
+
+		this.calendarViewBox.html(viewStr.join(""));
+		
+		const views =Array.from(this.calendarViewBox.children(".calendar-view"));
+		
+		const selTime=this.CurTime,
+			  CurTime=this.CurTime,
+			  rotate=this.rotate;
+
+		let config= {CurTime,rotate,Calendar:()=>{
+			return this ;
+		}};
+
+		if(this.view_2){
+			this.view_2.viewBox.unbind();
+			this.view_2 = null;
+		}
+
+		const {year,mon,searson,day} = CurTime;
+		views.map((val,index)=>{
+		//	config.selTime =Object.assign({},this.selTime[index]);
+			config.selTime = this.selTime[index]; // 共享地址
+
+			this["view_"+index] = new View($(val),config);
+
+		});
+
+		this.upInp();
+
 	}
 	renderTimeStr(){
 
@@ -694,7 +705,7 @@ class Calendar{
 		this.updateRotate();
 			
 	}
-	
+
 	Handle(){
 
 		const self = this ;

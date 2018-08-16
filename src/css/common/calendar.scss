@@ -2,6 +2,7 @@ $themeColor:#00a0e9;
 $slectColor:#aee6ff;
 .dataTime{
 	min-height:280px;
+	min-width: 360px;
     z-index:20;
 	background: white;
 	border-radius:8px;
@@ -78,8 +79,8 @@ $slectColor:#aee6ff;
 .calendar-container{
 	display:flex;
 	.calendar-view{
-		width:260px;
-
+		width:100%;
+		min-width:260px;
 		padding:0 10px;	
 	}
 

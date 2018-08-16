@@ -92,7 +92,7 @@ $slectColor:#aee6ff;
 
 }
 
-.s-comboBox{
+/* .s-comboBox{
 	position: relative;
 	  
 	.inp-combobox{
@@ -167,7 +167,7 @@ $slectColor:#aee6ff;
 	.inp-combobox-icon{
 		transform: rotate(-180deg);
 	}
-}
+} */
 
 /* 滑块 */
 .s-switch{
@@ -357,8 +357,8 @@ $slectColor:#aee6ff;
 		width:100%;
 		top:$height + 4;
 		position: absolute;
-		visibility:hidden;
-		opacity:0;
+	//	visibility:hidden;
+	//	opacity:0;
 		display:none;
 		max-height:300px;
 		overflow:auto;
@@ -370,7 +370,7 @@ $slectColor:#aee6ff;
 		box-sizing:border-box;
 		z-index:2;
 		transform:translateY(-80%);
-		transition: all  .3s cubic-bezier(.31,1.47,.81,1.47);
+	//	transition: all  .3s cubic-bezier(.31,1.47,.81,1.47);
 		.drop-item {
 			padding:4px 8px;
 		}

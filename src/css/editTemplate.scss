@@ -27,15 +27,15 @@ $border:#E9E9E9;
 }
 
 @mixin init-status($dur:0.3s){
-	opacity:0;
-	visibility:hidden;
-	transition: all $dur ease;
+	//opacity:0;
+	//visibility:hidden;
+	//transition: all $dur ease;
 	display:none;
 }
 
 @mixin active(){
-	opacity:1;
-	visibility:visible;
+	//opacity:1;
+//	visibility:visible;
 	display:block;
 }
 
@@ -187,7 +187,6 @@ $border:#E9E9E9;
 	overflow:hidden;
 	box-sizing:border-box;
 	display:flex;
-
 	aside{
 		width:$title;
 		height:100%;
@@ -200,11 +199,15 @@ $border:#E9E9E9;
 		padding: 15px;
 		position: relative;
 		box-sizing:border-box;
+	//	background-image: url(../img/view_bg1.png);
+		.view-template{
+			border-radius:10px;
+		}
 		/* 九宫格线 */
 		.grid-line{
 			height: 100%;
 			width: 100%;
-			opacity:0.5;
+			opacity:0.35;
 			position: absolute;
 		    top: 0;
 		    left: 0;
@@ -213,7 +216,6 @@ $border:#E9E9E9;
 			table{
 				width: 100%;
 				height: 100%;
-				border: 1px solid green;
 				border-collapse: collapse;
 				border-spacing: 0;
 				table-layout:fixed;
@@ -223,7 +225,7 @@ $border:#E9E9E9;
 			td{
 				text-align: center;
 				vertical-align: cemter;
-				border: 2px dashed green;
+				border: 2px dashed red;
 				padding: 5px 0;
 			}
 		}
@@ -371,7 +373,6 @@ $border:#E9E9E9;
 				}
 				#zbTree{
 				   height:360px;
-				   display:none;
 				}
 				.zb-opt{
 					height:40px;
@@ -385,11 +386,6 @@ $border:#E9E9E9;
 			}
 			.zb-box.active{
 				@include active;
-				#zbTree{
-				   display:block;
-				}
-				
-
 			}
 
 		}
