@@ -196,39 +196,46 @@ $border:#E9E9E9;
 	}
 	section{
 		flex:1;
-		padding: 15px;
+	//	padding: 15px;
 		position: relative;
 		box-sizing:border-box;
 	//	background-image: url(../img/view_bg1.png);
 		.view-template{
-			border-radius:10px;
+		//	border-radius:10px;
+		  padding-top:10px;
+		}
+		.view-item{
+			border:1px dashed rgba(255,255,255,0.46);
+		}
+		.view-item.view-active{
+			border:2px solid red;
 		}
 		/* 九宫格线 */
-		.grid-line{
-			height: 100%;
+	/* 	.grid-line{
+		height: 100%;
+		width: 100%;
+		opacity:0.35;
+		position: absolute;
+	    top: 0;
+	    left: 0;
+	    padding: 15px;
+	    box-sizing: border-box;
+		table{
 			width: 100%;
-			opacity:0.35;
-			position: absolute;
-		    top: 0;
-		    left: 0;
-		    padding: 15px;
-		    box-sizing: border-box;
-			table{
-				width: 100%;
-				height: 100%;
-				border-collapse: collapse;
-				border-spacing: 0;
-				table-layout:fixed;
-				position: relative;
-
-			} 		
-			td{
-				text-align: center;
-				vertical-align: cemter;
-				border: 2px dashed red;
-				padding: 5px 0;
-			}
+			height: 100%;
+			border-collapse: collapse;
+			border-spacing: 0;
+			table-layout:fixed;
+			position: relative;
+	
+		} 		
+		td{
+			text-align: center;
+			vertical-align: cemter;
+			border: 2px dashed red;
+			padding: 5px 0;
 		}
+	} */
 	}
 	.component-title{
 		$h:40px;
@@ -286,18 +293,28 @@ $border:#E9E9E9;
 		width:850px;
 		overflow:hidden;
 	}
+	.m-title{
+		text-align:left;
+		padding: 0 15px;
+	}
+	#modalType{
+		font-size:28px;
+		vertical-align: middle;
+	}
 }
 .s-modal{
-	.m-tab:first-child{
+	 .m-tab:nth-child(2){
   		background: url("../img/tab-bg1.png") 0 0 no-repeat;
 	}
-}
-
-.other{
-	.m-tab:first-child{
+	.m-tab:nth-child(3){
   		background: url("../img/tab-bg2.png") 0 0 no-repeat;
 	}
+}
+.other{
 	.m-tab:nth-child(2){
+  		background: url("../img/tab-bg2.png") 0 0 no-repeat;
+	}
+	.m-tab:nth-child(3){
   		background: url("../img/tab-bg1.png") 0 0 no-repeat;
 	}
 	.wrap{

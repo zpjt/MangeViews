@@ -13,18 +13,17 @@ import {api} from "api/ManageViews.js";
 
 class Chart{
 
-	constructor($el,config,callback){
+	constructor($el,config,data){
 
-		const {id} = config;
+		const {border} = config;
 		this.type="";
-		this.id=id;
 		this.Box=$el;
-		this.init(callback);
+		this.init(data,border);
 		this.color=["#1CA7DA","#92BCF5"];
 		
 	}
 
-	init(callback){
+	init(res,border){
 		const typeObject={
 			"3":"tabConfig",
 			"4":"lineConfig",
@@ -32,59 +31,33 @@ class Chart{
 			"6":"radarConfig",
 			"7":"scatterConfig",
 		}	
-		this.getData().then(obj=>{
 
-			if(obj){
 
-				const {data,chartName,contrastDim,rowDim} = obj;
-				const option = this[typeObject[this.type]](data);
-				option.Dim={
-					contrastDim,
-					rowDim,
-				};
+		const {graphInfo:{chartType,chartName,contrastDim,rowDim},data} = res;
+		 
+		this.type=chartType;
 
-				if(!$(this.Box).parent().siblings(".bgSvg").length){
-					option.title={
-						text:this.title,
-						left:"center",
-						textStyle:{
-							color:"white",
-							fontSize:14,
-						}
-					}
+		const option = this[typeObject[this.type]](data);
+			  option.Dim={contrastDim, rowDim,};
+
+		if(!border){ // 没边框
+			option.title={
+				text:chartName,
+				left:"center",
+				textStyle:{
+					color:"white",
+					fontSize:14,
 				}
-
-
-				let myChart= echarts.init(this.Box); 
-				myChart.setOption(option);
-
-				//制作边框的回调函数
- 				callback(chartName);
-
- 				//窗口自适应
- 				$(window).on("resize",function(){
-						myChart.resize();
-		  		 });
 			}
-
-
-		});
+		};
+		let myChart= echarts.init(this.Box); 
+			myChart.setOption(option);
+			//窗口自适应
+			$(window).on("resize",function(){
+				myChart.resize();
+  		 });
 		 
 	}
-
-	getData(){
-		return  api.getGraphData(this.id).then(res=>{
-			if(res.graphInfo){
-				const {graphInfo:{chartType,chartName,contrastDim,rowDim},data} = res;
-				this.type=chartType;
-				this.title=chartName;
-				return {data,chartName,contrastDim,rowDim};
-			}else{
-				return false ;
-			}
-		});
-	}
-	
 
 	barConfig(res){
 

@@ -5,58 +5,63 @@ import {STable} from "./sTable.js";
 
 class View {
 
-	constructor($el,index){
-		this.container=$el;
-		this.type= $el.attr("echo-type");
-		this.id = this.container.attr("echo-id");
-		this.index = index;
-		this.init();
+	constructor($el,config,data,status="1"){
+
+		const {id,type,index,viewTitle} = config;
+		
+		this.container=$el;// 组件dom
+		this.viewType= type; // 组件类型 chart table
+		this.borderType= "0"; // 组件边框类型 0，1,2,3
+		this.viewTitle = viewTitle; // 组件名称
+		this.id = id; // 组件id
+		this.index = index;//组件的索引
+		this.status = status;
+		this.init(data);
 	}
 
-	init(){
+	init(data){
 
 		const method = {"table":"initTable","chart":"initChart","realTime":"initRealTime"}
 
 		const chartBox = this.container.children(".view-content");
-		chartBox.html(this.renderContent());
-
-		const chartDom = chartBox.children(".chart");
-
-		this[method[this.type]](chartDom);
-
-	}
-
-
-	initChart($el){
-		this.chart = new  Chart($el[0],{id:this.id},(title)=>{
-			const borderDom = this.container.children(".bgSvg");
-			borderDom.length && this.initBorder(borderDom,title);
-		});
-	}
-
-	initTable($el){
-		this.table = new STable($el,{id:this.id},(title)=>{
-			const borderDom = this.container.children(".bgSvg");
-			borderDom.length && this.initBorder(borderDom,title);
-		});
-	}
-
-	initRealTime($el){
 		
-
-	}
-
-	initBorder($el,title){
-		this.border = new  Border($el,{id:this.id,title});
-	}
-
-	renderContent(){
 		const borderDom = this.container.children(".bgSvg");
-		const borderType = +borderDom.attr("echo-type");
+		this.border = !!borderDom.length;
+		this.borderType= this.border && borderDom.attr("echo-type") ||"0"; 
+		this.border && this.initBorder(borderDom);
+
+		chartBox.html(this.renderContent());
+		const chartDom = chartBox.children(".chart");
+		this[method[this.viewType]](chartDom,data);
 		
-		const poitionClass = borderType === 2 ? "border3-opt" : "";	
+	}
 
 
+	initChart($el,data){
+		const  border = this.borderType;
+		this.chart = new  Chart($el[0],{border},data);
+	}
+
+	initTable($el,data){
+		const  border = this.borderType;
+		this.table = new STable($el,{border},data);
+	}
+
+	initRealTime($el,data){
+		
+
+	}
+
+	initBorder($el){
+
+		const title = this.viewTitle,
+			  id = this.id ;
+		this.border = new Border($el,{id,title});
+	}
+
+	renderViewOpt1(){
+
+		const poitionClass = this.borderType === "2" ? "border3-opt" : "";	
 		return `<div class="view-optBox ${poitionClass}" >
 	        		<div class="btn-handle">
 						<span class="fa fa-bars" ></span>
@@ -69,12 +74,34 @@ class View {
 						<span class="fa fa-filter view-btn" sign="filter" title="筛选"></span>
 					</div>
 					
-	        	</div>
-	            <div class="chart"></div>`;
+	        	</div>`;
+
 	}
 
 
+	renderViewOpt2(){
 
+		const poitionClass = this.borderType === "2" ? "border3-opt" : "";	
+		return `<div class="view-optBox ${poitionClass}" >
+	        		<div class="btn-handle">
+						<span class="fa fa-bars" ></span>
+					</div>
+	        		<div class="view-btns" echo-id="${this.id}" echo-index="${this.index}">
+						<span class="fa fa-refresh view-btn" sign="refresh" title="刷新"></span>
+						<span class="fa fa-expand view-btn" sign="expand" title="最大化"></span>
+						<span class="fa fa-file-excel-o view-btn" sign="excel" title="导出excel"></span>
+						<span class="fa fa-file-image-o view-btn" sign="image" title="导出图片"></span>
+						<span class="fa fa-filter view-btn" sign="filter" title="筛选"></span>
+					</div>
+					
+	        	</div>`;
+
+	}
+
+	renderContent(){
+
+		return `${ this.status==1 && this.renderViewOpt1() || this.renderViewOpt2()}<div class="chart"></div>`;
+	}
 }
 
 export {View,Border,STable} ;

@@ -17,12 +17,39 @@ class App{
 		this.layout_id = $(".active",parent.document).attr("echo-id");
 		this.items=[];
 		this.init();
-		
+		this.handle();
 	}
 
 
 	init(){
 		this.renderModal();
+	}
+
+	createView(config){
+		const {id,type,item,box} = config;
+		const method={
+			table:{
+				getDataUrl:"getTableData",
+				configName:"tabInfo",
+			},
+			chart:{
+				getDataUrl:"getGraphData",
+				configName:"graphInfo",
+			},
+		}
+
+		api[method[type].getDataUrl](id).then(res=>{
+
+				if(res.data && res.data.length){
+					const viewTitle =res[method[type].configName].chartName;
+					this.items[item] = new View(box,{id,type,index:item,viewTitle},res);
+				}else{
+					alert("没数据！")
+				}
+			
+
+		});
+
 	}
 
 
@@ -35,10 +62,12 @@ class App{
 					$container.html(res.model);
 					const url = $("#template").css("backgroundImage");
 					$maxWindow.css("backgroundImage",url);
-
+				
 					$.map($(".view-item"),(val,index)=>{
 						(function(item,$val){
-							self.items[item] = new View($val,item);
+							const type = $val.attr("echo-type"),
+								  id =  $val.attr("echo-id");
+							self.createView({item,box:$val,type,id});
 						})(index,$(val));
 						
 					});
@@ -50,8 +79,8 @@ class App{
 
 	MaxView(config){
 
-		const {id,borderType,option,index,viewTitle,viewType} = config;
-		const poitionClass = borderType === 2 ? "border3-opt" : "";	
+		const {borderType,option,index,viewTitle,viewType,id} = config;
+		const poitionClass = borderType == "2" ? "border3-opt" : "";	
 
 		const templateStr=`
 							<div class="view-item" echo-id="max" style="width:100%;height:100%;">
@@ -76,11 +105,10 @@ class App{
 		$maxWindow.html(templateStr);
 		const chartDom = $maxWindow.find(".chart");
 		if(viewType=="table"){
-				
-			new STable(chartDom,{id},function(){
-					
-			});
 
+			api.getTableData(id).then(res=>{
+				new STable(chartDom,{borderType},res);
+			});
 			
 		}else if(viewType=="chart"){
 			let myChart= echarts.init(chartDom[0]); 
@@ -172,7 +200,6 @@ class App{
 
 	Toimage(view){
 
-		console.log(view);
 		const {chart:{title}} = view ;
 
 		const is_max = !$maxWindow.is(":hidden");
@@ -217,98 +244,90 @@ class App{
 		}
 
 	}
+	handle(){
+
+			$app.on("click",".btn-handle",function(){
+				$(this).toggleClass("active");
+			});
+			$app.on("click",".view-btn",function(){
+				
+				const type = $(this).attr("sign");
+				const par = $(this).parent();
+				const index = par.attr("echo-index");
+				const view = page.items[+index];
+
+				const {viewType,viewTitle,borderType,id} = view ;
+
+
+				let option = null,
+					$el =null,
+					chartType =null,
+					WdArr = null;
+				
+				if(viewType==="table"){
+
+					const {table:{container,title,data,config}} = view;
+
+					$el = container ;
+					option = view.id;
+					chartType = config;
+				    WdArr=["","时间", "科室", "指标", "维度值"];
+
+				}else if(viewType==="chart"){
+
+					const {chart:{Box,viewType:_chartType}} = view;
+					const Mychart = echarts.getInstanceByDom(Box);
+
+					$el = Box ;
+					chartType = _chartType;
+					option = Mychart.getOption();
+					WdArr=["","时间","科室","维度值","指标"];
+
+				}
+				switch(type){
+
+					case "refresh":
+					
+						break;
+					case "excel":
+						page.Toexcel(option,viewType,{WdArr,chartType,viewTitle});
+						break;
+					case "expand":
+						$("#slide",window.parent.document).animate({"width":0},500,function(){
+							$maxWindow.show();
+							page.MaxView({
+								option,
+								borderType,
+								index,
+								viewTitle,
+								viewType,
+								id,
+							});
+						});
+						
+						break;
+					case "compress":
+						const $slide = $("#slide",window.parent.document);
+						const width = $slide.hasClass("collapsed") && 45 || 250;
+						$slide.animate({"width":width},500,function(){
+							$maxWindow.html("");
+							$maxWindow.hide();
+						});
+						break;
+					case "image":
+					 	page.Toimage(view);
+						break;
+					case "filter":
+
+						break;
+				}
+			})
+	}
 }
 
 const page = new App();
 
 
-$app.on("click",".btn-handle",function(){
-
-		$(this).toggleClass("active");
-
-});
-$app.on("click",".view-btn",function(){
-	
-	const type = $(this).attr("sign");
-	const par = $(this).parent();
-	const index = par.attr("echo-index");
-	const view = page.items[+index];
-
-	console.log(view);
-	const {type:viewType} = view ;
-
-
-	let option = null,
-		$el =null,
-		chartType =null,
-		viewTitle =null,
-		WdArr = null;
-	
-	if(viewType==="table"){
-
-		const {table:{container,title,data,config}} = view;
-
-		$el = container ;
-		viewTitle= title;
-		option = data;
-		chartType = config;
-	    WdArr=["","时间", "科室", "指标", "维度值"];
-
-	}else if(viewType==="chart"){
-
-		const {chart:{Box,type:_chartType,title}} = view;
-		const Mychart = echarts.getInstanceByDom(Box);
-
-		$el = Box ;
-		chartType = _chartType;
-		viewTitle= title;
-		option = Mychart.getOption();
-		WdArr=["","时间","科室","维度值","指标"];
-
-	}
-
-
-	console.log(option);
-
-	switch(type){
-
-		case "refresh":
-		
-			break;
-		case "excel":
-			page.Toexcel(option,viewType,{WdArr,chartType,viewTitle});
-			break;
-		case "expand":
-			const borderType = view.border && view.border.type || 0 ;
-			$("#slide",window.parent.document).animate({"width":0},500,function(){
-				$maxWindow.show();
-				page.MaxView({
-					option,
-					borderType,
-					index,
-					id:view.id,
-					viewTitle,
-					viewType,
-				});
-			});
-			
-			break;
-		case "compress":
-			const $slide = $("#slide",window.parent.document);
-			const width = $slide.hasClass("collapsed") && 45 || 250;
-			$slide.animate({"width":width},500,function(){
-				$maxWindow.html("");
-				$maxWindow.hide();
-			});
-			break;
-		case "image":
-		 	page.Toimage(view);
-			break;
-		case "filter":
-
-			break;
-	}
-})
 
 
 

@@ -261,19 +261,16 @@ class SCombobox {
 			let status = null ;
 			const is_self = $this.hasClass("active");
 			if(self.config.multiply){
-
-				
 			
 				 is_self &&  $this.removeClass("active")|| $this.addClass("active");
-				 status	= is_self;
-
+				 status	= !is_self;
 		
 			}else{
 
 				if(is_self){
 					return ;
 				}
-				status = $this.siblings(".active");
+				status = self.getValue();
 				$this.addClass("active").siblings().removeClass("active");
 			}
 
@@ -288,7 +285,7 @@ class SCombobox {
 
 			self.updateInpBox(par);
 
-			self.config.clickCallback && self.config.clickCallback(node,self,!status);
+			self.config.clickCallback && self.config.clickCallback(node,self,status);
 
 		});
 

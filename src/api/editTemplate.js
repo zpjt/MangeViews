@@ -33,6 +33,26 @@ class API {
 			}));
 	}
 
+	getGraphInfo(obj){
+		return Promise.resolve($.ajax({
+				url:URL_C+"getGraphInfo",
+				data:JSON.stringify(obj),
+				contentType:"application/json",
+				type:"post",
+			}));
+	}
+
+	saveTableInfo(obj){
+
+		return Promise.resolve($.ajax({
+				url:URL_C+"saveTableInfo",
+				data:JSON.stringify(obj),
+				contentType:"application/json",
+				type:"post",
+			}));	
+
+	}
+
 	
 }  
 
