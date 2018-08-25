@@ -3,7 +3,6 @@ import "css/common/dropMenu.scss";
 import "css/common/Svg.scss";
 
 
-import RotateMenu from "js/common/rotateMenu.js";
 import { EasyUITab } from "js/common/EasyUITab.js";
 import {Unit,SCombobox,SModal,Calendar,Tree} from "js/common/Unit.js";
 import {API} from "api/szViews.js";
@@ -187,18 +186,7 @@ class TableStyle extends EasyUITab{
 
 		// 进入模板编辑器
 		$tabContainer.on("click",".node-file",function(){
-			const $this = $(this);
-
-			const index = +$this.attr("echo-data");
-
-			const style = $(".style-sel").index();
-			const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
-
-
-			$("#content",window.parent.document).addClass("no-head");
-			$("#slide",window.parent.document).animate({"width":0},500,function(){
-				window.location.href="./editTemplate.html";
-			});
+			page.toEdit($(this),0);
 		});
 
 		//复选框事件
@@ -222,7 +210,7 @@ class CatalogueStyle{
 			const {layout_icon_name,layout_name,layout_id,layout_type} = val ;
 			const type = layout_type ===1 && "view-catalogue" || "view-file";
 
-			let str = `
+			/*let str = `
 					<div class="tab-opt rotate-btn rotate-icon" node-sign="icon" echo-text="图标"><span class="sicon sicon-btn-3"></span></div>
 					<div class="tab-opt rotate-btn rotate-rename" node-sign="rename" echo-text="重命名"><span class="sicon sicon-btn-4"></span></div>
 					`;
@@ -232,17 +220,18 @@ class CatalogueStyle{
 					<div class="tab-op rotate-btn rotate-copy" node-sign="copy" echo-text="复制"><span class="sicon sicon-btn-1"></span></div>
 					`;
 
-				str = layout_type !==1 &&  str + fileopt || str ;
+				str = layout_type !==1 &&  str + fileopt || str ;*/
 
 			return `
 					<div class="catalogue-item " >
 						<div class="view-show ${type}" echo-data="${index}">
 							<p><i class="sicon ${layout_icon_name}"></i></p>
 							<p class="catalogue-name"><span>${layout_name}</span></p>
+							<span class="s-checkbox catalogue-chec">
+									<input type="checkbox"  value="129"><label class="fa fa-square-o"></label>
+							</span>
 						</div>
-						<div class="view-opt" echo-data="${index}">
-							${str}
-						</div>
+						
 					</div>
 				  `
 		});
@@ -310,8 +299,17 @@ class CatalogueStyle{
 
 		});
 
+
+		$catalogueBox.on("dblclick",".view-file",function(){
+			
+
+			page.toEdit($(this),1);
+			
+
+
+		});
+
 		let timer = null;
-		const rotateMenu = new RotateMenu();
 
 		$catalogueBox.on("click",".view-show",function(){
 			const $this = $(this);
@@ -322,10 +320,8 @@ class CatalogueStyle{
 				$this.parent().addClass("catalogue-item-sel").siblings().removeClass("catalogue-item-sel");
 				const node = $catalogueBox.data("getData")[index];
 				page.catalogue.cataFooterRender(node);
-				const rangeAngle = node.layout_type===1 ? 60: 180 ;
-				rotateMenu.setPath($this,rangeAngle);
 
-			}, 200);
+			}, 150);
 
 		});
 
@@ -425,7 +421,7 @@ class AddModal{
 								    const $val = $(val);
 									const name = $val.parent().siblings(".item-txt").text();
 									const id = val.value ;
-									return 	`<li echo-id="${id}" class="sel-item menuItem">
+									return 	`<li echo-id="${id}" class="org-sel-item ">
 												<i class="fa fa-user-circle-o">&nbsp;</i>
 												<b>${name}</b>
 											 </li>`
@@ -444,24 +440,6 @@ class AddModal{
 			}
 
     	});
-
-    
-
-    	
-
-    	/*	const selArr = [].slice.call($(".child-checkinp:checked"));
-			const strArr = selArr.map(val=>{
-					const name = val.getAttribute("echo-name");
-					const id = val.value ;
-
-					return 	`<li echo-id="${id}" class="sel-item menuItem">
-								<i class="fa fa-user-circle-o">&nbsp;</i>
-								<b>${name}</b>
-							 </li>`
-
-			});
-			$("#orgSel").html(strArr.join(""));
-*/
     }
 
     
@@ -795,7 +773,15 @@ class Page  {
 		$tabCard.html(str.join(""));
     }
 
-    
+    toEdit($this,style){
+		const index = +$this.attr("echo-data");
+		const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
+		
+		$("#slide",window.parent.document).animate({"width":0},500,function(){
+			$("#content",window.parent.document).addClass("no-head");
+			window.location.href="./editTemplate.html";
+		});
+    }
 
     getCurTabData(menuArr,curIndex){
 		
@@ -851,6 +837,14 @@ class Page  {
     
 
     handle(){
+
+    	$(window).on("click",function(){
+
+    			$(".active-menu").removeClass("active-menu");
+          		$(".icon-active").removeClass("icon-active");
+          		$(".dataTime").hide();
+         
+		});
 		
 		//切换选项卡
 		$tabCard.on("click",".card",function(){
