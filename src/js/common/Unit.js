@@ -199,8 +199,23 @@ class SCombobox {
 	  this.updateInpBox($drop);
 	}
 
-	getValue($el=this.box){
-		return $el.find(".combo-value").val();
+	getValue($el=this.box,node="id"){
+
+		const selIds =  $el.find(".combo-value").val();
+
+		if(node=="id"){
+			return selIds;
+		}else{
+
+			const {data,idField} = this.config;
+			return this.config.data.filter(val=>{
+
+
+				return selIds.includes(val[idField]);
+
+			})
+		}
+		
 	}
 	clearValue($el=this.box){
 

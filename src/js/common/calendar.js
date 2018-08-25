@@ -439,9 +439,6 @@ class Calendar{
 		this.selTime = this.initSelTime();
 		this.showSelBox.html(this.renderTimeStr().join(""));
 		this.initViewsContent();
-		
-
-		console.log(this);
 	}
 
 	
@@ -747,8 +744,6 @@ class Calendar{
 		this.container.on("click",".calendar-opt",function(){
 				const index = $(this).index();
 				if(index===0){
-
-					console.log(self.value);
 
 					if(self.style === 2){
 

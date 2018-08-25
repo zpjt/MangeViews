@@ -40,7 +40,7 @@ $("#btnLogin").click(function(){
 		}else if(data.url == "0"){
 			$stateWarn.html('<span><i class="fa fa-exclamation-triangle"></i>该账户已被禁用</span></p>');
 		}else {
-			//window.location.href=baseUrl+data.url;	
+		//	window.location.href=baseUrl+data.url;	
 			window.location.href=data.url;	
 		}
 	})

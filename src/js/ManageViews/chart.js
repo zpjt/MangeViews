@@ -404,7 +404,7 @@ class Chart{
 
 		return {
 			
-			color:this.color,
+		//	color:this.color,
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {

@@ -52,6 +52,16 @@ class API {
 			}));	
 
 	}
+	saveGraphInfo (obj){
+
+		return Promise.resolve($.ajax({
+				url:URL_C+"saveGraphInfo ",
+				data:JSON.stringify(obj),
+				contentType:"application/json",
+				type:"post",
+			}));	
+
+	}
 
 	
 }  

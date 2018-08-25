@@ -15,7 +15,7 @@ const $setMd = $("#setComponentMd"),
 	$viewStyleBox = $("#viewStyleBox"),
 	$zbBox = $("#zbTreeBox");
 
-console.log(422);
+console.log(42244);
 
 class TemplateView {
 
@@ -161,6 +161,8 @@ class ZbComponent {
 				const publicDim = dimArr.length === 1 && dimArr[0] !== "dim_2" && true || false;
 
 				this.publicDim = publicDim;
+				this.publicDimArr = dimArr;
+				this.isOneZb = kpi.length > 1;
 
 				//获取分类好了的指标数组
 				const zbObj = !publicDim && dimArr.map((key) => {
@@ -192,27 +194,56 @@ class ZbComponent {
 
 				const htmlStr = !publicDim ? zbObj.join("") : `<div class="publicDim dim-item" >${zbObj.join("")}</div>`;
 
+
+				const specialWd = viewSetModal.viewType === "table" ?
+				   
+				     [...wd_arr_common, {
+											"id": "3",
+											"text": "指标"
+										}, {
+											"id": "4",
+											"text": "维度值"
+										}] :
+				     [...wd_arr_common, {
+											"id": "3",
+											"text": "维度值"
+										}];
+
 				// 公共维度下拉框
 				if (publicDim) {
-					$("#publicDim").show();
+				
 					const dimId = dimArr[0].split("_")[1];
-					const data = this.findDimData(dimId).sub;
-					viewSetModal.dimWd.loadData(data);
-					viewSetModal.wd_arr = wd_arr.slice();
-					viewSetModal.yAxis.loadData(viewSetModal.wd_arr);
-					viewSetModal.xAxis.loadData(viewSetModal.wd_arr);
+					const dImNode = this.findDimData(dimId);
+					viewSetModal.dimWd.loadData(dImNode.sub);
+					viewSetModal.dimWd.clearValue();
+					viewSetModal.wd_arr = specialWd;
+
+					const yAxisData =viewSetModal.viewType !== "table" ? this.isOneZb  && [{"id":"4","text":"指标"}] || [...specialWd,{"id":"4","text":"指标"}] : specialWd;
+
+					viewSetModal.yAxis.loadData(yAxisData);
 					viewSetModal.yAxis.clearValue();
+
+					viewSetModal.xAxis.loadData(viewSetModal.wd_arr);
+					
 					viewSetModal.xAxis.clearValue();
+					$("#publicDim").show();
+					$("#publicDim").attr("dim-id",dimId);
+					$("#publicDim").attr("dim-name",dImNode.dim_name);
+
 				} else {
 					$("#publicDim").hide();
 
-					const AxisData = wd_arr.filter(val => {
-						return val.id != "4"
-					});
-					viewSetModal.wd_arr = AxisData;
+					specialWd.pop();
+					const AxisData = specialWd;
 
-					viewSetModal.yAxis.loadData(AxisData);
-					viewSetModal.xAxis.loadData(AxisData);
+					const yAxisData =viewSetModal.viewType !== "table" ? this.isOneZb  && [{"id":"4","text":"指标"}] || [...specialWd,{"id":"4","text":"指标"}] : specialWd;
+
+					viewSetModal.wd_arr = AxisData;
+					viewSetModal.yAxis.loadData(yAxisData);
+
+
+
+					viewSetModal.xAxis.loadData( AxisData);
 					viewSetModal.yAxis.clearValue();
 					viewSetModal.xAxis.clearValue();
 				}
@@ -291,6 +322,16 @@ class ZbComponent {
 		return str;
 	}
 
+	sureBtnHandle(){
+		const values = this.zbTree.getValue("all");
+		const ids = values.map(val => val.kpi_id);
+
+		if (!ids.length) {
+			return;
+		}
+		this.classifyZb(ids, values);
+		viewSetModal.modal.close($zbBox, "active");
+	}
 
 
 	handle() {
@@ -310,19 +351,12 @@ class ZbComponent {
 
 			switch (index) {
 
-				case 0:
+				case 0: //确定
 
-					const values = self.zbTree.getValue("all");
-					const ids = values.map(val => val.kpi_id);
-
-					if (!ids.length) {
-						return;
-					}
-					self.classifyZb(ids, values);
-					viewSetModal.modal.close($zbBox, "active");
+					self.sureBtnHandle();
 
 					break;
-				case 1:
+				case 1: // 取消
 					viewSetModal.modal.close($zbBox, "active");
 					break;
 			}
@@ -337,27 +371,36 @@ class ZbComponent {
 	}
 }
 
-const wd_arr = [{
-	"id": "1",
-	"text": "时间"
-}, {
-	"id": "2",
-	"text": "科室"
-}, {
-	"id": "3",
-	"text": "指标"
-}, {
-	"id": "4",
-	"text": "维度值"
-}];
+
+// 注意 表格 id:3 是指标，图形id：3是维度
+const wd_arr_common = [
+					{
+						"id": "1",
+						"text": "时间"
+					}, {
+						"id": "2",
+						"text": "科室"
+					}
+				];
 
 class ViewSetModal {
 	constructor() {
 
 		this.viewType ="";
+		this.wd_arr = null;
 		this.getTreeData();
 		this.handle();
 		
+	}
+
+	getTreeData() {
+
+		return Promise.all([api.dimtree(), api.kpitree(), api.orgtree()]).then((res) => {
+			this.orgTree = res[2].sub;
+			this.kpiTree = res[1].sub;
+			this.dimTree = res[0].sub;
+			this.init();
+		})
 	}
 
 	filterAxisData(values) {
@@ -368,6 +411,8 @@ class ViewSetModal {
 	}
 
 	changeComboSel(id,status){
+
+		const wd_id = this.viewType === "table" ? "4" : "3" ;
 
 		switch (id) {
 				case "1": // 日历
@@ -380,7 +425,7 @@ class ViewSetModal {
 					this.orgWd.tree.init();
 					this.orgWd.clearValue();
 					break;
-				case "4": // 维度值
+				case wd_id: // 维度值
 					this.dimWd.config.multiply = status;
 					this.dimWd.clearValue();
 					break;
@@ -406,6 +451,8 @@ class ViewSetModal {
 		    this.viewStyleBoxTnit();
 		    this.upComboxStatus();
 			this.modal.show($setMd);
+			this.zbComponent.sureBtnHandle();
+			
 	}
 
 	upComboxStatus(){
@@ -414,6 +461,7 @@ class ViewSetModal {
 
 		this.xAxis.config.multiply = status;
 		this.yAxis.config.multiply = status;
+		this.dimWd.config.multiply = false;
 		this.xAxis.clearValue();
 		this.yAxis.clearValue();
 		this.dimWd.clearValue();
@@ -444,11 +492,25 @@ class ViewSetModal {
 			"prompt": "请选择横轴维度...",
 			"multiply": true,
 			clickCallback: function(node, _this, status) {
-				
+
+				let yData = "";
 				const values = _this.getValue().split(",");
-				const Xdata = self.filterAxisData(values);
-				self.yAxis.loadData(Xdata);
-				self.changeSelType(node, status, _this.config.multiply);
+				if(self.viewType==="table"){
+					 yData = self.filterAxisData(values);
+					self.yAxis.loadData(yData);
+				
+				}else{
+					if(!self.zbComponent.isOneZb){
+						yData = self.filterAxisData(values);
+						yData.push({"id":"4","text":"指标"});
+						self.yAxis.loadData(yData);
+					}
+				}
+
+				setTimeout(function(){
+					self.changeSelType(node, status, _this.config.multiply);
+				},60);
+				
 			}
 		});
 
@@ -462,8 +524,9 @@ class ViewSetModal {
 				const Ydata = self.filterAxisData(values);
 				self.xAxis.loadData(Ydata);
 
-				self.changeSelType(node, status, _this.config.multiply);
-			
+				setTimeout(function(){
+					self.changeSelType(node, status, _this.config.multiply);
+				},60);
 			}
 		});
 
@@ -541,25 +604,31 @@ class ViewSetModal {
 
 	lineInit() {
 
-		const htmlStr = `<div class="sel-item">
-						    <p class="s-title">横向图:</p>
-						    <div>
-						        <span><input type="radio" class="s-radio" name="tab-style" checked="checked" value="0"><label>是</label></span>
-						        <span><input type="radio"  class="s-radio" name="tab-style" value="1"><label>否</label></span>
-						    </div>
-						</div>
+		const htmlStr = `
 						<div class="sel-item">
-						    <p class="s-title">堆叠:</p>
-						    <div>
-						        <span><input type="radio" class="s-radio" name="tab-style" checked="checked" value="0"><label>是</label></span>
-						        <span><input type="radio"  class="s-radio" name="tab-style" value="1"><label>否</label></span>
-						    </div>
+							<div class="sel-item">
+							    <span class="s-title">横向图:</span>
+							    <label class="s-switch-2">
+										<input type="checkbox" class="landscape" name="landscape">
+										<span class="switch-ball"></span>
+						    	</label>
+							</div>
+							<div class="sel-item">
+								<span class="s-title">堆叠:</span>
+							    <label class="s-switch-2">
+										<input type="checkbox" class="stack" name="stack">
+										<span class="switch-ball"></span>
+						    	</label>
+							</div>
 						</div>
 						<div class="sel-item">
 						    <p class="s-title">图例位置:</p>
 						    <div>
-						        <span><input type="radio" class="s-radio" name="tab-style" checked="checked" value="0"><label>是</label></span>
-						        <span><input type="radio"  class="s-radio" name="tab-style" value="1"><label>否</label></span>
+						        <span><input type="radio" class="s-radio legend-place" name="legend-place" checked="checked" value="1"><label>上</label></span>
+						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="2"><label>下</label></span>
+						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="3"><label>左</label></span>
+						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="4"><label>右</label></span>
+						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="5"><label>无</label></span>
 						    </div>
 						</div>
 				`
@@ -580,17 +649,9 @@ class ViewSetModal {
 		$viewStyleBox.html(htmlStr);
 	}
 
-	getTreeData() {
+	
 
-		return Promise.all([api.dimtree(), api.kpitree(), api.orgtree()]).then((res) => {
-			this.orgTree = res[2].sub;
-			this.kpiTree = res[1].sub;
-			this.dimTree = res[0].sub;
-			this.init();
-		})
-	}
-
-	getCommonValue(type) {
+	getCommonValue(type,pubDim) {
 
 
 		const fieldObj = {
@@ -604,6 +665,9 @@ class ViewSetModal {
 				dimNameField:"dim_name",
 				dimValField:"dim_val",
 				dimNameValField:"dim_val_name",
+				pubDimIdField:"pub_dim_id",
+				pubDimNameField:"pub_dim_name",
+				pubDimValsField:"pub_dim_vals",
 			},
 			chart: {
 				xField: "rowDim",
@@ -615,6 +679,9 @@ class ViewSetModal {
 				dimNameField:"dimName",
 				dimNameValField:"dimValName",
 				dimValField:"dimVal",
+				pubDimIdField:"pubDimId",
+				pubDimNameField:"pubDimName",
+				pubDimValsField:"pubDimVals",
 			}
 		}
 
@@ -679,11 +746,11 @@ class ViewSetModal {
 				}else if(viewType==="line"){
 
 					obj.refName="-无-";
-					obj.lineType="3";
+					obj.lineType="1";
 
 				}else if(viewType==="bar"){
 					obj.refName="-无-";
-					obj.lineType="4";
+					obj.lineType="3";
 				}
 
 				return obj
@@ -710,10 +777,10 @@ class ViewSetModal {
 							obj.isRef="0";
 						}else if(viewType==="line"){
 							obj.refName="-无-";
-							obj.lineType="3";
+							obj.lineType="1";
 						}else if(viewType==="bar"){
 							obj.refName="-无-";
-							obj.lineType="4";
+							obj.lineType="3";
 						}
 						return obj;
 					});
@@ -744,15 +811,6 @@ class ViewSetModal {
 						}
 
 						kpi_infos.push(obj);
-						/*kpi_infos.push({
-							"kpi_name": $this.children("b").text(),
-							"kpi_id": $this.attr("echo-id"),
-							"dim_id": dimId,
-							"dim_name": dimName,
-							"dim_val": dimVal,
-							"dim_val_name": dimValue,
-							"isRef": "0"
-						});*/
 						return ;
 					});
 				}
@@ -774,7 +832,22 @@ class ViewSetModal {
 			chartName,
 		}
 
-		common[fieldObj[type].dimZbField] = kpi_infos;
+       if(pubDim){
+					
+		common[fieldObj[type].pubDimIdField] = $("#publicDim").attr("dim-id");
+		common[fieldObj[type].pubDimNameField] = $("#publicDim").attr("dim-name");
+
+		console.log(this.dimWd.getValue(this.dimWd.box,"all"),"ssss");
+		common[fieldObj[type].pubDimValsField] = this.dimWd.getValue(this.dimWd.box,"all").map(val=>{
+			return {id:val.dim_value,text:val.dim_name}
+		});
+     
+       }else{
+    
+       	common[fieldObj[type].dimZbField] = kpi_infos;
+    
+       }
+		
 		common[fieldObj[type].xField] = row_wd;
 		common[fieldObj[type].yField] = col_wd;
 
@@ -791,7 +864,7 @@ class ViewSetModal {
 			isMerge = "1",
 			total = !_total ? "0" : (_total.includes(",") && "3" || _total);
 
-		return Object.assign(this.getCommonValue("table"), {
+		return Object.assign(this.getCommonValue("table",dim_x), {
 			isAdded,
 			tab_style,
 			total,
@@ -804,29 +877,53 @@ class ViewSetModal {
 
 	getChartSet() {
 
-		const chartType = "4",
-			  landscape= "0",
-			  stack= "0",
-			  threeD= "0",
-			  maxVal= "@",
-			  minVal= "@",
-			  legend= "1",
-			  isPubDimX= true,
-			  moreAxis= "0";
+		const viewType = this.viewType;
+		/*
+		    4:折线
+			5:饼图
+			6:雷达图
+			7:散点图
+		*/
+	
+	
+		let chartType = "",
+		    flagObj = null ,
+		    legend= $(".legend-place:checked").val(),
+		    isPubDimX = this.zbComponent.publicDimArr.length==1;
 
-		return Object.assign(this.getCommonValue("chart"), {
-			 chartType,
-			  landscape,
-			  stack,
-			  threeD,
-			  maxVal,
+		switch(viewType){
+			case "pie":
+				chartType = "5";
+				
+
+				break;
+			case "scatter":
+				chartType = "6";
+				break;
+			case "rader":
+				chartType = "7";
+				break;
+			default:{
+				chartType = "4" ;
+				const landscape= $(".landscape")[0].checked && "1" || "0",
+					  stack= $(".stack")[0].checked && "1" || "0",
+					  threeD= "0",
+					  maxVal= "@",
+					  minVal= "@",
+					  moreAxis= "0";
+				flagObj = {landscape,stack,threeD,maxVal,minVal,moreAxis}
+				break;
+			}
+		};
+
+
+	 	const dimId = this.zbComponent.publicDimArr[0]!=="dim_2";
+
+		return Object.assign(this.getCommonValue("chart",dimId),flagObj,{
+			  chartType,
 			  isPubDimX,
-			  minVal,
-			  legend,
-			  moreAxis,
+			  legend
 		});
-		
-
 	}
 
 	getSetData() {
@@ -872,6 +969,7 @@ class ViewSetModal {
 				});
 
 			} else {
+				
 				alert("数据出错！");
 
 			}
@@ -1013,8 +1111,6 @@ class ViewComponet {
 			eleDrag.ondragend = function(ev) {
 				/*拖拽结束*/
 				ev.dataTransfer.clearData("type");
-
-				console.log("end");
 				return false
 			};
 		});

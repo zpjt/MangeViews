@@ -92,84 +92,8 @@ $slectColor:#aee6ff;
 
 }
 
-/* .s-comboBox{
-	position: relative;
-	  
-	.inp-combobox{
-			cursor: pointer;
-			height:$height;
-			line-height:$height;
-			font:{
-				weight:bolder;
-			}
-			position: relative;
-			padding:4px 8px;
-			width: $width	;
-			box-sizing:content-box;
-			background:$inpBg;
-			border-radius:4px;
-		}
 
-	.inp-combobox-icon{
-		position: absolute;
-		right:10px;
-		top:5px;
-		color:$themeColor;
-		width: 24px;
-	    height: 24px;
-	    text-align: center;
-	    line-height: 24px;
-	    pointer-events: none;
-	    transition: transform .3s linear;
-	}
-	.combo-lab{
-		color:$themeColor;
-		position: absolute;
-		top:-5px;
-		left:10px;
-	}
-
-	.combo-box{
-		width:100%;
-		top:$height*1.9;
-		position: absolute;
-		visibility:hidden;
-		opacity:0;
-		max-height:200px;
-		background:$inpBg;
-		border:1px solid $default;
-		box-shadow: 0 0 28px 0 $default; 
-		border-radius:4px ;
-		padding:8px;
-		box-sizing:border-box;
-		z-index:2;
-		color:$themeColor;
-		cursor: pointer;
-		transform:translateY(-80%);
-		transition: all  .5s cubic-bezier(.31,1.47,.81,1.47);
-		.combo-item{
-			padding:5px 10px;
-			
-		}
-		.combo-item-active{
-			background:$slectColor;
-			color:white;
-		}
-	}
-}
-
-.combo-active{
-	.combo-box{
-		visibility:visible;
-		opacity:1;
-		transform:translateY(0);
-	}
-	.inp-combobox-icon{
-		transform: rotate(-180deg);
-	}
-} */
-
-/* 滑块 */
+/* 滑块1 */
 .s-switch{
 	$active:#329043;
 	$off: #666;
@@ -237,12 +161,50 @@ $slectColor:#aee6ff;
 			transition: all 0.4s, width 0.2s linear 0.4s, text-indent 0.3s linear 0.4s;
 		}
 	}
+}
+
+/* 滑块2 */
+.s-switch-2{
+	$radisu:22px;
+	position: relative;
+	cursor: pointer;
+	input{
+		display:none;
+	}
+
 	
+
+	.switch-ball{
+		position: relative;
+		display:inline-block;
+		width: 60px;
+		height: 30px;
+		background: #C0CCDA ;
+		border-radius:30px;
+		transition: background .3s ease-in-out;
+		&:before {
+			content:"";
+			position: absolute;
+			width: $radisu;
+			height: $radisu;
+			border-radius:100%;
+			background: #fff ;
+			top:4px;
+			right:8px;
+			transition: right .3s ease-in-out;
+		}
+	}
+
+	input:checked + .switch-ball{
+		background: #13CE66 ;
+		&:before{
+			right:54%;	
+		}
+	}
 	
 }
 
 /* 动画checkbox */
-
 .s-checkbox{
 	position: relative;
 	display:inline-block;
@@ -284,11 +246,9 @@ $slectColor:#aee6ff;
 		}
 		
 	}
-
 }
 
 /* 动画radio */
-
 .s-radio{
 	appearance:none;
 	border: 2px solid #4caf50;
@@ -304,11 +264,11 @@ $slectColor:#aee6ff;
     &:after{
     	content: "";
 	    display: block;
-	    width: 70%;
-	    height: 70%;
+	    width: 10px;
+	    height: 10px;
 	    border-radius: 50%;
 	    transform:  scale(0) ;
-	    margin:2.5px;
+	    margin:3px;
 	    transition: all ease-out 250ms;
     }
     &:checked:after{
@@ -316,10 +276,6 @@ $slectColor:#aee6ff;
     	background: #4caf50;
     }
 }
-
-
-
-
 
 /* 下拉框 */
 .s-comboBox{
@@ -379,9 +335,7 @@ $slectColor:#aee6ff;
 			border-radius: 2px;
 		}
 	}
-
 }
-
 .s-comboBox.active{
 	.slide-icon{
 		transform: rotate(-180deg);

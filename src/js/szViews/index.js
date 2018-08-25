@@ -47,77 +47,17 @@ const $menuBox=$("#menuBox"),
 const $inpName = $("#name"),
 	  $parName = $("#parName");
 
-console.log(3);
-//初始化页面类
-class InitPage extends EasyUITab{
-	dropMenuConfig=[
-		{"icon":"fa-file-text",text:"创建视图",type:"view"},
-		{"icon":"fa-folder",text:"创建分类",type:"catalogue"},
-	]
+
+
+class TableStyle extends EasyUITab{
 
 	constructor(){
-		super();
-		this.init();
-	}
-	
-    init(){
-		
-		this.setPageHeight($ViewContainer,160);
-		this.tabInit();
-		this.tabCardInit([{layout_name:"我的创建",index:0,layout_id:-2}]);
-		this.InitIconBox($iconBox);
-		this.orgBoxInit();
-		this.initUnit();
-		
+       super();
+       this.setPageHeight($ViewContainer,150);
+       this.handle();
     }
 
-    initUnit(){
-    	// 日历
-		this.calendar = new Calendar($(".dataTime"),$("#viewShowTime"),{
-			rotate:4,
-			style:2
-		});
-		// 目录选择下拉框
-		this.parCatalogSel = new SCombobox($("#parName"),{
-			"textField":"layout_name",
-			"idField":"layout_id",
-			"prompt":"请选择所属分类...",
-			"width":300,
-		});
-
-		this.modal = new SModal();
-
-
-    }
-
-    InitIconBox($el){
-		API_szViews.getAllLayout_icon().then(res=>{
-
-			const {par,child}=res;
-			const par_strArr = par.map(val=>{
-				const {name,id} = val ;
-				return `
-					    <span class="sicon ${name}" echo-data="${id}"></span> 
-
-						`
-			});
-
-			const child_strArr = child.map(val=>{
-				const {name,id} = val ;
-				return `
-					    <span class="sicon ${name}" echo-data="${id}"></span> 
-						`
-			});
-
-			const str = `
-						<div class="iconBox-item">${child_strArr.join("")}</div>	
-						<div class="iconBox-item">${par_strArr.join("")}</div>	
-						`
-			$el.html(str);
-		});
-    }
-
-    tabConfig(idField){
+	tabConfig(idField){
 
 		return {
 			idField:idField,
@@ -216,26 +156,67 @@ class InitPage extends EasyUITab{
 		};
     }
 
-    tabInit(menuIndexArr=[0],type="tab"){
-		API_szViews.getAllLayout().then(res=>{
-				
-			const  allData = [res] ;
-
-			$ViewContainer.data("tabData",allData);
-			
-			let tabData=JSON.stringify(allData);
-			    tabData=JSON.parse(tabData);
-
-			menuIndexArr.map(function(val){
-				tabData = tabData[val].sub
-			});
-
-			type==="tab"?this.loadTab(tabData):this.catalogueInit(tabData);
-
-		})
+    loadTab(data){
+		this.creatTab(data,$tab,this.tabConfig("layout_id"));
     }
 
-    catalogueInit(tabData){
+    changeTabcard($this){ // 进入目录
+
+		const tabData = $tab.datagrid("getData").rows;
+
+
+		const index = +$this.attr("echo-data");
+		const childArr = tabData[index].sub;
+
+		this.loadTab(childArr);
+		const {layout_name,layout_id}=tabData[index];
+		const lastData = $tabCard.data("menuArr");
+
+		lastData.push({layout_name,index,layout_id});
+		page.tabCardInit(lastData);
+
+    }
+
+    handle(){
+		//  进入目录
+		$tabContainer.on("click",".node-catalogue",function(){
+			const $this = $(this);
+			page.table.changeTabcard($this);
+
+		});
+
+		// 进入模板编辑器
+		$tabContainer.on("click",".node-file",function(){
+			const $this = $(this);
+
+			const index = +$this.attr("echo-data");
+
+			const style = $(".style-sel").index();
+			const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
+
+
+			$("#content",window.parent.document).addClass("no-head");
+			$("#slide",window.parent.document).animate({"width":0},500,function(){
+				window.location.href="./editTemplate.html";
+			});
+		});
+
+		//复选框事件
+		$tabContainer.on("click",".checkSingle",function(){
+			page.table.checkSingleHandle($tabContainer);
+		});
+    }
+
+}
+
+class CatalogueStyle{
+
+	constructor(){
+
+		this.handle();
+	}
+
+	catalogueInit(tabData){
 		
 		const str = tabData.map((val,index)=>{
 			const {layout_icon_name,layout_name,layout_id,layout_type} = val ;
@@ -311,9 +292,495 @@ class InitPage extends EasyUITab{
 		$catalogueBox.siblings(".cata-footer").html(str);
     }
 
-    loadTab(data){
-		this.creatTab(data,$tab,this.tabConfig("layout_id"));
+    handle(){
+		$catalogueBox.on("dblclick",".view-catalogue",function(){
+
+			clearTimeout(timer);
+			const $this = $(this);
+			const tabData = $catalogueBox.data("getData");
+			const index = +$this.attr("echo-data");
+			const childArr = tabData[index].sub;
+			page.catalogue.catalogueInit(childArr);
+			const {layout_name,layout_id}=tabData[index];
+			const lastData = $tabCard.data("menuArr");
+
+			lastData.push({layout_name,index,layout_id});
+			page.tabCardInit(lastData);
+
+
+		});
+
+		let timer = null;
+		const rotateMenu = new RotateMenu();
+
+		$catalogueBox.on("click",".view-show",function(){
+			const $this = $(this);
+			clearTimeout(timer);
+			timer = setTimeout(function(){
+
+				const index =$this.attr("echo-data");
+				$this.parent().addClass("catalogue-item-sel").siblings().removeClass("catalogue-item-sel");
+				const node = $catalogueBox.data("getData")[index];
+				page.catalogue.cataFooterRender(node);
+				const rangeAngle = node.layout_type===1 ? 60: 180 ;
+				rotateMenu.setPath($this,rangeAngle);
+
+			}, 200);
+
+		});
+
     }
+}
+
+class AddModal{
+
+	constructor(){
+		this.handle();
+		this.init();
+		this.orgBoxInit();
+	}
+
+	static dropMenuConfig=[
+		{"icon":"fa-file-text",text:"创建视图",type:"view"},
+		{"icon":"fa-folder",text:"创建分类",type:"catalogue"},
+	]
+
+	init(){
+
+		// 日历
+		this.calendar = new Calendar($(".dataTime"),$("#viewShowTime"),{
+			rotate:4,
+			style:2
+		});
+
+		// 目录选择下拉框
+		this.parCatalogSel = new SCombobox($("#parName"),{
+			"textField":"layout_name",
+			"idField":"layout_id",
+			"prompt":"请选择所属分类...",
+			"width":300,
+		});
+
+	}
+
+	dropMenuCallback=(state)=>{
+
+    		const lev = $tabCard.data("menuArr").length;
+		
+			let dropMenuConfig = AddModal.dropMenuConfig.slice();
+			if(lev===1){
+				dropMenuConfig.splice(0,1);
+			}else if(lev>3){
+				dropMenuConfig.splice(1,1);
+			}
+
+			UnitOption.renderDropMenu($menuBox,!state?dropMenuConfig:[]);
+    }
+
+	addCatalogue(type,obj,style){
+	
+		API_szViews.checkName(obj)
+		.then(res=>{
+			return res ? API_szViews.addView(type,{user_id,...obj}) : "重名" ;
+		})
+		.then(res=>{
+
+			if(res === "重名"){
+				alert(res);
+				return ;
+			}
+
+			if(res){ //true
+				const menuIndexArr = $tabCard.data("menuArr").map(val=>{
+					  return  val.index ;
+				}) ;
+				 page.styleBoxrender(menuIndexArr,style);
+				 page.modal.close($addMView);
+			}else{
+			}
+
+		}).catch(error=>{
+
+			console.log(error);
+		})
+    }
+    orgBoxInit(){
+
+    	
+    	API_szViews.getLayoutUserTree().then(res=>{
+
+			if(res){
+
+				
+				this.orgTree = new Tree($org,{
+					"data":res.sub,
+					"textField":"name",
+					"idField":"id",
+					"checkbox":true,
+					 "checkCallback":function(){
+
+					 	setTimeout(function(){
+							const selArr = [].slice.call($org.find(".child-checkinp:checked"));
+							const strArr = selArr.map(val=>{
+								    const $val = $(val);
+									const name = $val.parent().siblings(".item-txt").text();
+									const id = val.value ;
+									return 	`<li echo-id="${id}" class="sel-item menuItem">
+												<i class="fa fa-user-circle-o">&nbsp;</i>
+												<b>${name}</b>
+											 </li>`
+
+							});
+							$("#orgSel").html(strArr.join(""));
+					 	}, 60);
+
+					 },
+					 "clickAndCheck":true,
+					 "childrenField":"sub",
+					 "judgeRelation":(val)=>{//自定义判断是目录还是文件的函数
+							return val.type == 0 ;
+					 }
+				});
+			}
+
+    	});
+
+    
+
+    	
+
+    	/*	const selArr = [].slice.call($(".child-checkinp:checked"));
+			const strArr = selArr.map(val=>{
+					const name = val.getAttribute("echo-name");
+					const id = val.value ;
+
+					return 	`<li echo-id="${id}" class="sel-item menuItem">
+								<i class="fa fa-user-circle-o">&nbsp;</i>
+								<b>${name}</b>
+							 </li>`
+
+			});
+			$("#orgSel").html(strArr.join(""));
+*/
+    }
+
+    
+	handle(){
+		// 下拉框显示
+		$("#menuBtn").click(function(e){
+			const $this = $(this);
+			 e.stopPropagation();
+			UnitOption.dropMenuHandle($this,page.addModal.dropMenuCallback);
+		});
+
+
+		// 创建类型选择
+		$menuBox.on("click",".menu-item",function(e){
+
+			e.stopPropagation();
+			const $this = $(this);
+
+			const type =$this.attr("sign");
+			$addMBtn.attr({"type":type,"method":"create"});
+			$inpName.val(null);
+				
+			const curCatalogueArr = $tab.datagrid("getData").rows.reduce(function(total,curVal){
+					// layout_type : 1 目录 ，0：文件
+					const {layout_name,layout_id,layout_type} = curVal;
+					layout_type === 1 && total.push({layout_name,layout_id});
+					 return total;
+			},[]);
+			
+			const menuArr = $tabCard.data("menuArr");
+			const curId = menuArr[menuArr.length-1].layout_id;
+			curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
+			
+			page.addModal.parCatalogSel.loadData(curCatalogueArr);
+			page.addModal.parCatalogSel.setValue(curId);
+			page.modal.show($addMView);
+
+		});
+
+		//模态框确定按钮
+		$addMBtn.click(function(){
+
+			const type = $(this).attr("type");
+			const method = $(this).attr("method");
+			const name = $inpName.val().trim();
+			const par_id = method==="create" ? page.parCatalogSel.getValue() : $ViewContainer.attr("curid");
+			const style = $(".style-sel").index() ? "catalogue":"tab";
+
+
+			if(name){
+				method==="create" ? page.addCatalogue(type,{name,par_id},style) : API_szViews.updataName({name,id:par_id}).then(res=>{
+
+						if(res){
+								const menuIndexArr = $tabCard.data("menuArr").map(val=>{
+									  return  val.index ;
+								}) ;
+								 page.styleBoxrender(menuIndexArr,style);
+								 page.modal.close($addMView);
+						}else{
+							alert("重名");
+						}
+
+					}).catch(res=>{
+
+						console.log(res);
+					})
+			}
+
+		});
+
+		//发布
+		$("#issueBtn").click(function(){
+
+			const id= +$ViewContainer.attr("curid");
+
+			let user = ["-1"],
+				starttime ="-1",
+			    endtime = "-1",
+			    release = 1 ;
+
+			const switchs = [].slice.call($issueMView.find(".s-switch input"));
+
+			switchs.map((val,index)=>{
+				const status = val.checked;
+				if(!status){
+					switch(index){
+						case 0:
+							const timeValue =page.addModal.calendar.value;
+							starttime = timeValue[0].join("");
+							endtime = timeValue[1].join("");
+							break;
+						case 1:
+							const selArr =$.map($issueMView.find(".child-checkinp:checked"),val=>{
+								return val.value;
+							});
+							user = !selArr.length && null || selArr ;
+
+							break;
+						case 2:
+							 release = 0 ;
+							break;
+			
+					}
+
+				}		
+			});
+
+
+			if(!user){
+				alert("请选择可见用户！");
+				return ;
+			}
+			
+			API_szViews.ReleaseLayout({id,user,starttime,endtime,release}).then(res=>{
+				if(res){
+					alert("成功！");
+					const menuIndexArr = $tabCard.data("menuArr").map(val=>{
+							  return  val.index ;
+					}) ;
+					page.styleBoxrender(menuIndexArr);
+					page.modal.close($issueMView);
+				}else{
+					alert("发布失败！");
+				}
+			});
+		});
+		//开关
+		$issueMView.on("click",".s-switch",function(){
+
+			const type = $(this).attr("sign");
+
+			switch(type){
+
+				case "time":
+					$(this).siblings(".time-inpbox").toggleClass("active");
+					break;
+				case "org":
+					$(this).parent().siblings(".org-box").toggleClass("active");
+					break;
+
+			}
+		});
+
+
+
+	}
+
+}
+
+class DelModal{
+
+	constructor(){
+
+		this.handle();
+	}
+
+	handle(){
+		//删除
+		$("#delBtn").click(function(){
+			
+			const selArr = $.map($(".checkSingle:checked"),function(val){
+				return val.value;
+			});
+			
+			if(!selArr.length){
+				return ;
+			}
+			const id = selArr.join(",");
+			page.modal.show($confirmMView);
+			$confirmBtn.attr("delArr",id);
+			
+		});
+		// 删除模态框确认按钮
+		$confirmBtn.click(function(){
+
+			UnitOption.renderTipM($svg_statusBox,"#g-load");
+			const id = $(this).attr("delArr");
+			$tipText.html("");
+			API_szViews.updataRecycle({user_id,id}).then(res=>{
+				$svg_statusBox.addClass("g-status");
+				if(res){
+					const menuIndexArr = $tabCard.data("menuArr").map(val=>{
+							  return  val.index ;
+					}) ;
+					page.styleBoxrender(menuIndexArr);
+					UnitOption.renderTipM($svg_statusBox,"#g-success");
+				}else{
+					UnitOption.renderTipM($svg_statusBox,"#g-error");
+				}
+
+			});
+
+		})
+	
+	}
+}
+
+class IconBox{
+
+	constructor(){
+		this.InitIconBox($iconBox);
+		this.handle();
+	}
+
+	InitIconBox($el){
+		API_szViews.getAllLayout_icon().then(res=>{
+
+			const {par,child}=res;
+			const par_strArr = par.map(val=>{
+				const {name,id} = val ;
+				return `
+					    <span class="sicon ${name}" echo-data="${id}"></span> 
+
+						`
+			});
+
+			const child_strArr = child.map(val=>{
+				const {name,id} = val ;
+				return `
+					    <span class="sicon ${name}" echo-data="${id}"></span> 
+						`
+			});
+
+			const str = `
+						<div class="iconBox-item">${child_strArr.join("")}</div>	
+						<div class="iconBox-item">${par_strArr.join("")}</div>	
+						`
+			$el.html(str);
+		});
+    }
+
+	handle(){
+
+		//选择icon
+		$iconBox.on("click",".sicon",function(){
+			$(".icon-sel").removeClass("icon-sel");
+			$(this).addClass("icon-sel");
+		});
+		//操作icon
+		$("#iconFooter").on("click","p",function(){
+
+			const sign = $(this).attr("sign");
+			const $parContainer = $iconBox.parent();
+
+			switch(sign){
+				case "sub":
+					
+					const id = $ViewContainer.attr("curId");
+					const icon_id =$(".icon-sel").attr("echo-data");
+
+					API_szViews.updataIcon({icon_id,id}).then(res=>{
+
+						if(res){
+							page.modal.close($parContainer,"icon-active") ;
+							const menuIndexArr = $tabCard.data("menuArr").map(val=>{
+							  return  val.index ;
+							}) ;
+
+							const style =$(".style-sel").index() ? "catalogue" :"tab";
+
+							page.styleBoxrender(menuIndexArr,style);
+						} 
+					
+						
+					});
+
+					break;
+				case "close":
+					page.modal.close($parContainer,"icon-active") ;
+					break;
+			}
+		});
+
+		$("#iconContainer").on("click",function(e){
+			e.stopPropagation();
+		});
+
+	}
+
+}
+
+//初始化页面类
+class Page  {
+
+	constructor(){
+		this.handle();
+		this.init();
+	}
+
+    init(){
+
+		this.modal = new SModal();
+		this.table = new TableStyle();
+		this.catalogue  = new CatalogueStyle();
+		this.addModal = new AddModal();
+		this.delModal = new DelModal();
+		this.iconBox = new IconBox();
+
+		this.styleBoxrender();
+		this.tabCardInit([{layout_name:"我的创建",index:0,layout_id:-2}]);
+
+ 	}
+    
+    styleBoxrender(menuIndexArr=[0],type="tab"){
+		API_szViews.getAllLayout().then(res=>{
+				
+			const  allData = [res] ;
+			$ViewContainer.data("tabData",allData);
+			let tabData=JSON.stringify(allData);
+			    tabData=JSON.parse(tabData);
+			menuIndexArr.map(function(val){
+				tabData = tabData[val].sub
+			});
+
+			type==="tab"?this.table.loadTab(tabData):this.catalogue.catalogueInit(tabData);
+
+		})
+    }
+    
     tabCardInit(menuArr){
 		$tabCard.data("menuArr",menuArr);
 		const leg = menuArr.length;
@@ -324,28 +791,11 @@ class InitPage extends EasyUITab{
 			const icon_str = !is_last && `&nbsp;&nbsp;<i class="fa fa-angle-right fa-lg">&nbsp;&nbsp;</i>` || "";
 			
 			return `<div class="card" echo-data="${index}"><span>${layout_name}</span>${icon_str}</div>` ;
-		})
-		
-
+		});
 		$tabCard.html(str.join(""));
     }
 
-    changeTabcard($this){ // 进入目录
-
-		const tabData = $tab.datagrid("getData").rows;
-
-
-		const index = +$this.attr("echo-data");
-		const childArr = tabData[index].sub;
-
-		this.loadTab(childArr);
-		const {layout_name,layout_id}=tabData[index];
-		const lastData = $tabCard.data("menuArr");
-
-		lastData.push({layout_name,index,layout_id});
-		this.tabCardInit(lastData);
-
-    }
+    
 
     getCurTabData(menuArr,curIndex){
 		
@@ -371,7 +821,7 @@ class InitPage extends EasyUITab{
 		
 
 		const styleIndex = $(".style-sel").index();
-		styleIndex ? this.catalogueInit(tabData) :this.loadTab(tabData);
+		styleIndex ? this.catalogue.catalogueInit(tabData) :this.table.loadTab(tabData);
 		const newmenuArr=menuArr.slice(0,index+1);
 		this.tabCardInit(newmenuArr);
 
@@ -390,650 +840,124 @@ class InitPage extends EasyUITab{
 
 		if(index){
 			const tabData = $tab.datagrid("getData").rows;
-			this.catalogueInit(tabData);
+			this.catalogue.catalogueInit(tabData);
 		}else{
 			const tabData = $catalogueBox.data("getData");
-			this.loadTab(tabData);
+			this.table.loadTab(tabData);
 		}
 
     }
 
-    addCatalogue(type,obj,style){
-	
-		API_szViews.checkName(obj)
-		.then(res=>{
-			return res ? API_szViews.addView(type,{user_id,...obj}) : "重名" ;
-		})
-		.then(res=>{
+    
 
-			if(res === "重名"){
-				alert(res);
-				return ;
-			}
-
-			if(res){ //true
-				const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-					  return  val.index ;
-				}) ;
-				 this.tabInit(menuIndexArr,style);
-				 page.modal.close($addMView);
-			}else{
-			}
-
-		}).catch(error=>{
-
-			console.log(error);
-		})
-    }
-
-    dropMenuCallback=(state)=>{
-
-    		const lev = $tabCard.data("menuArr").length;
+    handle(){
 		
-			let dropMenuConfig = this.dropMenuConfig.slice();
-			if(lev===1){
-				dropMenuConfig.splice(0,1);
-			}else if(lev>3){
-				dropMenuConfig.splice(1,1);
-			}
+		//切换选项卡
+		$tabCard.on("click",".card",function(){
+			const $this = $(this);
+			page.handleCard($this);
 
-			UnitOption.renderDropMenu($menuBox,!state?dropMenuConfig:[]);
-    }
+		});
 
-    orgBoxInit(){
+		//切换显示风格
+		$("#styleBox").on("click",".style-item",function(){
+			const $this = $(this);
+			page.changeStyle($this);
+		});
 
-    	
-    	API_szViews.getLayoutUserTree().then(res=>{
+		//操作按钮
+		$ViewContainer.on("click",".tab-opt",function(e){
+			const type = $(this).attr("node-sign");
+			const index = $(this).parent().attr("echo-data");
 
-			if(res){
-				const str = this.renderOrgJson(res.sub,0);
-				
-				$org.html(str.join(""));
-			}
+			const style = $(".style-sel").index();
+			const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
 
-    	});
+			const {layout_type,layout_id,layout_icon,layout_icon_name,layout_name} = data ;    
+			const last_layoutId = +$ViewContainer.attr("curId");
 
-    	$org.on("click",".slide-icon",function(){
-			
-			
+			switch(type){
 
-			const parLi = $(this).closest(".org-li");
-			const $parDiv = $(this).parent();
-
-			$parDiv.hasClass("org-active") && $parDiv.removeClass("org-active") || $parDiv.addClass("org-active");
-
-			const parMenu =parLi.children(".par-menu"); 
-    		parMenu.slideToggle();
-
-    	});
-
-    	$org.on("click",".org-inp",function(){
-
-    		const status =$(this).prop("checked");
-    		const type = $(this).hasClass("par-checkinp");
-			const par_li = $(this).closest(".org-li");
-
-			if(type){
-				par_li.find(".has-chec").removeClass("has-chec");
-				par_li.find(".org-inp").prop("checked",status);
-			}
-
-			let lev = par_li.attr("lev");
-			if(lev!=="1"){
-				
-				let up_par_li = $(this).closest(".org-li");
-
-				while (lev > 1 ){
-					  up_par_li = up_par_li.parent().parent();
-					  lev = +up_par_li.attr("lev");
- 					  const checkEl = up_par_li.children(".menuItem").find(".org-inp");
- 					  const ul_par =  up_par_li.children(".par-menu") ;
-					  const ul_par_leg = ul_par.children().length;
-					  const check_leg = ul_par.children().children(".menuItem").find(".org-inp:checked").length;
-
-					 if(check_leg === 0 ){ //一个没选
-					 	checkEl.siblings("label").removeClass("has-chec");
-					 	checkEl.prop("checked",false);
-
-						
-						
-					 }else if( check_leg < ul_par_leg ){
-
-						checkEl.prop("checked",false);
-						checkEl.siblings("label").addClass("has-chec");
-
-
+				case "pre":
+					break;
+				case "issue":
 					
-					 }else{// 全选 
+					  	API_szViews.showReleaseLayout(layout_id).then(res=>{
+										if(res){
+											
+											page.modal.show($issueMView);
+											const {user,starttime,endtime,release} = res;
+										
+										  	[].slice.call($issueMView.find(".s-switch input")).map((val,index)=>{
 
-					 	checkEl.siblings("label").removeClass("has-chec");
-					 	checkEl.prop("checked",false);
+													switch(index){
+														case 0 : //时间
+															const status =  starttime == "-1" ;
+															val.checked= status ;
 
-					 	checkEl.prop("checked",true);
-						checkEl.siblings("label").removeClass("has-chec");
-					 }
+															if(status){
+																$(val).parent().siblings(".time-inpbox").removeClass("active");
+															}else{
+																$(val).parent().siblings(".time-inpbox").addClass("active");
+																page.addModal.calendar.setTime([starttime,endtime]);
+															}
 
-					  const is_has_chec = up_par_li.find(".has-chec").length;
+															break;
+														case 1 ://用户
+															const status_2 =  user[0] == "-1" ;
+															val.checked= status_2 ;
 
-					 if(check_leg == 0 &&  is_has_chec){
-					 	checkEl.prop("checked",false);
-						checkEl.siblings("label").addClass("has-chec");
-					 }
+															if(status_2){
+																$(val).closest(".item-status").siblings(".org-box").removeClass("active");
+															}else{
+																$(val).closest(".item-status").siblings(".org-box").addClass("active");
 
-				}
-				
+																$org.find(".org-inp").prop("checked",false).removeClass("has-chec");
+																user.map(val=>{
+																	$org.find(`.child-checkinp[value=${val}]`).click();
+																})
+															}
+													
+															break;
+														case 2 :
+															const status_3 =  release === 1 ;
+															val.checked= status_3 ;
+															break;
+													}
+											  });
+										}
+						});
+					break;
+				case "copy":
+					break;
+				case "rename":
+					page.modal.show($addMView);
+					$parName.parent().hide();
+					$addMBtn.attr({"method":"modify"});
+					 $inpName.val(layout_name);
+					 $inpName.parent().addClass("inp-fill");
+					break;
+				case "icon":
+					e.stopPropagation();
+					const $parContainer = $iconBox.parent();
+					const status = $parContainer.hasClass("icon-active");
+					const $iconBoxItem = $(".iconBox-item");
+
+					$iconBoxItem.css("display","none");
+					$iconBoxItem.eq(2-layout_type).css("display","flex");
+					$(".icon-sel").removeClass("icon-sel");
+					$iconBox.find("."+layout_icon_name.trim()).addClass("icon-sel");
+
+				  !status || last_layoutId !== layout_id ? page.modal.show($parContainer,"icon-active") :page.modal.close($parContainer,"icon-active") ;
+					break;
 			}
-			
-			
 
-			const selArr = [].slice.call($(".child-checkinp:checked"));
-			const strArr = selArr.map(val=>{
-					const name = val.getAttribute("echo-name");
-					const id = val.value ;
 
-					return 	`<li echo-id="${id}" class="sel-item menuItem">
-								<i class="fa fa-user-circle-o">&nbsp;</i>
-								<b>${name}</b>
-							 </li>`
+			$ViewContainer.attr("curId",layout_id);
 
-			});
-			$("#orgSel").html(strArr.join(""));
-
-    	});
-
+		});
     }
-
-    renderOrgJson(arr,_lev){
-
-    	let lev = _lev ;
-    		lev ++ ;
-		return arr.map((val,index)=>{
-			
-			const {type,id,name,sub,par_id} = val;
-
-			let data = {id , name ,lev,par_id} ;
-
-			if(type===0){
- 
-				let  childrenEl = this.renderOrgJson(sub,lev);
-
-				return this.parentComponent(childrenEl,data);
-
-			}else{
-
-				const item = this.childComponent(data);
-			
-				return 	item;					
-			
-			}
-		})
-	}
-	
-	parentComponent(child,data){
-
-		let {name,id,lev,par_id}= data;
-
-		const  indent =new Array(lev).fill(`<span class="indent"></span>`).join("");
-
-		return (`
-			<li  lev="${lev}" class="org-li">
-				<div class="menuItem par-item" echo-id="${id}">
-					${indent}
-					<span class="s-checkbox">
-						<input type="checkbox" class="par-checkinp org-inp"  par="${par_id}" value="${id}" /><label class="fa fa-square-o" ></label>
-					</span>
-					<i class="fa fa-folder-open-o"></i>
-					<span>${name}</span><span class="slide-icon"><i class="fa fa-caret-down  "></i></span>
-				</div>
-				<ul class="par-menu">${child.join("")}</ul>
-			</li>
-		`);
-
-	}
-
-	childComponent(data){
-
-		let {name,id,lev}= data;
-		const  indent =new Array(lev).fill(`<span class="indent"></span>`).join("");
-	
-		return (`
-			<li lev="${lev}" class="org-li">
-				<div class="menuItem child-item" echo-id="${id}">
-				${indent}
-				<span class="s-checkbox">
-						<input type="checkbox" class="child-checkinp org-inp" value="${id}" echo-name="${name}" /><label class="fa fa-square-o" ></label>
-				</span>
-				<i class="fa fa-user-circle-o">&nbsp;</i>
-				${name}
-				</div>
-			</li>
-		`);		
-	}
-   
 }
 
 
-
-
-
-
-const page = new  InitPage();
-
-$(window).on("click",function(){
-		  $(".active-menu").removeClass("active-menu");
-		  $(".icon-active").removeClass("icon-active");
-		  $(".dataTime").hide();
-});
-
-//切换选项卡
-$tabCard.on("click",".card",function(){
-	const $this = $(this);
-	page.handleCard($this);
-
-});
-
-//  进入目录
-$tabContainer.on("click",".node-catalogue",function(){
-	const $this = $(this);
-	page.changeTabcard($this);
-
-});
-
-// 进入模板编辑器
-$tabContainer.on("click",".node-file",function(){
-	const $this = $(this);
-
-	const index = +$this.attr("echo-data");
-
-	const style = $(".style-sel").index();
-	const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
-
-
-	$("#content",window.parent.document).addClass("no-head");
-	$("#slide",window.parent.document).animate({"width":0},500,function(){
-	//	window.location.href="editTemplate";
-		window.location.href="./editTemplate.html";
-				
-	});
-
-	
-	
-
-});
-
-$catalogueBox.on("dblclick",".view-catalogue",function(){
-
-	clearTimeout(timer);
-	const $this = $(this);
-	const tabData = $catalogueBox.data("getData");
-	const index = +$this.attr("echo-data");
-	const childArr = tabData[index].sub;
-	page.catalogueInit(childArr);
-	const {layout_name,layout_id}=tabData[index];
-	const lastData = $tabCard.data("menuArr");
-
-	lastData.push({layout_name,index,layout_id});
-	page.tabCardInit(lastData);
-
-
-});
-
-let timer = null;
-const rotateMenu = new RotateMenu();
-
-$catalogueBox.on("click",".view-show",function(){
-	const $this = $(this);
-	clearTimeout(timer);
-	timer = setTimeout(function(){
-
-		const index =$this.attr("echo-data");
-		$this.parent().addClass("catalogue-item-sel").siblings().removeClass("catalogue-item-sel");
-		const node = $catalogueBox.data("getData")[index];
-		page.cataFooterRender(node);
-		const rangeAngle = node.layout_type===1 ? 60: 180 ;
-		rotateMenu.setPath($this,rangeAngle);
-
-	}, 200);
-
-});
-
-//切换显示风格
-$("#styleBox").on("click",".style-item",function(){
-	const $this = $(this);
-	page.changeStyle($this);
-});
-
-
-// 下拉框显示
-$("#menuBtn").click(function(e){
-	const $this = $(this);
-	 e.stopPropagation();
-	UnitOption.dropMenuHandle($this,page.dropMenuCallback);
-});
-
-
-// 创建类型选择
-$menuBox.on("click",".menu-item",function(e){
-
-	e.stopPropagation();
-	const $this = $(this);
-
-	const type =$this.attr("sign");
-	$addMBtn.attr({"type":type,"method":"create"});
-	$inpName.val(null);
-		
-	const curCatalogueArr = $tab.datagrid("getData").rows.reduce(function(total,curVal){
-			// layout_type : 1 目录 ，0：文件
-			const {layout_name,layout_id,layout_type} = curVal;
-			layout_type === 1 && total.push({layout_name,layout_id});
-			 return total;
-	},[]);
-	
-	const menuArr = $tabCard.data("menuArr");
-	const curId = menuArr[menuArr.length-1].layout_id;
-	curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
-	
-	page.parCatalogSel.loadData(curCatalogueArr);
-	page.parCatalogSel.setValue(curId);
-	page.modal.show($addMView);
-
-});
-
-//模态框确定按钮
-$addMBtn.click(function(){
-
-	const type = $(this).attr("type");
-	const method = $(this).attr("method");
-	const name = $inpName.val().trim();
-	const par_id = method==="create" ? page.parCatalogSel.getValue() : $ViewContainer.attr("curid");
-	const style = $(".style-sel").index() ? "catalogue":"tab";
-
-
-	if(name){
-		method==="create" ? page.addCatalogue(type,{name,par_id},style) : API_szViews.updataName({name,id:par_id}).then(res=>{
-
-				if(res){
-						const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-							  return  val.index ;
-						}) ;
-						 page.tabInit(menuIndexArr,style);
-						 page.modal.close($addMView);
-				}else{
-					alert("重名");
-				}
-
-			}).catch(res=>{
-
-				console.log(res);
-			})
-	}
-
-});
-
-//删除
-$("#delBtn").click(function(){
-	
-	const selArr = $.map($(".checkSingle:checked"),function(val){
-		return val.value;
-	});
-	
-	if(!selArr.length){
-		return ;
-	}
-	const id = selArr.join(",");
-	page.modal.show($confirmMView);
-	$confirmBtn.attr("delArr",id);
-	
-});
-// 删除模态框确认按钮
-$confirmBtn.click(function(){
-
-	UnitOption.renderTipM($svg_statusBox,"#g-load");
-	const id = $(this).attr("delArr");
-	$tipText.html("");
-	API_szViews.updataRecycle({user_id,id}).then(res=>{
-		$svg_statusBox.addClass("g-status");
-		if(res){
-			const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-					  return  val.index ;
-			}) ;
-			page.tabInit(menuIndexArr);
-			UnitOption.renderTipM($svg_statusBox,"#g-success");
-		}else{
-			UnitOption.renderTipM($svg_statusBox,"#g-error");
-		}
-
-	});
-
-})
-
-//复选框事件
-$tabContainer.on("click",".checkSingle",function(){
-	page.checkSingleHandle($tabContainer);
-});
-
-
-//操作按钮
-$ViewContainer.on("click",".tab-opt",function(e){
-	
-
-	const type = $(this).attr("node-sign");
-	const index = $(this).parent().attr("echo-data");
-
-	const style = $(".style-sel").index();
-	const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
-
-	const {layout_type,layout_id,layout_icon,layout_icon_name,layout_name} = data ;    
-	const last_layoutId = +$ViewContainer.attr("curId");
-
-	switch(type){
-
-		case "pre":
-			break;
-		case "issue":
-			
-			 
-
-			  	API_szViews.showReleaseLayout(layout_id).then(res=>{
-								if(res){
-									
-									page.modal.show($issueMView);
-									const {user,starttime,endtime,release} = res;
-								
-								  	[].slice.call($issueMView.find(".s-switch input")).map((val,index)=>{
-
-											switch(index){
-												case 0 : //时间
-													const status =  starttime == "-1" ;
-													val.checked= status ;
-
-													if(status){
-														$(val).parent().siblings(".time-inpbox").removeClass("active");
-													}else{
-														$(val).parent().siblings(".time-inpbox").addClass("active");
-														page.calendar.setTime([starttime,endtime]);
-													}
-
-													break;
-												case 1 ://用户
-													const status_2 =  user[0] == "-1" ;
-													val.checked= status_2 ;
-
-													if(status_2){
-														$(val).closest(".item-status").siblings(".org-box").removeClass("active");
-													}else{
-														$(val).closest(".item-status").siblings(".org-box").addClass("active");
-
-														$org.find(".org-inp").prop("checked",false).removeClass("has-chec");
-														user.map(val=>{
-
-															$org.find(`.child-checkinp[value=${val}]`).click();
-														})
-
-														
-													}
-											
-													break;
-												case 2 :
-													const status_3 =  release === 1 ;
-													val.checked= status_3 ;
-													break;
-											}
-									  });
-								}
-				});
-			break;
-		case "copy":
-			break;
-		case "rename":
-			page.modal.show($addMView);
-			$parName.parent().hide();
-			$addMBtn.attr({"method":"modify"});
-			 $inpName.val(layout_name);
-			 $inpName.parent().addClass("inp-fill");
-			break;
-		case "icon":
-			e.stopPropagation();
-			const $parContainer = $iconBox.parent();
-			const status = $parContainer.hasClass("icon-active");
-			const $iconBoxItem = $(".iconBox-item");
-
-			$iconBoxItem.css("display","none");
-			$iconBoxItem.eq(2-layout_type).css("display","flex");
-			$(".icon-sel").removeClass("icon-sel");
-			$iconBox.find("."+layout_icon_name.trim()).addClass("icon-sel");
-
-		  !status || last_layoutId !== layout_id ? page.modal.show($parContainer,"icon-active") :page.modal.close($parContainer,"icon-active") ;
-			break;
-	}
-
-
-	$ViewContainer.attr("curId",layout_id);
-
-});
-//选择icon
-$iconBox.on("click",".sicon",function(){
-	$(".icon-sel").removeClass("icon-sel");
-	$(this).addClass("icon-sel");
-});
-//操作icon
-$("#iconFooter").on("click","p",function(){
-
-	const sign = $(this).attr("sign");
-	const $parContainer = $iconBox.parent();
-
-	switch(sign){
-		case "sub":
-			
-			const id = $ViewContainer.attr("curId");
-			const icon_id =$(".icon-sel").attr("echo-data");
-
-			API_szViews.updataIcon({icon_id,id}).then(res=>{
-
-				if(res){
-					page.modal.close($parContainer,"icon-active") ;
-					const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-					  return  val.index ;
-					}) ;
-
-					const style =$(".style-sel").index() ? "catalogue" :"tab";
-
-					page.tabInit(menuIndexArr,style);
-				} 
-			
-				
-			});
-
-			break;
-		case "close":
-			page.modal.close($parContainer,"icon-active") ;
-			break;
-	}
-});
-
-$("#iconContainer").on("click",function(e){
-	e.stopPropagation();
-});
-
-//发布
-$("#issueBtn").click(function(){
-
-	const id= +$ViewContainer.attr("curid");
-
-	let user = ["-1"],
-		starttime ="-1",
-	    endtime = "-1",
-	    release = 1 ;
-
-	const switchs = [].slice.call($issueMView.find(".s-switch input"));
-
-	switchs.map((val,index)=>{
-		const status = val.checked;
-		if(!status){
-			switch(index){
-				case 0:
-					const timeValue =page.calendar.value;
-					starttime = timeValue[0].join("");
-					endtime = timeValue[1].join("");
-					break;
-				case 1:
-					const selArr =$.map($issueMView.find(".child-checkinp:checked"),val=>{
-						return val.value;
-					});
-					user = !selArr.length && null || selArr ;
-
-					break;
-				case 2:
-					 release = 0 ;
-					break;
-	
-			}
-
-		}		
-	});
-
-
-	if(!user){
-		alert("请选择可见用户！");
-		return ;
-	}
-	
-	API_szViews.ReleaseLayout({id,user,starttime,endtime,release}).then(res=>{
-		if(res){
-			alert("成功！");
-			const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-					  return  val.index ;
-			}) ;
-			page.tabInit(menuIndexArr);
-			page.modal.close($issueMView);
-		}else{
-			alert("发布失败！");
-		}
-	});
-});
-
-//开关
-
-$issueMView.on("click",".s-switch",function(){
-
-	const type = $(this).attr("sign");
-
-	switch(type){
-
-		case "time":
-			$(this).siblings(".time-inpbox").toggleClass("active");
-			break;
-		case "org":
-			$(this).parent().siblings(".org-box").toggleClass("active");
-			break;
-
-	}
-	
-
-
-
-});
-
-
-
- 
+const page = new Page();
