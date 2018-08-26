@@ -363,6 +363,12 @@ class SModal{
 
 	}
 
+	drap($el){
+
+
+
+	}
+
 	close($el,className="m-show"){
 		$el.removeClass(className);
 		requestAnimationFrame(function(){
@@ -379,10 +385,48 @@ class SModal{
 
 	handle(){
 		const self = this;
-		$(".m-close").click(function(){
+		$(".m-close").click(function(e){
+			e.stopPropagation();
 			const Modal = $(this).closest(".s-modal");
 			self.close(Modal);
 		});
+
+		let moveStatus = null;
+		let moveTarget = null;
+		let moveOffset = null ;
+
+		$(".m-title").on("mousedown",function(e){
+			
+			moveStatus = "move";
+			moveTarget = $(this).closest(".s-modal");
+	     	moveOffset = {x:e.offsetX,y:e.offsetY} ;
+		});
+
+		$(window).on("mousemove",function(e){
+
+			const event = e || window.events;
+			
+			if(moveStatus){
+				const x = e.clientX  - moveOffset.x;
+				const y = e.clientY - moveOffset.y;
+				moveTarget[0].style.transform = `translate(${x}px,${y}px)`;
+				moveTarget[0].style.top = 0;
+				moveTarget[0].style.left = 0;
+			}
+
+			return ;
+
+		});
+
+		$(".m-title").on("mouseup",function(){
+			
+			moveStatus = null;
+			moveTarget = null ;
+			moveOffset = null ;
+
+		});
+
+		
 	}
 }
 
@@ -629,6 +673,8 @@ class Tree{
 
 	}
 	setValue(ids,$el=this.box){
+
+		$el.find(".tree-inp").prop("checked",false).removeClass("has-chec");
 		ids.map(val=>{
 			$el.find(`.child-checkinp[value=${val}]`).click();
 		});

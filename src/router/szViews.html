@@ -61,10 +61,19 @@
 						<table id="tab" class="easy-tab" style="width:100%;height:100%"></table>
 				</div>
 				<div class="style-view cata-container">
+						<div class="catalogue-contentmenu" id="catalogueContentmenu" style="display: none;">
+								<div class="tab-opt " node-sign="icon" ><span class="sicon sicon-btn-3">&nbsp;图标</span></div>
+								<div class="tab-opt" node-sign="rename" ><span class="sicon sicon-btn-4">&nbsp;重命名</span></div>
+								<div id="fileOpts">
+									<div class="tab-opt" node-sign="pre" ><span class="fa fa-eye">&nbsp;预览</span></div>
+									<div class="tab-opt" node-sign="issue" ><span class="fa fa-paper-plane-o ">&nbsp;发布</span></div>
+									<div class="tab-opt" node-sign="copy" ><span class="sicon sicon-btn-1">&nbsp;复制</span></div>
+								</div>
+						</div>
 						<div class="catalogue-opt-box">
 							<span>全选：&nbsp;</span>
-							<span class="s-checkbox">
-									<input type="checkbox"  value="129"><label class="fa fa-square-o"></label>
+							<span class="s-checkbox" id="catalogueChecAll">
+									<input type="checkbox"  ><label class="fa fa-square-o"></label>
 							</span>	
 						</div>
 						<div id="catalogueBox" class="catalogueBox"></div>

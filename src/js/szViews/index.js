@@ -207,28 +207,18 @@ class CatalogueStyle{
 	catalogueInit(tabData){
 		
 		const str = tabData.map((val,index)=>{
-			const {layout_icon_name,layout_name,layout_id,layout_type} = val ;
+			const {layout_icon_name,layout_name,layout_id,layout_type,sub} = val ;
 			const type = layout_type ===1 && "view-catalogue" || "view-file";
-
-			/*let str = `
-					<div class="tab-opt rotate-btn rotate-icon" node-sign="icon" echo-text="图标"><span class="sicon sicon-btn-3"></span></div>
-					<div class="tab-opt rotate-btn rotate-rename" node-sign="rename" echo-text="重命名"><span class="sicon sicon-btn-4"></span></div>
-					`;
-			const fileopt = `
-					<div class="tab-opt rotate-btn rotate-pre" node-sign="pre" echo-text="预览"><span class="fa fa-eye"></span></div>
-					<div class="tab-opt rotate-btn rotate-issue" node-sign="issue" echo-text="发布"><span class="fa fa-paper-plane-o "></span></div>
-					<div class="tab-op rotate-btn rotate-copy" node-sign="copy" echo-text="复制"><span class="sicon sicon-btn-1"></span></div>
-					`;
-
-				str = layout_type !==1 &&  str + fileopt || str ;*/
+			const is_disCheck = sub.length === 0 ;
 
 			return `
 					<div class="catalogue-item " >
 						<div class="view-show ${type}" echo-data="${index}">
 							<p><i class="sicon ${layout_icon_name}"></i></p>
 							<p class="catalogue-name"><span>${layout_name}</span></p>
-							<span class="s-checkbox catalogue-chec">
-									<input type="checkbox"  value="129"><label class="fa fa-square-o"></label>
+							<span class="s-checkbox catalogue-chec ${!is_disCheck && "dis-check" || ""}">
+									${is_disCheck && '<input type="checkbox"  class="catalogue-chec-inp" >' || ""}
+									<label class="fa fa-square-o"></label>
 							</span>
 						</div>
 						
@@ -240,7 +230,7 @@ class CatalogueStyle{
 		this.cataFooterInit();
     }
     cataFooterInit(){
-		const str = `
+		const str = ` 
 				<div class="footer-item">
 					<i class="fa fa-bookmark-o">&nbsp;</i>
 					<span>点击获取文件信息</span>
@@ -283,7 +273,6 @@ class CatalogueStyle{
 
     handle(){
 		$catalogueBox.on("dblclick",".view-catalogue",function(){
-
 			clearTimeout(timer);
 			const $this = $(this);
 			const tabData = $catalogueBox.data("getData");
@@ -292,39 +281,56 @@ class CatalogueStyle{
 			page.catalogue.catalogueInit(childArr);
 			const {layout_name,layout_id}=tabData[index];
 			const lastData = $tabCard.data("menuArr");
-
+			
 			lastData.push({layout_name,index,layout_id});
 			page.tabCardInit(lastData);
-
-
+			$("#catalogueChecAll").children("input").prop("checked",false);
 		});
 
 
 		$catalogueBox.on("dblclick",".view-file",function(){
-			
-
 			page.toEdit($(this),1);
-			
-
-
 		});
 
 		let timer = null;
-
-		$catalogueBox.on("click",".view-show",function(){
+		$styleView.eq(1).on("click",".view-show",function(){
 			const $this = $(this);
 			clearTimeout(timer);
 			timer = setTimeout(function(){
-
 				const index =$this.attr("echo-data");
 				$this.parent().addClass("catalogue-item-sel").siblings().removeClass("catalogue-item-sel");
 				const node = $catalogueBox.data("getData")[index];
 				page.catalogue.cataFooterRender(node);
-
 			}, 150);
-
 		});
 
+		$styleView.eq(1).on("contextmenu",".view-show",function(e){
+			const $this = $(this);
+			const index =$this.attr("echo-data");
+			const node = $catalogueBox.data("getData")[index];
+			const {layout_type} = node ;
+			e.stopPropagation();
+			$("#catalogueContentmenu").show();
+			$("#catalogueContentmenu").attr("echo-data",index);
+			$("#catalogueContentmenu").find("#fileOpts").attr("echo-data",index);
+
+			layout_type === 1 && $("#catalogueContentmenu").find("#fileOpts").hide() || $("#catalogueContentmenu").find("#fileOpts").show();
+			$("#catalogueContentmenu").css({"top":e.clientY-115,"left":e.clientX-40});
+
+			return false ;
+		});
+
+		$styleView.eq(1).on("click",".catalogue-chec",function(e){
+			e.stopPropagation();
+			const is_allCheck = $styleView.eq(1).find(".catalogue-chec-inp").not(":checked").length === 0 ;
+
+			$("#catalogueChecAll").children("input").prop("checked",is_allCheck);
+		});
+
+		$("#catalogueChecAll").click(function(){
+			const status = $(this).children("input").prop("checked");
+			$styleView.eq(1).find(".catalogue-chec-inp").prop("checked",status);
+		});
     }
 }
 
@@ -843,6 +849,7 @@ class Page  {
     			$(".active-menu").removeClass("active-menu");
           		$(".icon-active").removeClass("icon-active");
           		$(".dataTime").hide();
+          		$("#catalogueContentmenu").hide();
          
 		});
 		
@@ -850,6 +857,7 @@ class Page  {
 		$tabCard.on("click",".card",function(){
 			const $this = $(this);
 			page.handleCard($this);
+			$("#catalogueChecAll").children("input").prop("checked",false);
 
 		});
 
@@ -906,10 +914,7 @@ class Page  {
 															}else{
 																$(val).closest(".item-status").siblings(".org-box").addClass("active");
 
-																$org.find(".org-inp").prop("checked",false).removeClass("has-chec");
-																user.map(val=>{
-																	$org.find(`.child-checkinp[value=${val}]`).click();
-																})
+																page.addModal.orgTree.setValue(user);
 															}
 													
 															break;
