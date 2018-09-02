@@ -495,18 +495,22 @@ class ViewSetModal {
 
 				let yData = "";
 				const values = _this.getValue().split(",");
-				if(self.viewType==="table"){
-					 yData = self.filterAxisData(values);
-					self.yAxis.loadData(yData);
-				
-				}else{
-					if(!self.zbComponent.isOneZb){
-						yData = self.filterAxisData(values);
-						yData.push({"id":"4","text":"指标"});
-						self.yAxis.loadData(yData);
-					}
-				}
 
+				requestAnimationFrame(function(){
+					if(self.viewType==="table"){
+						 yData = self.filterAxisData(values);
+						self.yAxis.loadData(yData);
+					
+					}else{
+						if(!self.zbComponent.isOneZb){
+							yData = self.filterAxisData(values);
+							yData.push({"id":"4","text":"指标"});
+							self.yAxis.loadData(yData);
+						}
+					}
+
+				});
+				
 				setTimeout(function(){
 					self.changeSelType(node, status, _this.config.multiply);
 				},60);
@@ -521,8 +525,11 @@ class ViewSetModal {
 			clickCallback: (node, _this, status) => {
 
 				const values = _this.getValue().split(",");
-				const Ydata = self.filterAxisData(values);
-				self.xAxis.loadData(Ydata);
+				requestAnimationFrame(function(){
+					const Xdata = self.filterAxisData(values);
+					self.xAxis.loadData(Xdata);
+				});
+			
 
 				setTimeout(function(){
 					self.changeSelType(node, status, _this.config.multiply);
@@ -894,14 +901,19 @@ class ViewSetModal {
 		switch(viewType){
 			case "pie":
 				chartType = "5";
-				
+				const roseType= "0",	
+					  rowDim = "4";
+				flagObj = {roseType,rowDim};
 
 				break;
 			case "scatter":
-				chartType = "6";
+				chartType = "7";
 				break;
 			case "rader":
-				chartType = "7";
+				chartType = "6";
+				const area= "1";
+				flagObj = {area};
+
 				break;
 			default:{
 				chartType = "4" ;
@@ -982,7 +994,9 @@ class ViewSetModal {
 	handle() {
 		const self = this;
 		// tab切换
-		$setMd.on("click", ".m-tab", function() {
+		$setMd.on("click", ".m-tab", function(e) {
+
+			e.stopPropagation();
 			const index = $(this).index();
 
 			if (index==2) {
@@ -998,17 +1012,19 @@ class ViewSetModal {
 		$("#viewSure").click(function() {
 			self.getSetData();
 		});
+
+		$setMd.on("click", function() {
+
+			requestAnimationFrame(function(){
+		         const $comboDrop = $(".combo-drop");
+				 $comboDrop.parent().removeClass("active");
+				 $comboDrop.hide();
+		    });
+		});
 	}
 }
 
-$(window).on("click", function() {
 
-	/*const $scomboBox=$(".s-comboBox");
-	 $scomboBox.removeClass("active");
-	 const $drop = $scomboBox.children(".combo-drop");
-   	 $drop.hide();*/
-
-});
 
 
 class HeadOpt {

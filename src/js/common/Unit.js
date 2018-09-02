@@ -269,38 +269,40 @@ class SCombobox {
 		this.box.on("click",".drop-item",function(e){
 
 			if(self.config.multiply){
-				e.stopPropagation();	
+			//	e.stopPropagation();	
 			}
+
+			e.stopPropagation();
 
 			const $this= $(this);
 			let status = null ;
 			const is_self = $this.hasClass("active");
 			if(self.config.multiply){
-			
 				 is_self &&  $this.removeClass("active")|| $this.addClass("active");
 				 status	= !is_self;
-		
 			}else{
-
 				if(is_self){
 					return ;
 				}
 				status = self.getValue();
 				$this.addClass("active").siblings().removeClass("active");
+				
 			}
-
-			const id = $this.attr("echo-id");
-			
-			const node = self.config.data.find(val=>{
-
-				return val[self.config.idField] == id ;
-			})
-
+			// 更新inp里所选择的值
 			const par = $this.parent();
-
 			self.updateInpBox(par);
 
-			self.config.clickCallback && self.config.clickCallback(node,self,status);
+			//单选时，关闭下拉框
+			!self.config.multiply && self.hideUp(self.box);
+
+			//回调函数
+			if(self.config.clickCallback){
+				const id = $this.attr("echo-id");
+				const node = self.config.data.find(val=>{
+					return val[self.config.idField] == id ;
+				});
+				self.config.clickCallback(node,self,status);
+			}
 
 		});
 
@@ -338,15 +340,12 @@ class SCombobox {
 		 const $drop = par.children(".combo-drop");
        	 $drop.hide();
 
-       	 this.config.validCombo && this.valid(par);
+       	 this.config.validCombo && this.valid(par.children(".combo-inp"));
 	}
 
 	valid($par){
-		const $inp = $par.find(".combo-value");
-		$.map($inp,function(val){
-			const $val = $(val)
-       	 	val.value && $val.parent().removeClass("no-fill") || $val.parent().addClass("no-fill");
-       	 });
+		const $inp = $par.children(".combo-value");
+       	$inp.val() ? $par.removeClass("no-fill") : $par.addClass("no-fill");
 	}
 }
 
@@ -360,12 +359,6 @@ class SModal{
 	}
 
 	init(){
-
-	}
-
-	drap($el){
-
-
 
 	}
 
@@ -386,7 +379,6 @@ class SModal{
 	handle(){
 		const self = this;
 		$(".m-close").click(function(e){
-			e.stopPropagation();
 			const Modal = $(this).closest(".s-modal");
 			self.close(Modal);
 		});
@@ -395,11 +387,15 @@ class SModal{
 		let moveTarget = null;
 		let moveOffset = null ;
 
-		$(".m-title").on("mousedown",function(e){
-			
-			moveStatus = "move";
-			moveTarget = $(this).closest(".s-modal");
-	     	moveOffset = {x:e.offsetX,y:e.offsetY} ;
+		$(".m-title").mousedown(function(e){
+
+			const target = e.target || e.srcElement;
+
+			if(target.classList.contains("m-title")){
+				moveStatus = "move";
+				moveTarget = $(this).closest(".s-modal");
+	     		moveOffset = {x:e.offsetX,y:e.offsetY} ;
+			}
 		});
 
 		$(window).on("mousemove",function(e){
@@ -423,6 +419,7 @@ class SModal{
 			moveStatus = null;
 			moveTarget = null ;
 			moveOffset = null ;
+
 
 		});
 
@@ -749,7 +746,7 @@ class SComboTree {
 			"prompt":"请选择...",
 			"slideIcon":"fa fa-chevron-down",
 			"defaultVal":"",
-			validCombo:true,
+			 validCombo:true,
 			 width:300,
 		}
 
@@ -844,7 +841,9 @@ class SComboTree {
 			    const id = node[this.tree.config.idField];
 			    const txt = node[this.tree.config.textField];
 			    const curTreeBox = $dom.closest(".combo-drop");
+
 				this.updateInpBox(curTreeBox,{id,txt});
+				!this.tree.config.checkbox && this.hideUp(this.box);
 				clickHandle && clickHandle(node);
 		}
 
@@ -867,10 +866,8 @@ class SComboTree {
 		
 		this.box.on("click",".combo-inp",function(e){
 			e.stopPropagation();
-
 			const $this= $(this);
 			const par = $this.parent();
-
 			const is_active = par.hasClass("active");
 
 			!is_active ? self.showDown(par) : self.hideUp(par);
@@ -880,7 +877,6 @@ class SComboTree {
 
 	showDown(par){
 
-		  //this.hideUp($(".s-comboBox"));
 		par.children(".combo-drop").show();
 		requestAnimationFrame(function(){
            par.addClass("active");
@@ -892,15 +888,12 @@ class SComboTree {
 	hideUp(par){
 		 par.removeClass("active");
          par.children(".combo-drop").hide();
-    	 this.config.validCombo && this.valid(par);
+    	 this.config.validCombo && this.valid(par.children(".combo-inp"));
 	}
 
 	valid($par){
-		const $inp = $par.find(".combo-value");
-		$.map($inp,function(val){
-			const $val = $(val)
-       	 	val.value && $val.parent().removeClass("no-fill") || $val.parent().addClass("no-fill");
-       	 });
+		const $inp = $par.children(".combo-value");
+       	 	$inp.val() ? $par.removeClass("no-fill") : $par.addClass("no-fill");
 	}
 }
 

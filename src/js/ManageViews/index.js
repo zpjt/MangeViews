@@ -56,10 +56,17 @@ class App{
 	renderModal(){
 		const self = this;
 		api.showLayoutModel(this.layout_id).then(res=>{
+
+
 				
 				if(res.model){
 
-					$container.html(res.model);
+
+					const str = `<div class="view-template theme1" id="template"> <div class="view-item" echo-type="chart" echo-id="172" style="grid-row:1/3;grid-column:1/3"> <div class="bgSvg" echo-w="2" echo-y="2" echo-type="1"></div> <div class="view-content"> </div> </div> <div class="view-item" echo-type="chart" echo-id="174" style="grid-row:1/3;grid-column:3/4"> <div class="bgSvg" echo-w="1" echo-y="2" echo-type="1"></div> <div class="view-content"> </div> </div> <div class="view-item" echo-type="chart" echo-id="163" style="grid-column:1/4;grid-row:3/4;"> <div class="bgSvg" echo-w="3" echo-y="1" echo-type="1"></div> <div class="view-content"> </div> </div> </div>`
+
+
+
+					$container.html(str);
 					const url = $("#template").css("backgroundImage");
 					$maxWindow.css("backgroundImage",url);
 				
@@ -127,18 +134,20 @@ class App{
 		let body=[], head=[];
 
 		if(viewType=="table"){
-				
-			const {row_wd,col_wd} = chartType;
-			const addArr = col_wd.reverse();
-			row_wd.map((row,item)=>{
-				addArr.map((val,index)=>{
-					option[item].unshift(WdArr[+val]);
+
+			api.getTableData(option).then(res=>{
+				tableArr = res.data ;
+				const {col_wd} = chartType;
+				col_wd.map(function(val,index){
+					tableArr[0][index] = WdArr[+val];
+				});
+
+				api.getExeclld({data:tableArr,fileName:viewTitle}).then(res=>{
+						if(res){
+							window.location.href = baseUrl+"Expo/getExecl?id="+res;
+						}
 				});
 			});
-			
-		
-			tableArr = option;
-
 			
 		}else if(viewType=="chart"){
 			
@@ -153,7 +162,8 @@ class App{
 					
 					head.unshift(WdArr[+Dim.contrastDim]+"/"+WdArr[+Dim.rowDim]);
 					body = series.map(val=>{
-						return [val.name,...val.data];
+						const data = val.data.map(val=> val || "--");
+						return [val.name,...data];
 					});
 
 					tableArr=[head,...body];
@@ -162,7 +172,8 @@ class App{
 				case "5": // pie 
 					body.push(" ");
 					head = legend[0].data.map(val=>{
-						body.push(val.value);
+						const item = val.value || "--";
+						body.push(item);
 						return val.name;
 					});
 				
@@ -173,7 +184,9 @@ class App{
 					break;
 				case "6": // rader
 					body = series[0].data.map(val=>{
-						return [val.name,...val.value];
+
+						const data = val.value.map(val=> val || "--");
+						return [val.name,...data];
 					});
 					head = radar[0].indicator.map(val=>{
 						return val.text;
@@ -186,9 +199,7 @@ class App{
 					break;
 			}
 
-		}
-		
-		
+			
 			api.getExeclld({data:tableArr,fileName:viewTitle}).then(res=>{
 
 				if(res){
@@ -196,11 +207,16 @@ class App{
 				}
 
 			});
+
+		}
+		
+		
+			
 	}
 
 	Toimage(view){
 
-		const {chart:{title}} = view ;
+		const {viewTitle:title} = view ;
 
 		const is_max = !$maxWindow.is(":hidden");
 
@@ -216,7 +232,9 @@ class App{
 
 			
 		  	img1.src=`data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgXml)))}`;
-		  	img2.src=`./img/view_bg1.png`;
+
+		   	img2.src=`./img/view_bg1.png`;
+		  
 		  	img3.src=$canvas[0].toDataURL('png');
 
 
@@ -275,7 +293,7 @@ class App{
 
 				}else if(viewType==="chart"){
 
-					const {chart:{Box,viewType:_chartType}} = view;
+					const {chart:{Box,type:_chartType}} = view;
 					const Mychart = echarts.getInstanceByDom(Box);
 
 					$el = Box ;

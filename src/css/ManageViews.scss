@@ -74,7 +74,7 @@ $headH:50px;
 						span.fa{
 							padding:5px 8px;
 							&:hover{
-								color:red;
+								color:white;
 								cursor:pointer;
 							}
 						}
@@ -87,11 +87,11 @@ $headH:50px;
 					}
 					 .view-optBox{
 					 	font-size:16px;
-					 	color:white;
+					 	color:#7EBFCB;
 					 	position: absolute;
 					 	z-index:10;
-					 	right:2%;
-					 	top:5%;
+					 	right:12px;
+					 	top:12px;
 					 	display:none;
 					 }
 

@@ -1,4 +1,5 @@
 $themeColor:#00a0e9;
+$sel:#FF6666;
 $slectColor:#aee6ff;
 .dataTime{
 	min-height:280px;
@@ -11,6 +12,7 @@ $slectColor:#aee6ff;
 	display:none;
 	top:30px;
 	left:0;
+	box-shadow: 4px 4px 22px 0px rgba(0, 0, 0, 0.46);
 }
 .s-calendar-title{
 	display:flex;
@@ -24,6 +26,7 @@ $slectColor:#aee6ff;
 				display:block;
 				position: relative;
 				cursor: pointer;
+				z-index: 3;
 				.frequemcy-sel{
 					width:$w;
 					color:$themeColor;
@@ -32,29 +35,19 @@ $slectColor:#aee6ff;
 				.calendar-frequemcy{
 					position: absolute;
 					border-radius:5px ;
-					background: $slectColor;
-					box-shadow: 0 0 27px 1px $themeColor;
+					background:white;
+					box-shadow: 2px 3px 18px 0px rgba(0, 0, 0, 0.26);
 					width:$w;
-					top:40px;
+					top:30px;
 					color:$themeColor;
 					display:none;
-					&:after{
-						content:"";
-						position: absolute;
-						top:-25px;
-						right:5px;
-						height:0;
-						width:0;
-						border:10px solid transparent;
-						border-bottom:15px solid $slectColor;
-						pointer-events:none;
-					}
 					&>li{
 						text-align:center;
-						
 						padding:4px 0;
 						border-bottom:1px solid $themeColor;
-
+					}
+					li:last-child{
+						border:none;
 					}
 					.frequemcy-active{
 						background: $themeColor;
@@ -70,6 +63,15 @@ $slectColor:#aee6ff;
 		font:{
 			weight:bolder;
 		}
+		.sel-time-inp{
+			background: #0080bb;
+			width: 140px;
+			display: inline-block;
+			height: 28px;
+			text-align: center;
+			border-radius: 28px;
+			line-height: 28px;
+		}
 	}
 	.sure-btn{
 		color:$themeColor;
@@ -83,12 +85,48 @@ $slectColor:#aee6ff;
 		min-width:260px;
 		padding:0 10px;	
 	}
+	.s-calendar-content{
+		padding:10px 0;
+	}
 
 }
 .calendar-item{
 	display:none;
 	color:$themeColor;
 	cursor: pointer;
+	.view-item{
+		text-align:center;
+		span{
+			display:inline-block;
+			border-radius:50%;
+		}
+		.day-span{
+			width: 35px;
+			height: 35px;
+			line-height:35px;
+		}
+		.mon-span,.year-span{
+			width: 60px;
+			height: 60px;
+			line-height:60px;
+		}
+		.sea-span{
+			width: 80px;
+			height: 80px;
+			line-height:80px;
+		}
+	}
+	.day-disabled{
+		color:grey;
+		cursor: not-allowed;
+		text-align:center;
+		span{
+			display:inline-block;
+			width: 30px;
+			height: 30px;
+			line-height:30px;
+		}
+	}
 	@at-root{
 		.week-group{
 			display:flex;
@@ -102,19 +140,20 @@ $slectColor:#aee6ff;
 				padding:8px 0;
 			}
 		}
+		
 		.data-group{
 			display:flex;
 			&>li{
 				width:14.28% ;
-				text-align:center;
-				padding:8px 0;
 			}
 			.view-item{
 				cursor: pointer;
 				&:hover{
-					background:$themeColor;
-					color:white;
-					border-radius:50%;
+					span{
+						background:$themeColor;
+						color:white;
+					}
+				
 				}
 			}
 			
@@ -123,12 +162,11 @@ $slectColor:#aee6ff;
 			display:flex;
 			.view-item{	
 				width:33.3%;
-				text-align:center;
-				padding:15px 0;
 				&:hover{
-					background:$themeColor;
-					color:white;
-					border-radius:50%;
+					span{
+						background:$themeColor;
+						color:white;
+					}
 				}
 			}
 		}
@@ -143,11 +181,12 @@ $slectColor:#aee6ff;
 			.view-item{	
 				width:50%;
 				text-align:center;
-				padding:30px 0;
 				&:hover{
-					background:$themeColor;
-					color:white;
-					border-radius:50%;
+					span{
+						background:$themeColor;
+						color:white;
+					}
+					
 				}
 			}
 		}
@@ -157,21 +196,21 @@ $slectColor:#aee6ff;
 		width:33.3%;
 		margin:auto;
 		text-align:center;
-		padding:15px 0;
 	}
 	.calendar-today{
-		border-radius:50%;
-		border:1px solid $themeColor;
-		
+		span{
+			color:$sel;
+			font:{
+				weight:bolder;
+			}
+		}
 	}
-	.day-disabled{
-				color:grey;
-				cursor: not-allowed;
-	}
+	
 	.calendar-sel{
-		border-radius:50%;
-		background: $themeColor;
-		color:white;
+		span{
+			background: $sel;
+			color:white;
+		}
 	}
 	
 }

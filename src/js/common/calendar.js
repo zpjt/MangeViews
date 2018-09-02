@@ -190,7 +190,7 @@ class View{
 
 					return `
 							<li echo-text="${value}" class=" view-item ${monToday + " "+monSel }" >
-								<span >${this.monFormatter[value-1]}月</span>
+								<span class="mon-span">${this.monFormatter[value-1]}月</span>
 							</li>
 
 							`
@@ -227,10 +227,10 @@ class View{
 			return `
 					<ul class="searson-group">
 						<li echo-text="${startTime}" class=" view-item ${searsonToday_1 + " " + searsonSel_1}">
-							<span>${this.searsonFormatter[startTime-1]}</span>
+							<span class="sea-span">${this.searsonFormatter[startTime-1]}</span>
 						</li>
 						<li echo-text="${startTime+1}" class=" view-item ${searsonToday_2 + " " + searsonSel_2}" >
-							<span>${this.searsonFormatter[startTime]}</span>
+							<span class="sea-span">${this.searsonFormatter[startTime]}</span>
 						</li>
 					</ul>
 					`
@@ -253,7 +253,7 @@ class View{
 
 			return `
 					<li echo-text="${value}" class=" view-item  ${ yearToday + " " + yearsel }">
-						<span>${value}</span>
+						<span class="year-span">${value}</span>
 					</li>
 
 					`;
@@ -263,7 +263,7 @@ class View{
 		const yearsel = this.selTime.year === this.lastYear && "calendar-sel" || "" ;
 		const last = `
 						<div echo-text="${this.lastYear}" class="last-year view-item  ${ yearToday + " " + yearsel }">
-							<span>${this.lastYear}</span>
+							<span class="year-span">${this.lastYear}</span>
 						</div>
 					 `;
 		
@@ -295,7 +295,7 @@ class View{
 
 		return 	`
 						<li class="${is_able+" " + is_Today + " " + is_sel }"  echo-text="${_day}">
-							<span>${_day}</span>
+							<span class="day-span">${_day}</span>
 						</li>
 				`
 	}
@@ -560,15 +560,15 @@ class Calendar{
 						value[index]=[year];
 						break;
 					case 2:
-						showStr=`${formatter+searson}季度`;
+						showStr=`${formatter+searson}`;
 						value[index]=[year,"S"+searson];
 						break;
 					case 3:
-						showStr=`${formatter+mon}月`;
+						showStr=`${formatter+mon}`;
 						value[index]=[year,mon];
 						break;
 					case 4:
-						showStr=`${formatter+mon}月${formatter+day}日`;
+						showStr=`${formatter+mon}${formatter+day}`;
 						value[index]=[year,mon,day];
 						break;	
 
@@ -576,7 +576,7 @@ class Calendar{
 
 		 	  
 				return `
-						${index===1 ? "<span style='padding:0 10px;'>至</span>" :""}<span >${year+"年"+showStr}</span>
+						${index===1 ? "<span style='padding:0 10px;'>至</span>" :""}<span class="sel-time-inp">${year+showStr}</span>
 
 						`;
 

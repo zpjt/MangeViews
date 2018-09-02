@@ -19,7 +19,7 @@ class Chart{
 		this.type="";
 		this.Box=$el;
 		this.init(data,border);
-		this.color=["#1CA7DA","#92BCF5"];
+		this.color=["#1296FB","#8FD6FA","#0088CC","#06B76A","#CBC450","#FD8D1D"];
 		
 	}
 
@@ -64,7 +64,7 @@ class Chart{
 		return {
 			legend: {
 				orient: 'horizontal',
-				x: 'center',
+				left: 10,
 				top: '12%',
 				itemWidth: 12,
 				itemHeight: 12,
@@ -172,10 +172,17 @@ class Chart{
 		}) ;
 
 
-		const startColor = ['#0157be', '#7a18ed', '#00bbce', '#ea865a'];
-		const endColor = ['#0367d4', '#2743ed', '#00c4a5', '#ea2e41'];
+		//color:["#1296FB","#8FD6FA","#0088CC","#06B76A","#CBC450","#FD8D1D"],
+
+
+		const startColor = ['#1296FB', '#06B76A', '#00bbce', '#ea865a'];
+		const endColor = ['#1296FB', '#0088CC', '#00c4a5', '#ea2e41'];
+
 		const borderStartColor = ['#05acff', '#ee36ff', '#05fcfb', '#ffa597'];
 		const borderEndColor = ['#09c1ff', '#8171ff', '#05ffff', '#ff6584'];
+
+		
+
 		
 		const RealData = data.map((val,index)=>{
 			
@@ -189,12 +196,12 @@ class Chart{
 							y2: 1,
 							colorStops: [{
 								offset: 0,
-								color: startColor[index] // 0% 处的颜色
+								color: endColor[index] // 0% 处的颜色
 							}, {
 								offset: 1,
 								color: endColor[index] // 100% 处的颜色
 							}],
-							globalCoord: false // 缺省为 false
+							globalCoord: true // 缺省为 false
 						},
 					}
 				};
@@ -235,7 +242,7 @@ class Chart{
 			},
 			legend: {
 				top:20,
-				// left: 10,
+				left: 20,
 				textStyle: {
 					color: '#f2f2f2',
 					fontSize: 12,
@@ -269,11 +276,11 @@ class Chart{
 					name: "",
 					data: RealData,
 					tooltip: {
-						formatter: "{a}：<br/>{b}: {c}人"
+						formatter: "{b}: {c}"
 					}
 				},
 				// 边框的设置
-				{
+				/*{
 					radius: ['31%', '36%'],
 					center: ['50%', '50%'],
 					type: 'pie',
@@ -298,9 +305,9 @@ class Chart{
 						show: false
 					},
 					data: borderData
-				},
+				},*/
 				// 中心的圆圈
-				{
+				/*{
 					radius: ['26%', '31%'],
 					center: ['50%', '50%'],
 					type: 'pie',
@@ -333,12 +340,14 @@ class Chart{
 						}
 					}],
 					animation: false
-				}
+				}*/
 			]
 		};
 	}
 
 	lineConfig(res){
+
+
 
 
 		/*
@@ -400,11 +409,9 @@ class Chart{
 			}
 		});
 
-
-
 		return {
 			
-		//	color:this.color,
+			color:["#1296FB","#8FD6FA","#0088CC","#06B76A","#CBC450","#FD8D1D"],
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {
@@ -420,8 +427,8 @@ class Chart{
 				extraCssText: 'box-shadow: 0 0 5px rgba(0,0,0,0.3)'
 			},
 			legend: {
-				right: "center",
 				top:20,
+				left: 20,
 				orient: 'horizontal',
 				textStyle: { //图例文字的样式
 					fontSize: 12,
@@ -545,6 +552,7 @@ class Chart{
 					'#dd4444', '#fec42c', '#80F1BE'
 				],
 				legend: {
+					left: 20,
 					y: 'top',
 					data: ['北京', '上海', '广州'],
 					textStyle: {
@@ -701,11 +709,13 @@ class Chart{
 			}
 		});
 		return  {
+			color:["#1296FB","#8FD6FA","#0088CC","#06B76A","#CBC450","#FD8D1D"],
 			tooltip: {
 				trigger: 'axis'
 			},
 			legend: {
 		          top: 20,
+		          left: 20,
 		          itemWidth: 12,
 		          itemHeight: 12,
 		          data: legend,

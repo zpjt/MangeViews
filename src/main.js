@@ -144,7 +144,7 @@ $menu.on("click",".menuItem",function(events){
 	$iframe[0].src="./"+url+".html";
 	
 	
-	 /*const url=$(this).attr("data-url");
+	/* const url=$(this).attr("data-url");
 	 $iframe[0].src=url;*/
 
 });
@@ -190,7 +190,7 @@ $userOptions.on("click","li",function(){
 
 			break;
 		case "power": //退出登录
-			//window.location.href=baseUrl+"login/logOut";
+		//	window.location.href=baseUrl+"login/logOut";
 			 window.location.href="login.html";
 			break;
 	}
