@@ -177,10 +177,11 @@ class TableStyle extends EasyUITab{
     }
 
     handle(){
+    	const _self = this ;
 		//  进入目录
 		$tabContainer.on("click",".node-catalogue",function(){
 			const $this = $(this);
-			page.table.changeTabcard($this);
+			_self.changeTabcard($this);
 
 		});
 
@@ -191,7 +192,7 @@ class TableStyle extends EasyUITab{
 
 		//复选框事件
 		$tabContainer.on("click",".checkSingle",function(){
-			page.table.checkSingleHandle($tabContainer);
+			_self.checkSingleHandle($tabContainer);
 		});
     }
 
@@ -272,13 +273,15 @@ class CatalogueStyle{
     }
 
     handle(){
+
+    	const _self = this ;
 		$catalogueBox.on("dblclick",".view-catalogue",function(){
-			clearTimeout(timer);
+			window.clearTimeout(timer);
 			const $this = $(this);
 			const tabData = $catalogueBox.data("getData");
 			const index = +$this.attr("echo-data");
 			const childArr = tabData[index].sub;
-			page.catalogue.catalogueInit(childArr);
+			_self.catalogueInit(childArr);
 			const {layout_name,layout_id}=tabData[index];
 			const lastData = $tabCard.data("menuArr");
 			
@@ -300,7 +303,7 @@ class CatalogueStyle{
 				const index =$this.attr("echo-data");
 				$this.parent().addClass("catalogue-item-sel").siblings().removeClass("catalogue-item-sel");
 				const node = $catalogueBox.data("getData")[index];
-				page.catalogue.cataFooterRender(node);
+				_self.cataFooterRender(node);
 			}, 150);
 		});
 
@@ -359,6 +362,7 @@ class AddModal{
 		this.parCatalogSel = new SCombobox($("#parName"),{
 			"textField":"layout_name",
 			"idField":"layout_id",
+			"validCombo":false,
 			"prompt":"请选择所属分类...",
 			"width":300,
 		});
@@ -450,6 +454,8 @@ class AddModal{
 
     
 	handle(){
+
+		const _self = this ;
 		// 下拉框显示
 		$("#menuBtn").click(function(e){
 			const $this = $(this);
@@ -479,8 +485,8 @@ class AddModal{
 			const curId = menuArr[menuArr.length-1].layout_id;
 			curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
 			
-			page.addModal.parCatalogSel.loadData(curCatalogueArr);
-			page.addModal.parCatalogSel.setValue(curId);
+			_self.parCatalogSel.loadData(curCatalogueArr);
+			_self.parCatalogSel.setValue(curId);
 			page.modal.show($addMView);
 
 		});
@@ -491,12 +497,12 @@ class AddModal{
 			const type = $(this).attr("type");
 			const method = $(this).attr("method");
 			const name = $inpName.val().trim();
-			const par_id = method==="create" ? page.parCatalogSel.getValue() : $ViewContainer.attr("curid");
+			const par_id = method==="create" ? _self.parCatalogSel.getValue() : $ViewContainer.attr("curid");
 			const style = $(".style-sel").index() ? "catalogue":"tab";
 
 
 			if(name){
-				method==="create" ? page.addCatalogue(type,{name,par_id},style) : API_szViews.updataName({name,id:par_id}).then(res=>{
+				method==="create" ? _self.addCatalogue(type,{name,par_id},style) : API_szViews.updataName({name,id:par_id}).then(res=>{
 
 						if(res){
 								const menuIndexArr = $tabCard.data("menuArr").map(val=>{
@@ -533,7 +539,7 @@ class AddModal{
 				if(!status){
 					switch(index){
 						case 0:
-							const timeValue =page.addModal.calendar.value;
+							const timeValue =_self.calendar.value;
 							starttime = timeValue[0].join("");
 							endtime = timeValue[1].join("");
 							break;
@@ -588,9 +594,6 @@ class AddModal{
 
 			}
 		});
-
-
-
 	}
 
 }
