@@ -176,7 +176,7 @@
 	.slide-icon{
 		position: absolute;
 		right: 10px;
-    	top: 5px;
+    	top: 8px;
     	padding:5px;
     	&:hover .fa{
 			color:$hoverColor;
@@ -225,7 +225,7 @@
     transition: 0.6s ease;
 			position: absolute;
 			width:72%;
-			bottom:16px;
+			bottom:24px;
 			left:14%;
 			background:#075ea9;
 			height:40px;
@@ -254,11 +254,12 @@
 				transition:.6s ease;
 			}
 			.view-name{
+				text-shadow: 0 0 12px #00a0e9;
 				&:before{
-					content:"管理界面";
+					content:"视图界面";
 				}
 				&:after{
-					content:"视图界面";
+					content:"管理界面";
 					display:none;
 				}
 			}
@@ -272,6 +273,9 @@
 				&:after{
 					display:inline;
 				}
+			}
+			.fa-television:before{
+				content:"\f085";
 			}
 		}
 		.indent{

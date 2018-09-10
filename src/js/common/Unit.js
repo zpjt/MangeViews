@@ -2,6 +2,7 @@ import "css/common/input.scss";
 import "css/common/modal.scss";
 import "css/common/common.scss";
 import "css/common/button.scss";
+
 import { Calendar } from "js/common/calendar.js";
 class Unit {
 
@@ -102,9 +103,9 @@ class Unit {
 
 /*
  下拉框类
- data:数组
- multiply:true 多选,
- dropFormatter:自定义返回的内容，但是主要显示的文字一定要用 item-txt包住
+ @data:数组
+ @multiply:true 多选,
+ @dropFormatter:自定义返回的内容，但是主要显示的文字一定要用 item-txt包住
 */
 
 class SInp{

@@ -15,10 +15,10 @@ class EasyUITab {
 			frozenColumns:tabObj.frozenColumns,
 			columns:tabObj.columns,
 			onLoadSuccess:function(){
-				console.log($el.datagrid("options"));
 				const $checkAll = $el.parent().find(".checkAll");
 				$checkAll.attr("checkedStatus","off");
 				callback ? callback():null ;
+				$checkAll.unbind();
 				$checkAll.on("click",function(events){
 					self.checkAll(events,tabObj.tabId);
 				});

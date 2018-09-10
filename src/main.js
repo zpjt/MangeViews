@@ -75,7 +75,7 @@ class Menu{
 			<li class="par_li_${lev} par_li" >
 				<div class="menuItem par-item " data-url=${url} lev="${lev}" echo-id="${id}">
 					${indent}<i class="sicon ${sys_param}"></i>
-					<span class="icon-wrap">${name}<span class="slide-icon"><i class="fa fa-caret-down  "></i></span></span>
+					<span class="icon-wrap">${name}<span class="slide-icon"><i class="fa fa-chevron-down  "></i></span></span>
 				</div>
 				<ul class="par-menu">${child.join("")}</ul>
 			</li>
@@ -116,14 +116,14 @@ $menu.on("click",".slide-icon",function(e){
 	e.stopPropagation();
 	const $icon = $(this).children(".fa");
 	const $childEl = $(this).parent().parent().siblings(".par-menu");
-	const is_down = $icon.hasClass("fa-caret-down");
+	const is_down = $icon.hasClass("fa-chevron-down");
 
 	if(is_down){
-		$icon.removeClass("fa-caret-down").addClass("fa-caret-up");
+		$icon.removeClass("fa-chevron-down").addClass("fa-chevron-up");
 		$childEl.slideUp();
 	}else{
 
-		$icon.removeClass("fa-caret-up").addClass("fa-caret-down");
+		$icon.removeClass("fa-chevron-up").addClass("fa-chevron-down");
 		$childEl.slideDown();
 	}
 });
@@ -159,7 +159,7 @@ const closeFun = (function (){
 				$(".par-menu").removeAttr("style");
 			});
 		}else{
-			$(".slide-icon").html('<i class="fa fa-caret-down"></i>');
+			$(".slide-icon").html('<i class="fa fa-chevron-down"></i>');
 			$slide.animate({"width":250},500,function(){
 				$slide.removeClass("collapsed");
 			});

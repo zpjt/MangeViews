@@ -158,5 +158,46 @@ $border:#E9E9E9;
 	}
 }
 
+/* 删除操作按钮 */
+.delBtn{
+	height: 34px;
+    background: #00a0e9;
+}
 
-
+/* hover 动画下划线 */
+.g-tab{
+	display:flex;
+	padding:8px 0;
+	.m-tab-item{
+		cursor: pointer;
+		font-size:16px;
+		text-align:center;
+		margin-right:32px;
+	}
+}
+.line-hover{
+	padding:8px 0;
+	position: relative;
+	&:after{
+		content:"";
+		position: absolute;
+		bottom:0;
+		left:0;
+		width:100%;
+		height:3px;
+		background: $themeColor;
+		border-radius:3px;
+	    will-change: transform;
+	    transition: transform .55s cubic-bezier(.82,.01,.21,1);
+	    transform:scaleX(0);
+        transform-origin: 100% 0;
+	}
+	&:hover{
+	  &:after{
+	  	 transition: transform .85s cubic-bezier(.82,.01,.21,1);
+	  	 transform:scaleX(1);
+	  	 transform-origin: 0 0;
+	  }	
+	
+	}
+}

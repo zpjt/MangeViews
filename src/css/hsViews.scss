@@ -1,0 +1,19 @@
+@import "css/common/search.scss" ;
+$themeColor:#00a0e9;
+$border:#E9E9E9;
+$slectColor:#aee6ff;
+
+div.g-tab{
+	background: $slectColor;
+	padding-left:16px;
+	border-radius:8px 8px 0 0;
+	.m-tab-item{
+	//	color:$border;
+	}
+	.m-tab-item.active{
+		color:$themeColor;
+		&:after{
+			transform:scaleX(1)
+		}
+	}
+}
