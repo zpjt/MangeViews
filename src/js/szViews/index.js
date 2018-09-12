@@ -4,7 +4,7 @@ import "css/common/Svg.scss";
 
 
 import { EasyUITab } from "js/common/EasyUITab.js";
-import {Unit,SCombobox,SModal,Calendar,Tree} from "js/common/Unit.js";
+import {Unit,SCombobox,SModal,Calendar,Tree,SInp} from "js/common/Unit.js";
 import {API} from "api/szViews.js";
 
 
@@ -61,7 +61,11 @@ class TableStyle extends EasyUITab{
 		return {
 			idField:idField,
 			tabId:"#tabBox",
-			frozenColumns: this.frozenColumns(idField),
+			frozenColumns: this.frozenColumns(idField,{
+				disableCheck:function(rowData){
+						return rowData.layout_type === 1  &&  rowData.sub.length ? true :false;
+				}
+			}),
 			columns: [
 				[{
 					field: 'layout_name',
@@ -746,6 +750,7 @@ class Page  {
 		this.addModal = new AddModal();
 		this.delModal = new DelModal();
 		this.iconBox = new IconBox();
+		this.inp = new SInp();
 
 		this.styleBoxrender();
 		this.tabCardInit([{layout_name:"我的创建",index:0,layout_id:-2}]);

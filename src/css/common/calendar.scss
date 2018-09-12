@@ -22,7 +22,7 @@ $slectColor:#aee6ff;
 	align-items:center;
 	@at-root{
 		.frequemcy-box{
-				$w:90px;
+				$w:60px;
 				display:block;
 				position: relative;
 				cursor: pointer;
@@ -65,7 +65,7 @@ $slectColor:#aee6ff;
 		}
 		.sel-time-inp{
 			background: #0080bb;
-			width: 140px;
+			width: 168px;
 			display: inline-block;
 			height: 28px;
 			text-align: center;

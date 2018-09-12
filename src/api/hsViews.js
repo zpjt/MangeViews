@@ -35,7 +35,15 @@ class API {
 			})
 		);
 	}
-	
+	getAllLayoutPar(keyword=""){
+		return Promise.resolve($.post(URL+"getAllLayoutPar",{keyword}));
+	}
+	checkName(data){
+		return Promise.resolve($.post(URL+"checkName",data));
+	}
+	RecycleLayout(data){
+		return Promise.resolve($.post(URL+"RecycleLayout",data));
+	}
 
 }  
 

@@ -2,7 +2,7 @@ import "css/hsViews.scss";
 import {api} from "api/hsViews.js";
 
 import {EasyUITab} from "js/common/EasyUITab.js";
-import {Unit , SModal} from "js/common/Unit.js";
+import {Unit, SModal, SComboTree ,SInp} from "js/common/Unit.js";
 
 
 /* 
@@ -11,7 +11,8 @@ import {Unit , SModal} from "js/common/Unit.js";
  */
 
  const $tableBox = $("#tabBox"),
-       $table = $("#tab");
+       $table = $("#tab"),
+       $restModal = $("#restModal");
 
 
 class Table extends EasyUITab{
@@ -23,7 +24,7 @@ class Table extends EasyUITab{
     }
 
 	tabConfig(idField){
-
+		const name = this.state === "layout" && "视图名称" || "图表名称" ;
 		return {
 			idField:idField,
 			tabId:"#tabBox",
@@ -31,7 +32,7 @@ class Table extends EasyUITab{
 			columns: [
 				[{
 					field: 'layout_name',
-					title: '视图名称',
+					title: name,
 					width: "35%",
 				}, 
 				{
@@ -74,7 +75,8 @@ class Table extends EasyUITab{
 		};
     }
 
-    loadTab(data){
+    loadTab(data,type){
+    	this.state = type ;
 		this.creatTab(data,$table,this.tabConfig("layout_id"));
     }
 
@@ -89,26 +91,27 @@ class Table extends EasyUITab{
 
 			const type =  $(this).attr("node-sign");
 			const par = $(this).parent(),
-				  id = par.attr("echo-data");
+				  id = +par.attr("echo-data");
 
 			
 			switch(type){
-				case "rest":
+				case "rest":{
+
+					const node = $table.datagrid("getData").rows.find(val=>{
+
+						return val.layout_id === id ;
+					});
+
+
+					page.restModal.setValue(node.layout_name,node.par_id,id);
 
 					break;
+				}
 				case "del":{
 
 					const obj = {ids:[id]} ;
-					api.delLayout(obj).then(res=>{
+					page.del(obj);
 
-						if(!res){
-							alert("删除失败！");
-						}else{
-							alert("删除成功！");
-						
-						}
-
-					});
 					break;
 					}
 				default:
@@ -120,6 +123,91 @@ class Table extends EasyUITab{
 		});
     }
 
+}
+
+class RestModal{
+
+	constructor(){
+		this.init();
+		this.handle();
+	}
+
+	init(){
+		this.getAllLayoutPar();
+	}
+
+	setValue(name,par_id,id){
+
+		this.optId = id ;
+		$("#name").val(name);
+		this.restCombo.tree.setSingleValue(par_id);
+		page.modal.show($restModal);
+	}
+
+	getAllLayoutPar(){
+
+		api.getAllLayoutPar().then(res=>{
+
+			if(res){
+
+				this.restCombo = new SComboTree($("#parName"),{
+					width:300,
+					treeConfig:{
+						data:res.sub,
+						"textField":"layout_name",
+						"idField":"layout_id",
+						"childIcon":"fa fa-folder-open-o",
+						"childrenField":"sub",
+						"parClick":true,
+						"judgeRelation":(val)=>{//自定义判断是目录还是文件的函数
+								return val.sub.length > 0 ;
+						 }
+					}
+				});
+				
+			}else{
+				alert("出错！")
+			}
+		})
+		
+	}
+
+	handle(){
+
+		const _self = this ;
+		
+		$("#addMBtn").click(function(){
+			
+			const par_id = _self.restCombo.box.find(".combo-value").val(),
+				  name = $("#name").val();
+
+			if(!name || !par_id){
+				
+				alert("清填写完整！");
+				return ;
+			}
+		    api.checkName({par_id,name}).then(res=>{
+
+		   	  if(res){
+				const id = _self.optId;
+				api.RecycleLayout({id,par_id}).then(res=>{
+					
+					if(res){
+						page.getData();
+					}else{
+						alert("还原失败！");
+					}
+				});
+
+		   	  }else{
+		   	  	alert("重名！")
+		   	  }
+		   })
+
+			
+
+		});
+	}
 }
 
 class Page{
@@ -135,8 +223,10 @@ class Page{
 
 	init(){
 		this.table = new Table();
-		this.search = new Unit();
+		this.unit = new Unit();
 		this.modal = new SModal();
+		this.restModal = new RestModal();
+		this.inp = new SInp();
 
 		this.getData();
 	}
@@ -149,7 +239,7 @@ class Page{
 			if(!res){
 				alert("出错！")
 			}else{
-				this.table.loadTab(res);
+				this.table.loadTab(res,this.state);
 			}
 
 		});
@@ -169,7 +259,31 @@ class Page{
 	}
 
 	handle(){
+		const _self = this ;
+		// 切换 视图与图表
+		$("#j-tab").on("click",".m-tab-item",function(){
+			const $this = $(this);
+			const type = $this.index();
 
+			if($this.hasClass("active")){
+					return ;			
+			}
+
+			$this.addClass("active").siblings().removeClass("active");
+			_self.state = type === 0 ? "layout" : "chart" ;
+			_self.getData();
+
+		});
+		//批量删去
+		$("#delBtn").click(function(){
+
+			const ids =$.map($tableBox.find(".checkSingle"),function(val){
+					return +val.value;
+			}) ;
+
+			_self.del({ids});
+
+		});
 	}
 }
 

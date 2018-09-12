@@ -190,6 +190,7 @@ $userOptions.on("click","li",function(){
 
 			break;
 		case "power": //退出登录
+		
 		//	window.location.href=baseUrl+"login/logOut";
 			 window.location.href="login.html";
 			break;

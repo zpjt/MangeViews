@@ -46,31 +46,59 @@ class EasyUITab {
 		$tabEl.css("height", min_H - lessH);
 
 	}
-	frozenColumns(field,color="#0092DC"){
+	frozenColumns(field,obj){
 
+		const defaultObj = {
+			disableCheck:null,
+			order:false,
+		};
+
+		const config = Object.assign({},defaultObj,obj);
+		const {disableCheck,order} = config ;
 		const checkboxAll = `<div class="tab-checkbox"><span  name="tab_node" checkedStatus="off"  class="tab_node checkAll fa fa-square-o fa-lg"></span></div>`;
-
-		return [
-				[{
-					field: 'order_td',
+		
+		const checkboxObj = {
+					field: 'custom_checkbox',
 					title: checkboxAll,
 					align: "center",
-					width: "4%",
+					width: 40,
 					formatter: function(value, rowData, rowIndex) {
 
-
-
-						const  status = rowData.layout_type === 1  &&  rowData.sub.length ? "dis-check" :"checkSingle" ;
+						const  status = disableCheck && disableCheck(rowData) ? "dis-check" :"checkSingle" ;
 
 						const disable = status === "dis-check" && "disabled" || "" ;
-
 						const tip = status === "dis-check" && "禁止选择" || "" ;
 
 
-						return  `<div class="tab-checkbox"><input type="checkbox" name="tab_node" ${disable} class="tab_node ${status}" value="${field=="无" ? index :rowData[field]}" title="${tip}" /><label for="tab_node" class="fa fa-square-o fa-lg"></label></div>`;;
+						return  `<div class="tab-checkbox">
+										<input type="checkbox"
+										       name="tab_node" 
+										       ${disable} 
+										       class="tab_node ${status}" 
+										       value="${field=="无" ? index :rowData[field]}" 
+										       title="${tip}" />
+										<label for="tab_node" class="fa fa-square-o fa-lg"></label></div>`;
 					}
-				}]
-			] ;
+				}
+
+
+
+		let columns = [checkboxObj] ;
+
+		if(order){
+			columns.push({
+				field: 'custom_order',
+					title: "序号",
+					align: "center",
+					width: 48,
+					formatter: function(value, rowData, rowIndex) {
+
+						return  rowIndex + 1;
+					}
+			})
+		}
+		
+		return [columns ] ;
 	}
 
 }

@@ -139,7 +139,9 @@ $border:#E9E9E9;
 }
 
 /*日历 */
-
+.g-calendar{
+	position: relative;
+}
 .calendar-time{
 	$h:40px;
 	position: relative;
@@ -159,10 +161,15 @@ $border:#E9E9E9;
 }
 
 /* 删除操作按钮 */
-.delBtn{
-	height: 34px;
-    background: #00a0e9;
+.btnBox{
+	$h:34px;
+	.s-btn{
+		height:$h;
+	    background:$themeColor;
+	}
 }
+
+
 
 /* hover 动画下划线 */
 .g-tab{

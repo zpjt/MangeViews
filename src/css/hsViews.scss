@@ -3,6 +3,7 @@ $themeColor:#00a0e9;
 $border:#E9E9E9;
 $slectColor:#aee6ff;
 
+/* 选项卡盒子 */
 div.g-tab{
 	background: $slectColor;
 	padding-left:16px;
@@ -15,5 +16,12 @@ div.g-tab{
 		&:after{
 			transform:scaleX(1)
 		}
+	}
+}
+
+/* 还原模态框 */
+#restModal{
+	#name{
+		width:300px;
 	}
 }

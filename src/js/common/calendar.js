@@ -485,7 +485,7 @@ class Calendar{
 				<div class="s-calendar-title">
 					<div class="frequemcy-box">
 						<button class="frequemcy-sel s-btn">
-							<span class="fa fa-calendar-check-o">&nbsp;频率: </span>
+							<span class="fa fa-calendar-check-o"></span>
 							<b class="calendar-rotate">${activeArr[this.rotate-1].rotate}</b>
 						</button>
 						<ul class="calendar-frequemcy">

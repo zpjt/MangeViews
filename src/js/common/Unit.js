@@ -10,6 +10,45 @@ class Unit {
 		this.initSearch();
 	}
 
+	JsonTofind(obj,value){
+
+		const defaultConfig = {
+			childField:"children",
+			keyField:"id",
+			data:[],
+		}
+
+		const config = Object.assign({},defaultConfig,obj);
+
+		const {childField,keyField,data} = config;
+		
+		let result = null ;
+
+		function findJson(_arr){
+
+			return _arr.find(val=>{
+
+				const child = val[childField] ;
+
+				const is_key = val[keyField] === value;
+
+				if(is_key){
+					result = val ;
+					return true ;
+				}
+
+				if(child.length){
+					return findJson(child);
+				}
+			})
+		}
+
+		findJson(data);
+		
+		return result ;
+
+	}
+
 
 	/*
 	closeModal($el){
@@ -127,6 +166,7 @@ class SInp{
 		});
 	}
 }
+
 class SCombobox {
 
 	constructor($el,config){
@@ -445,6 +485,7 @@ class Tree{
 			"parIcon":"fa fa-folder-open-o",
 			"checkbox":false,
 			"formatter":null,
+			"parClick":false,
 			 "clickCallback":function(){
 			 },
 			 "checkCallback":function(){
@@ -567,7 +608,7 @@ class Tree{
 
 	handle(){
 
-		const {clickCallback,clickAndCheck,checkbox,checkCallback} = this.config;
+		const {clickCallback,clickAndCheck,checkbox,checkCallback,parClick} = this.config;
 
 		const self = this;
 
@@ -609,6 +650,12 @@ class Tree{
 			checkbox && clickAndCheck && $this.find(".tree-inp").click();
 
 			checkbox && clickCallback(node,$this);
+
+			if(!checkbox && parClick){
+				clickCallback(node,$this);
+				$this.closest(".s-tree").find(".active").removeClass("active");
+				$this.addClass("active");
+			}
 
     	});
 
@@ -678,6 +725,10 @@ class Tree{
 		});
 	}
 
+	setSingleValue(id,$el=this.box){
+		$el.find(`.menuItem[echo-id=${id}]`).click();
+	}
+
 	getValue(fieldCount,$el=this.box){
 		
 		if(this.config.checkbox){
@@ -727,10 +778,6 @@ class Tree{
 		return node;
 	}
 }
-
-
-
-
 
 
 /*
@@ -786,10 +833,11 @@ class SComboTree {
 				`
 	}
 
-	setValue($el,values){
-
-	  this.tree.setValue($el,values);
+	setValue(values,$el = this.box){
+		
+	  this.tree.setValue(values);
 	  this.updateInpBox($el,values);
+
 	}
 
 	getValue(){

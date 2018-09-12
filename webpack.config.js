@@ -6,6 +6,7 @@ const PATHS = {
 	szViews:path.join(__dirname,"./src/js/szViews/index.js"),
 	editTemplate:path.join(__dirname,"./src/js/editTemplate/index.js"),
 	hsViews:path.join(__dirname,"./src/js/hsViews/index.js"),
+	kpiWarning:path.join(__dirname,"./src/js/kpiWarning/index.js"),
 	build:path.join(__dirname,"dist"),
 	publicPath:"/",
 };
@@ -73,6 +74,14 @@ module.exports=function(env,argv){
 				template:"./src/router/hsViews.html",
 				chunks:["hsViews","vendor","manifest"],//对应关系,main.js对应的是index.html
 			}),
+			new htmlPlugin({
+				title: "智能预警",
+				filename:'kpi_Warning.html',
+	            inject:'body',
+	            hash:false,
+				template:"./src/router/kpi_Warning.html",
+				chunks:["kpiWarning","vendor","manifest"],//对应关系,main.js对应的是index.html
+			}),
 			new CleanWebpackPlugin(['dist']), //清除打包后的目录
 			new extractPlugin({
 					filename:"css/[name].css",
@@ -127,13 +136,14 @@ module.exports=function(env,argv){
 		return {
 			devtool:soucemap,
 			entry: {
-				vendor:"babel-polyfill",
+		//		vendor:"babel-polyfill",
 				main: PATHS.app,
 				login: PATHS.login,
 				ManageViews: PATHS.ManageViews,
 				szViews: PATHS.szViews,
 				editTemplate: PATHS.editTemplate,
 				hsViews: PATHS.hsViews,
+				kpiWarning: PATHS.kpiWarning,
 			},
 			mode:env,
 			output: {

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>table</title>
+	<style>
+		*{
+			padding:0;
+			margin:0;
+		} 
+		#app{
+			width: 50%;
+			margin: auto;
+		}
+		.s-tableBox{
+			position: relative;
+		}
+		.tab-list{
+			width: 100%;
+			height: 100%;
+			border: 1px solid green;
+			border-collapse: collapse;
+    		border-spacing: 0;
+    		table-layout:fixed;
+    		position: relative;
+				
+		}
+		.tab-list td{
+			text-align: center;
+			vertical-align: top;
+			border: 1px solid green;
+			padding: 5px 0;
+		}
+		.tab-list th{
+			text-align: center;	
+			vertical-align: top;
+			border: 1px solid green;
+			padding: 8px 0;
+		}
+		.table-body-wrap{
+			width:100%;
+			overflow: auto;
+			margin-top: -1px;
+		}
+		.tab-list .gutter{
+			width: 16px;
+		}
+		.fix-tab:before{
+		 content: "";
+		 position: absolute;
+		 top:0;
+		 bottom:0;
+		 right: 0;
+		 border-right: 1px solid green;
+
+		}
+		.fix-tab:after{
+		 content: "";
+		 position: relative;
+		 display: block;
+		 width: 100%;
+		 top: -1px;
+		 height: 0;
+		 border-bottom: 1px solid green;
+
+		}
+		.table-body{
+			
+		}
+
+		
+	</style>
+</head>
+<body>
+
+		<div id="app" class="s-tableBox fix-tab">
+			<table class="tab-list" class="tab-list">
+				<thead>
+				        <tr>
+				            <th width="200">指标</th>
+				            <th >2014年</th>
+				            <th >2015年</th>
+				            <th >2016年</th>
+				            <th >2017年</th>
+				            <th >2018年</th>
+				            <th class="gutter"></th>
+				        </tr>
+				    </thead>
+			</table>
+			<div class="table-body-wrap " style="height: 200px">
+				<table  border="1" class="tab-list table-body">
+				    
+				    <tbody>
+				        <tr>
+				            <td width="200">实际开放床位</td>
+				            <td>1210</td>
+				            <td>1194</td>
+				            <td>1194</td>
+				            <td>1193</td>
+				            <td>--</td>
+				        </tr>
+				        <tr>
+				            <td>重症医学科床位数</td>
+				            <td>24</td>
+				            <td>24</td>
+				            <td>24</td>
+				            <td>24</td>
+				            <td>--</td>
+				        </tr>
+				        <tr>
+				            <td>急诊留观床位数</td>
+				            <td>14</td>
+				            <td>14</td>
+				            <td>6</td>
+				            <td>14</td>
+				            <td>--</td>
+				        </tr>
+				        <tr>
+				            <td>重症医学床位所占的比例(%)</td>
+				            <td>1.98</td>
+				            <td>2.01</td>
+				            <td>2.01</td>
+				            <td>2.01</td>
+				            <td>--</td>
+				        </tr>
+				        <tr>
+				            <td>全院职工总数</td>
+				            <td>1212</td>
+				            <td>2323</td>
+				            <td>323</td>
+				            <td>2323</td>
+				            <td>3223</td>
+				        </tr>
+				        <tr>
+				            <td>卫生技术人员数</td>
+				            <td>1955</td>
+				            <td>2015</td>
+				            <td>2062</td>
+				            <td>2110</td>
+				            <td>3213123</td>
+				        </tr>
+				        <tr>
+				            <td>医师数</td>
+				            <td>830</td>
+				            <td>876</td>
+				            <td>897</td>
+				            <td>916</td>
+				            <td>--</td>
+				        </tr>
+				        <tr>
+				            <td>卫生技术人员数</td>
+				            <td>1955</td>
+				            <td>2015</td>
+				            <td>2062</td>
+				            <td>2110</td>
+				            <td>3213123</td>
+				        </tr>
+				        <tr>
+				            <td>医师数</td>
+				            <td>830</td>
+				            <td>876</td>
+				            <td>897</td>
+				            <td>916</td>
+				            <td>--</td>
+				        </tr>
+				        <tr>
+				            <td>卫生技术人员数</td>
+				            <td>1955</td>
+				            <td>2015</td>
+				            <td>2062</td>
+				            <td>2110</td>
+				            <td>3213123</td>
+				        </tr>
+				        <tr>
+				            <td>医师数</td>
+				            <td>830</td>
+				            <td>876</td>
+				            <td>897</td>
+				            <td>916</td>
+				            <td>--</td>
+				        </tr>
+				        <tr>
+				            <td>卫生技术人员数</td>
+				            <td>1955</td>
+				            <td>2015</td>
+				            <td>2062</td>
+				            <td>2110</td>
+				            <td>3213123</td>
+				        </tr>
+				        <tr>
+				            <td>医师数</td>
+				            <td>830</td>
+				            <td>876</td>
+				            <td>897</td>
+				            <td>916</td>
+				            <td>--</td>
+				        </tr>
+				        <tr>
+				            <td>卫生技术人员数</td>
+				            <td>1955</td>
+				            <td>2015</td>
+				            <td>2062</td>
+				            <td>2110</td>
+				            <td>3213123</td>
+				        </tr>
+				        <tr>
+				            <td>医师数</td>
+				            <td>830</td>
+				            <td>876</td>
+				            <td>897</td>
+				            <td>916</td>
+				            <td>--</td>
+				        </tr>
+				    </tbody>
+				</table>
+			</div>
+		</div>
+		<script>
+			
+		</script>
+</body>
+</html>
