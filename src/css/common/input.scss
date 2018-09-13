@@ -4,11 +4,12 @@ $height:40px;
 $default:#ececec;
 $width:200px;
 $slectColor:#aee6ff;
+$border:#E4E4E4;
 
 /* 输入框 */
 .s-inp{
 	height: 100%;
-	min-width:$width;
+//	min-width:$width;
 	text-indent:1em;
 	border:0;
 	outline:0;
@@ -21,6 +22,9 @@ $slectColor:#aee6ff;
   color:red;
 }
 
+.no-fill.s-inp{
+ 	border:2px solid red;
+}
 
 
 .s-inp-box{
@@ -37,9 +41,7 @@ $slectColor:#aee6ff;
 	 border-radius: 4px;
 	 border: solid 2px #e3e3e3;
    }
-   .no-fill.s-inp{
-		border-color:red;
-	}
+   
 }
 
 
@@ -343,6 +345,19 @@ $slectColor:#aee6ff;
 		transform:translateY(0);
 	}
 }
+
+div.u-drop-up{
+	.combo-drop{
+		top:0;
+	}
+}
+.u-drop-up.active{
+	.combo-drop{
+		transform:translateY(-100%);
+	}
+}
+
+
 /* 文本框 */
 .s-textarea{
   padding-top:10px;
@@ -353,4 +368,20 @@ $slectColor:#aee6ff;
   border:none;
   background: none;
   outline:none;
+}
+
+/* 数字验证框 */
+input.num-valid{
+	border:1px solid $border;
+	width:80px;
+	border-radius:4px;
+    height: 30px;
+}
+/* 普通下拉框 */
+.m-select{
+   border-radius: 4px;
+   border:1px solid $border;
+   padding: 0 4px;
+   color:$themeColor;
+   height: 30px;
 }

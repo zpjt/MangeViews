@@ -20,35 +20,32 @@ class API {
 	dimtree(){
 		return Promise.resolve($.get(baseUrl+"main/dimtree"));
 	}
-
-	delLayout(obj){
-		return Promise.resolve(
-			$.ajax({
-				method:"post",
-				url:URL+"delLayout",
-				contentType:"application/json",
-				data:JSON.stringify(obj),
-			})
-		);
+	getAllAlarmModel(obj){
+		return Promise.resolve($.get(URL+"getAllAlarmModel"));
 	}
-	delchart(obj){
-		return Promise.resolve(
-			$.ajax({
-				method:"post",
-				url:URL+"delchart",
-				contentType:"application/json",
-				data:JSON.stringify(obj),
-			})
-		);
+	getLayoutUserTree(keyword=""){
+		return Promise.resolve($.get(baseUrl+"layout/getLayoutUserTree",{keyword}));
 	}
-	getAllLayoutPar(keyword=""){
-		return Promise.resolve($.post(URL+"getAllLayoutPar",{keyword}));
+	GroupKpiByDim(obj){
+			return Promise.resolve(
+				$.ajax({
+					method:"post",
+					url:baseUrl+"main/GroupKpiByDim",
+					contentType:"application/json",
+					data:JSON.stringify(obj),
+				})
+			);
 	}
-	checkName(data){
-		return Promise.resolve($.post(URL+"checkName",data));
-	}
-	RecycleLayout(data){
-		return Promise.resolve($.post(URL+"RecycleLayout",data));
+	
+	addKpiAlarm(obj){
+			return Promise.resolve(
+				$.ajax({
+					method:"post",
+					url:URL+"addKpiAlarm",
+					contentType:"application/json",
+					data:JSON.stringify(obj),
+				})
+			);
 	}
 
 }  

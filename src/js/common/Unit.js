@@ -158,10 +158,17 @@ class SInp{
 
 	handle(){
 		$(".s-inp-box .s-inp" ).on("blur",function(){
-			
+
 			const val = this.value.trim();
 			!val && $(this).addClass("no-fill") || $(this).removeClass("no-fill");
 		
+
+		});
+
+		$(".num-valid").on("blur",function(){
+
+			var state=this.validity;
+		    !state.valid?$(this).addClass("no-fill"): $(this).removeClass("no-fill");
 
 		});
 	}
@@ -248,7 +255,7 @@ class SCombobox {
 			return selIds;
 		}else{
 
-			const {data,idField} = this.config;
+			const {data,idField,textField} = this.config;
 			return this.config.data.filter(val=>{
 
 
@@ -273,13 +280,17 @@ class SCombobox {
         const comboText = inpBox.children(".combo-text"),
         	  comboValue=inpBox.children(".combo-value");
 
+        const {data,idField,textField} = this.config;
+
 		const txts = [];
 		const ids = $.map($drop.children(".active"),(val,index)=>{
 				
 				const $val = $(val);
-				txts[index] = $val.children(".item-txt").text();
+			    const id  = $val.attr("echo-id");
+				const node = txts[index] = data.find(val=>val[idField] === id);
+				txts[index] = node &&　node[textField] || "";
 
-				return $val.attr("echo-id") ;
+				return id;
 		});
 		this.selValue = ids;
 		comboText.val(txts.join(","));
@@ -288,7 +299,7 @@ class SCombobox {
 
 	renderDrop(values=this.selValue){
 
-		const {data,dropIcon,textField,idField} = this.config;
+		const {data,dropIcon,textField,idField,dropFormatter} = this.config;
 		return data.map((val,index)=>{
 
 			const id = val[idField];
@@ -296,7 +307,7 @@ class SCombobox {
 
 			return `<li class="drop-item ${active}" echo-id="${id}">
 						<span class="${dropIcon}"></span>
-						<b class="item-txt">${ this.config.dropFormatter && this.config.dropFormatter(val) || val[textField] }</b>
+						<b class="item-txt">${ dropFormatter && dropFormatter(val) || val[textField] }</b>
 					</li>`
 
 		});
@@ -483,6 +494,7 @@ class Tree{
 			"idField":"id",
 			"childIcon":"fa fa-user-circle-o",
 			"parIcon":"fa fa-folder-open-o",
+			"slideIcon":"fa fa-minus-square-o",
 			"checkbox":false,
 			"formatter":null,
 			"parClick":false,
@@ -562,7 +574,7 @@ class Tree{
 	parentComponent(child,data){
 
 		let {name,id,lev,par_id}= data;
-		const {parIcon,checkbox} = this.config;
+		const {parIcon,checkbox,slideIcon} = this.config;
 
 		const  indent =new Array(lev).fill(`<span class="indent"></span>`).join("");
 
@@ -575,7 +587,7 @@ class Tree{
 				<div class="menuItem par-item" echo-id="${id}">
 					${indent + checkboxStr}
 					<i class="${parIcon}"></i>
-					<span class="item-txt">${name}</span><span class="tree-slide-icon"><i class="fa fa-caret-down  "></i></span>
+					<span class="item-txt">${name}</span><span class="tree-slide-icon"><i class="${slideIcon}"></i></span>
 				</div>
 				<ul class="par-menu">${child.join("")}</ul>
 			</li>

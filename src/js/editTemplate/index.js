@@ -15,7 +15,6 @@ const $setMd = $("#setComponentMd"),
 	$viewStyleBox = $("#viewStyleBox"),
 	$zbBox = $("#zbTreeBox");
 
-console.log(42244);
 
 class TemplateView {
 

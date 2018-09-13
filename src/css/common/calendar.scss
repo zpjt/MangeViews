@@ -22,7 +22,7 @@ $slectColor:#aee6ff;
 	align-items:center;
 	@at-root{
 		.frequemcy-box{
-				$w:60px;
+				$w:50px;
 				display:block;
 				position: relative;
 				cursor: pointer;
@@ -65,7 +65,7 @@ $slectColor:#aee6ff;
 		}
 		.sel-time-inp{
 			background: #0080bb;
-			width: 168px;
+			width: 178px;
 			display: inline-block;
 			height: 28px;
 			text-align: center;
@@ -84,16 +84,42 @@ $slectColor:#aee6ff;
 		width:100%;
 		min-width:260px;
 		padding:0 10px;	
+		position: relative;
 	}
 	.s-calendar-content{
-		padding:10px 0;
+		padding:4px 0 8px 0;
 	}
 
+}
+.has-watchTime{
+	padding-bottom:28px;
+}
+.calendar-control{
+	.s-btn{
+	  color:$themeColor;
+	  background: none;
+	}
 }
 .calendar-item{
 	display:none;
 	color:$themeColor;
 	cursor: pointer;
+	.m-time{
+		color:black;
+		display:flex;
+		position: absolute;
+		bottom:8px;
+		justify-content: center;
+		width: 100%;	
+		.wacth-time{
+			width:64px;
+			height:24px;
+			border:1px solid $themeColor;
+			border-radius:4px;
+			text-align:center;
+		}
+	}
+
 	.view-item{
 		text-align:center;
 		span{
@@ -122,9 +148,9 @@ $slectColor:#aee6ff;
 		text-align:center;
 		span{
 			display:inline-block;
-			width: 30px;
-			height: 30px;
-			line-height:30px;
+			width: 35px;
+			height: 35px;
+			line-height:35px;
 		}
 	}
 	@at-root{

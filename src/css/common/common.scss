@@ -61,33 +61,32 @@ $border:#E9E9E9;
 				color: white;
 			}
 	}
+	
 	.menuItem{
 		
 		$paddingH:8px;
 		position:relative;
 		padding: $paddingH 0;
-		padding-right: 40px;
 		border-bottom:1px solid grey;
 		cursor:pointer;
 		.tree-slide-icon{
 			position:absolute;
-			padding:$paddingH/2 8px;
+			padding:$paddingH/2 4px;
 			top:$paddingH/2;
-			right:$paddingH;
-			background:$themeColor ;
-			color:white;
-			border-radius:100%;
-			transition: all .3s ease ;
+			right:0;
+			font-size:18px;
 		}
 
 		&:hover{
 			@include child-active ;
 			.tree-slide-icon{
-				background: white ;
-				color:$themeColor ;
+				color:white ;
 			}
 		}
 		
+	}
+	.par-item{
+		padding-right: 30px;
 	}
 	.menuItem.active{
 		@include child-active ;
@@ -95,7 +94,9 @@ $border:#E9E9E9;
 
 	.tree-active{
 			.tree-slide-icon{
-				transform: rotate(-180deg);
+				.fa:before{
+					content:"\f196";
+				}
 			}
 			.fa-folder-open-o:before{
 				content:"\f114";

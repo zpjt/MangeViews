@@ -5,10 +5,11 @@ class View{
 
 	constructor(container,config){
 
-		const {selTime,CurTime,Calendar} = config;
+		const {selTime,CurTime,Calendar,time,timeWatch} = config;
 
 		
 		this.Calendar = Calendar();
+		this.time = time;
 		this.rotate = this.Calendar.rotate; // 1:year,2:seraon,3:mons,4:day
 		this.CurTime = CurTime;
 		this.showTime= Object.assign({},selTime);
@@ -17,6 +18,7 @@ class View{
 		this.index = this.viewBox.index();
 		this.searsonFormatter = ["一季度","二季度","三季度","四季度"];
 		this.monFormatter = ["一","二","三","四","五","六","七","八","九","十","十一","十二"];
+		this.timeWatch = timeWatch;
 		this.init();
 		this.handle();
 
@@ -46,6 +48,8 @@ class View{
 
 		const activeArr = new Array(4).fill("");
 
+		const has_watchTime = this.time && "has-watchTime" || "";
+
 			   activeArr[this.rotate-1]="calendar-active";
 
 		return `
@@ -59,9 +63,9 @@ class View{
 						<li class="calendar-item ${activeArr[2]}">
 							${mons}
 						</li>
-						<li class="calendar-item ${activeArr[3]}">
+						<li class="calendar-item ${activeArr[3]} ${has_watchTime}" >
 							
-							${days}
+							${days }
 						</li>
 					</ul>
 			   `
@@ -168,6 +172,7 @@ class View{
 		const titleStr = `<ul class="week-group">
 							<li>日</li><li>一</li><li>二</li><li>三</li><li>四</li><li>五</li><li>六</li>
 						 </ul>`;
+		this.time && daysArr.push(this.renderTimeBox()) ;	
 
 		 return  [titleStr,...daysArr];
 	}
@@ -357,6 +362,7 @@ class View{
 					str = this.renderDays().join("");
 					break;
 			}
+
 		this.calendarItems.eq(index).html(str);
 		this.calendarItems.eq(index).addClass("calendar-active").siblings().removeClass("calendar-active");	
 	}
@@ -364,6 +370,22 @@ class View{
 	updateSel($el){
 		$el.closest(".calendar-item").find(".calendar-sel").removeClass("calendar-sel");
 		$el.addClass("calendar-sel");
+	}
+
+	renderTimeBox(){
+
+		const value = this.timeWatch ;
+
+		return `<div class="m-time">
+					<div>
+						<b>时间：&nbsp;</b>
+						<input type="number" class="wacth-time" max="24" min="0" value="${value[0]}" echo-index="0" />	
+					</div>
+					<div>
+						<b>&nbsp;&nbsp;:&nbsp;</b>
+						<input type="number" class="wacth-time" max="60" echo-index="1" min="0" value="${value[1]}" />
+					</div>
+				</div>`;
 	}
 
 	handle(){
@@ -376,6 +398,12 @@ class View{
 			type===4 ? self.updateDays(index) : self.updateYears(index);
 		});
 
+		this.viewBox.on("blur",".wacth-time",function(){
+			const $this = $(this);
+			const index = +$this.attr("echo-index");
+			self.timeWatch[index] = $this.val();
+			self.Calendar.updateShowSel();
+		});
 		
 		this.viewBox.on("click",".view-item",function(){
 			const data = +$(this).attr("echo-text");
@@ -420,15 +448,28 @@ class View{
 
 class Calendar{
 
-	constructor($el,$inp,config){
-		const {rotate,style} = config ;
+	constructor($el,$inp,obj){
+
+		const defaultConfig = {
+			rotate:4,
+			style:1,
+			time:false,
+		};
+
+		const config = Object.assign({},defaultConfig,obj);
+
+
+		const {rotate,style,time} = config ;
 		this.rotate = rotate ; // 1:year,2:seraon,3:mons,4:day
 		this.style = style; // 1:单选 2:多选
+		this.time = time; // 1:单选 2:多选
 		this.CurTime=this.getCurTime();
 		this.selTime=this.initSelTime();
 		this.typeChange = [{rotate:"年"},{rotate:"季"},{rotate:"月"},{rotate:"日"}];
+		this.timeWatchArr = [[10,30],[12,50]];
 		this.container = $el;
 		this.inp=$inp;
+		this.value = "" ;
 		this.init();
 		this.Handle();
 
@@ -463,6 +504,7 @@ class Calendar{
 		const middleYear = year - (year%10) +1 ;
 		return {year,mon,day,searson}
 	}
+	
 	initHead(){
 
 		const {year,mon,searson,day} =this.CurTime;
@@ -516,9 +558,11 @@ class Calendar{
 		
 		const selTime=this.CurTime,
 			  CurTime=this.CurTime,
+			  time=this.time,
+			  timeWatchArr = this.timeWatchArr,
 			  rotate=this.rotate;
 
-		let config= {CurTime,rotate,Calendar:()=>{
+		let config= {CurTime,rotate,time,Calendar:()=>{
 			return this ;
 		}};
 
@@ -531,7 +575,8 @@ class Calendar{
 		views.map((val,index)=>{
 		//	config.selTime =Object.assign({},this.selTime[index]);
 			config.selTime = this.selTime[index]; // 共享地址
-
+			config.timeWatch = this.timeWatchArr[index]; // 共享地址
+			
 			this["view_"+index] = new View($(val),config);
 
 		});
@@ -546,9 +591,12 @@ class Calendar{
 		const value = [];
 
 
+
 		 const str = new Array(this.style).fill("").map((val,index)=>{
 
 		 	   let {year,searson,mon,day} = this.selTime[index];
+
+		 	   const timeWatch = this.timeWatchArr[index];
 
 		 	   mon = (mon+"").padStart(2,"0");
 		 	   day = (day+"").padStart(2,"0");
@@ -573,10 +621,13 @@ class Calendar{
 						break;	
 
 		 	   }
+ 				
+ 			  const watchTime = this.time && this.rotate === 4 && "&nbsp;&nbsp;"+timeWatch.join(" : ") || "";
+
 
 		 	  
 				return `
-						${index===1 ? "<span style='padding:0 10px;'>至</span>" :""}<span class="sel-time-inp">${year+showStr}</span>
+						${index===1 ? "<span >&nbsp;-&nbsp;&nbsp;</span>" :""}<span class="sel-time-inp">${year+showStr+watchTime}</span>
 
 						`;
 
@@ -638,8 +689,10 @@ class Calendar{
 	}
 	upInp(){
 
-		const val = this.value.map(function(val){
-			return val.join(" - ");
+		const val = this.value.map((val,index)=>{
+
+			const watchTime = this.time && this.rotate === 4 && "  "+this.timeWatchArr[index].join(" : ") ||　"";
+			return val.join(" - ") + watchTime;
 		});
 		this.inp.val(val.join(" 至 "));
 	}

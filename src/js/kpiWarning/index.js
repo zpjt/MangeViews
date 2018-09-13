@@ -3,7 +3,7 @@ import "css/kpiWarning.scss";
 import {api} from "api/kpiWarning.js";
 
 import {EasyUITab} from "js/common/EasyUITab.js";
-import {Unit, SModal, SComboTree ,SInp,Calendar} from "js/common/Unit.js";
+import {Unit, SModal, SComboTree ,SInp,Calendar,SCombobox} from "js/common/Unit.js";
 
 
 /* 
@@ -179,9 +179,11 @@ class AddModal{
 		this.getData();
 		// 日历
 		this.calendar = new Calendar($("#dataTime"),$("#viewShowTime"),{
-			rotate:4,
-			style:2
+			style:2,
+			time:true,
 		});
+		this.dimN = "" ;
+		
 	}
 
 	setValue(node){
@@ -190,13 +192,32 @@ class AddModal{
 		page.modal.show($addModal);
 	}
 
+	initRender(){
+		page.modal.show($addModal);
+	}
+
+	GroupKpiByDim(kpi){
+
+
+
+		api.GroupKpiByDim({kpi}).then(res=>{
+			if(res){
+				this.dimN = Object.keys(res)[0].split("_")[1];
+			}else{
+				alert("出错！")
+			}
+		})
+	}
+
 	getData(){
+
+		const _me = this ;
 
 
 		api.kpitree().then(res=>{
 			if(res){
 				this.zbTreeCombo = new SComboTree($("#zbTree"),{
-					width:420,
+					width:320,
 					treeConfig:{
 						 data:res.sub,
 						"textField":"kpi_name",
@@ -204,7 +225,12 @@ class AddModal{
 						"childrenField":"sub",
 						"judgeRelation":(val)=>{//自定义判断是目录还是文件的函数
 								return val.kpi_type === "0";
+						 },
+						 clickCallback:function(node){
+						 	const kpis = [node.kpi_id];
+								_me.GroupKpiByDim(kpis);
 						 }
+
 					}
 				});
 				
@@ -216,7 +242,7 @@ class AddModal{
 		api.orgtree().then(res=>{
 			if(res){
 				this.orgTreeCombo = new SComboTree($("#orgTree"),{
-					width:280,
+					width:200,
 					treeConfig:{
 						data:res.sub,
 						"textField":"dim_name",
@@ -236,46 +262,130 @@ class AddModal{
 		api.dimtree().then(res=>{
 			if(res){
 				this.dimData = res.sub;
+				this.dimCombo = new SCombobox($("#dimCombo"),{
+						"data":res.sub[0].sub,
+						"textField":"dim_name",
+						"idField":"dim_value",
+						"defaultVal":"",
+						 width:280,
+				})
 				
 			}else{
 				alert("出错！");
 			}
 		});
-		
+
+		api.getAllAlarmModel().then(res=>{
+			if(res){
+				this.messageCombox = new SCombobox($("#messageCombox"),{
+						"data":res,
+						"textField":"model_text",
+						"defaultVal":"",
+						 width:420,
+						 dropFormatter:function(node){
+								return node.model_name;
+						 }
+				})
+				
+			}else{
+				alert("出错！");
+			}
+		});
+
+		api.getLayoutUserTree().then(res=>{
+			if(res){
+				this.userTreeCombo = new SComboTree($("#userTreeCombobox"),{
+					width:300,
+					treeConfig:{
+						data:res.sub,
+						checkbox:true,
+						"textField":"name",
+						"childrenField":"sub",
+						"judgeRelation":(val)=>{//自定义判断是目录还是文件的函数
+								return val.type === 0;
+						 }
+					}
+				});
+				
+			}else{
+				alert("出错！");
+			}
+		});
 	}
 
 	handle(){
 
 		const _self = this ;
+
+		$("#addModal").on("click", function() {
+
+			requestAnimationFrame(function(){
+		         const $comboDrop = $(".combo-drop");
+				 $comboDrop.parent().removeClass("active");
+				 $comboDrop.hide();
+		    });
+		});
 		
 		$("#addMBtn").click(function(){
 			
-			const par_id = _self.restCombo.box.find(".combo-value").val(),
-				  name = $("#name").val();
+		  const id = "" ;
+		  const status = $(".warn-switch").prop("checked") && "1" || "2";
+		  const kpi_id = _self.zbTreeCombo.box.find(".combo-value").val();
 
-			if(!name || !par_id){
-				
-				alert("清填写完整！");
-				return ;
-			}
-		    api.checkName({par_id,name}).then(res=>{
+		  const param_cond = $("#warnCon option:selected").val(),
+		        param_value = $("#warnVal").val();
 
-		   	  if(res){
-				const id = _self.optId;
-				api.RecycleLayout({id,par_id}).then(res=>{
-					
-					if(res){
-						page.getData();
-					}else{
-						alert("还原失败！");
-					}
-				});
+		  const start_time = _self.calendar.value.map(val=>val.join(""))[0],
+		        end_time = _self.calendar.value.map(val=>val.join(""))[1];
 
-		   	  }else{
-		   	  	alert("重名！")
-		   	  }
-		   })
+		  const dim2 = _self.orgTreeCombo.box.find(".combo-value").val(),
+			    dimN = _self.dimN,
+		        dimX = dimN !== "2" && _self.dimCombo.box.find(".combo-value").val() || "";
 
+		  const alarm_level = $(".warnlev:checked").val(),
+		        alarm_type = $(".warnType:checked").val();
+
+		  const model_id = _self.messageCombox.box.find(".combo-value").val(),
+		        model_text = _self.messageCombox.box.find(".combo-text").val();
+		 
+		  const senduser = _self.userTreeCombo.getValue().map(val=>{
+					const send_user_id = val.id ,
+							send_user_name = val.name ;
+		  			return {
+						send_user_id,
+						send_user_name
+		  			}
+		  });
+
+		  const obj = {
+		  	id,
+		  	dim2,
+		  	dimN,
+		  	dimX,
+		  	status,
+		  	kpi_id,
+		  	param_cond,
+		  	param_value,
+		  	start_time,
+		  	end_time,
+		  	alarm_level,
+		  	alarm_type,
+		  	param_value,
+		  	model_id,
+		  	model_text,
+		  	senduser,
+
+		  };
+
+		  console.log(obj);
+
+		  api.addKpiAlarm(obj).then(res=>{
+		  	if(res){
+				console.log(res);
+		  	}else{
+				alert("出错！")
+		  	}
+		  })
 			
 
 		});
@@ -330,17 +440,10 @@ class Page{
 	handle(){
 		const _self = this ;
 		// 切换 视图与图表
-		$("#j-tab").on("click",".m-tab-item",function(){
-			const $this = $(this);
-			const type = $this.index();
+		$("#j-addBtn").on("click",function(){
+			
 
-			if($this.hasClass("active")){
-					return ;			
-			}
-
-			$this.addClass("active").siblings().removeClass("active");
-			_self.state = type === 0 ? "layout" : "chart" ;
-			_self.getData();
+			_self.addModal.initRender();
 
 		});
 		//批量删去
