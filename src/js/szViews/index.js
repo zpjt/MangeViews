@@ -893,46 +893,46 @@ class Page  {
 				case "issue":
 					
 					  	API_szViews.showReleaseLayout(layout_id).then(res=>{
-										if(res){
-											
-											page.modal.show($issueMView);
-											const {user,starttime,endtime,release} = res;
-										
-										  	[].slice.call($issueMView.find(".s-switch input")).map((val,index)=>{
+							if(res){
+								
+								page.modal.show($issueMView);
+								const {user,starttime,endtime,release} = res;
+							
+							  	[].slice.call($issueMView.find(".s-switch input")).map((val,index)=>{
 
-													switch(index){
-														case 0 : //时间
-															const status =  starttime == "-1" ;
-															val.checked= status ;
+									switch(index){
+										case 0 : //时间
+											const status =  starttime == "-1" ;
+											val.checked= status ;
 
-															if(status){
-																$(val).parent().siblings(".time-inpbox").removeClass("active");
-															}else{
-																$(val).parent().siblings(".time-inpbox").addClass("active");
-																page.addModal.calendar.setTime([starttime,endtime]);
-															}
+											if(status){
+												$(val).parent().siblings(".time-inpbox").removeClass("active");
+											}else{
+												$(val).parent().siblings(".time-inpbox").addClass("active");
+												page.addModal.calendar.setTime([starttime,endtime]);
+											}
 
-															break;
-														case 1 ://用户
-															const status_2 =  user[0] == "-1" ;
-															val.checked= status_2 ;
+											break;
+										case 1 ://用户
+											const status_2 =  user[0] == "-1" ;
+											val.checked= status_2 ;
 
-															if(status_2){
-																$(val).closest(".item-status").siblings(".org-box").removeClass("active");
-															}else{
-																$(val).closest(".item-status").siblings(".org-box").addClass("active");
+											if(status_2){
+												$(val).closest(".item-status").siblings(".org-box").removeClass("active");
+											}else{
+												$(val).closest(".item-status").siblings(".org-box").addClass("active");
 
-																page.addModal.orgTree.setValue(user);
-															}
-													
-															break;
-														case 2 :
-															const status_3 =  release === 1 ;
-															val.checked= status_3 ;
-															break;
-													}
-											  });
-										}
+												page.addModal.orgTree.setValue(user);
+											}
+									
+											break;
+										case 2 :
+											const status_3 =  release === 1 ;
+											val.checked= status_3 ;
+											break;
+									}
+							 	 });	
+							}
 						});
 					break;
 				case "copy":

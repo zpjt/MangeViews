@@ -1,16 +1,35 @@
 @import "./common/search.scss";
 
+$themeColor:#00a0e9;
+
  /* 添加模态框 */
  #addModal{
- 	width:720px;
+ 	 width:720px;
 	 .calendar-inpTxt{
 	 	width:420px;
 	 }
 
 	 .m-action {
+	    position: relative;
 		&>.sel-item{
 			margin:8px 0;
 		}
+	 }
+
+	 .j-mesageTemp{
+	 	margin-left:12px;
+	 	color:$themeColor;
+	 	cursor: pointer;
+	 }
+	 @at-root{
+	 	.g-message{
+	 		width: calc(100% - 30px);
+	 		background: #fff;
+	 		height:470px;
+	 		position: absolute;
+	 		top:10px;
+	 		z-index: 10;
+	 	}
 	 }
 	
  }

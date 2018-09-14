@@ -733,22 +733,37 @@ class Calendar{
 					
 					const view = this["view_"+index];
 					view.rotate = this.rotate ;
-						view.showTime = Object.assign({},this.selTime[index]);
+					view.showTime = Object.assign({},this.selTime[index]);
 					view.updateCalendar();
 			});
 
 		}else{
+
+			
 			this.rotate = 4;
 			new Array(this.style).fill("").map((val,index)=>{
+					
 					this.selTime[index].year = +time[index].substr(0,4);
 					this.selTime[index].mon = parseInt(time[index].substr(4,2));
 					this.selTime[index].day = parseInt(time[index].substr(6,2));
 				
 					const view = this["view_"+index];
 					view.rotate = this.rotate ;
-						view.showTime = Object.assign({},this.selTime[index]);
+					view.showTime = Object.assign({},this.selTime[index]);
+				
+					if(this.time){
+
+						this.timeWatchArr[index] = time[index].split("@")[1].split(":");
+						view.timeWatch = this.timeWatchArr[index];
+					}
+
 					view.updateCalendar();
+		
+
 			});
+		
+			
+
 		}
 		this.updateShowSel();
 		this.upInp();

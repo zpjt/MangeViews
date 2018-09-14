@@ -11,9 +11,13 @@ import {Unit, SModal, SComboTree ,SInp,Calendar,SCombobox} from "js/common/Unit.
  @$table：回收表格 
  */
 
+ const {user_id} = window.jsp_config;
+
 
  const $tableBox = $("#tabBox"),
        $table = $("#tab"),
+       $addMBtn = $("#addMBtn"),
+       $dimBox = $("#j-dimBox"),
        $addModal = $("#addModal");
 
 
@@ -146,9 +150,6 @@ class Table extends EasyUITab{
 				case "set":{
 
 					const node = $table.datagrid("getData").rows[index];
-
-					console.log(node);
-
 					page.addModal.setValue(node);
 
 					break;
@@ -168,6 +169,106 @@ class Table extends EasyUITab{
     }
 }
 
+class MessageTab extends EasyUITab{
+
+	constructor(){
+       super();
+      
+       this.tabBox = $("#g-tabMessageBox");
+       this.tab = $("#g-tabMessage");
+       this.handle();
+    }
+
+	tabConfig(idField){
+		return {
+			idField:idField,
+			tabId:"#g-tabMessageBox",
+			frozenColumns: this.frozenColumns(idField,{
+				order:false,
+			}),
+			columns: [
+				[{
+					field: 'model_name',
+					title: '模板名称',
+					width: "20%",
+				}, 
+				{
+					field: 'model_text',
+					title: '模板内容',
+					width: "50%",
+					formatter:function(val,rowData){
+						
+						return `<b>${val}</b>`;
+					}
+				}, 
+				{
+					field: 'optBtn',
+					title: '操作',
+					width: "20%",
+					formatter: function(val, rowData,index) {
+						
+						let str = `
+										<div class="tab-opt s-btn s-Naira" node-sign="edit">
+												<i class="fa fa-edit"></i>
+												<span>编辑</span>	
+										</div>
+							   		`;
+
+						return `
+								<div class="tabBtnBox" echo-data='${index}' >
+										${str}
+								</div>
+							`;
+					}
+				}]
+			],
+		};
+    }
+
+    loadTab(data){
+		this.creatTab(data,this.tab,this.tabConfig("id"));
+    }
+
+    handle(){
+    	const _self = this ;
+		//复选框事件
+		this.tabBox.on("click",".checkSingle",function(){
+			_self.checkSingleHandle(_self.tabBox);
+		});
+		//
+		this.tabBox.on("click",".tab-opt",function(){
+
+			const type =  $(this).attr("node-sign");
+			const par = $(this).parent(),
+				  index = +par.attr("echo-data");
+
+			
+			switch(type){
+				case "set":{
+
+					const node = $table.datagrid("getData").rows[index];
+					page.addModal.setValue(node);
+
+					break;
+				}
+				case "pre":{
+
+
+					break;
+					}
+				default:
+					break;
+			}
+
+
+
+		});
+    }
+}
+
+
+
+
 class AddModal{
 
 	constructor(){
@@ -183,26 +284,93 @@ class AddModal{
 			time:true,
 		});
 		this.dimN = "" ;
-		
+		this.optId = "";
+		this.$title = $("#s-Mtitle");
+		this.messageTab = new MessageTab();
+		//this.messageTab.loadTab();
 	}
 
 	setValue(node){
 
-	//	this.optId = id ;
-		page.modal.show($addModal);
+		this.$title.html("修改指标预警");
+		const {status,kpi_id,param_value,dim2,start_time,end_time,alarm_level,alarm_type,model_id,senduser,param_cond,dimN,dimX} = node ;
+
+		this.optId = node.id;
+		this.dimN = dimN ;
+		this.dimX = dimX ;
+
+		$(".warn-switch").prop("checked",status === "1");
+		
+		this.zbTreeCombo.tree.setSingleValue(kpi_id);
+
+		const param_cond_num = param_cond === "高于" ? 0 : 1;
+
+		  $("#warnCon option").eq(param_cond_num).prop("selected","selected");
+		  $("#warnVal").val(param_value);
+
+	      this.calendar.setTime([start_time,end_time]);
+
+		  this.orgTreeCombo.tree.setSingleValue(dim2);
+		 
+
+		 $(".warnlev").eq(+alarm_level - 1).prop("checked",true);
+		 $(".warnType").eq(+alarm_type - 1).prop("checked",true);
+
+		 this.messageCombox.setValue(model_id);
+		 
+		 const ids = senduser.map(val=>val.send_user_id);
+		 this.userTreeCombo.setValue(ids);
+
+		 $addModal.find(".no-fill").removeClass("no-fill");
+
+		 page.modal.show($addModal);
 	}
 
 	initRender(){
+		this.$title.html("添加指标预警");
+		this.optId = "";
+
 		page.modal.show($addModal);
+		this.zbTreeCombo.clearValue();
+		this.orgTreeCombo.clearValue();
+		this.userTreeCombo.clearValue();
+		$dimBox.html(null);
 	}
 
 	GroupKpiByDim(kpi){
-
-
-
+		$addMBtn.prop("disabled","disabled");
 		api.GroupKpiByDim({kpi}).then(res=>{
 			if(res){
-				this.dimN = Object.keys(res)[0].split("_")[1];
+				const dimN = Object.keys(res)[0].split("_")[1];
+				this.dimN = dimN;
+				const dimX = this.dimX;
+				this.dimCombo = null;
+				$dimBox.html(null);
+				if(this.dimN !== "2"){
+
+					const dimStr = `<p class="s-title"><b class="inp-tip">*</b>主题维度:</p>
+									<div class="s-comboBox" id="dimCombo"> </div>`;
+					$dimBox.html(dimStr);
+
+					const data  = this.dimData.find(val=>val.dim_id === dimN).sub;
+					this.dimCombo = new SCombobox($("#dimCombo"),{
+						"data":data,
+						"textField":"dim_name",
+						"idField":"dim_value",
+						 width:280,
+				    });
+
+					if(this.optId && dimX &&  dimX !== "null"){
+						this.dimCombo.setValue(dimX);
+						this.dimCombo.box.find(".no-fill").removeClass("no-fill");
+					} 　
+
+				
+
+				}
+
+				$addMBtn.removeAttr("disabled");
+
 			}else{
 				alert("出错！")
 			}
@@ -262,13 +430,7 @@ class AddModal{
 		api.dimtree().then(res=>{
 			if(res){
 				this.dimData = res.sub;
-				this.dimCombo = new SCombobox($("#dimCombo"),{
-						"data":res.sub[0].sub,
-						"textField":"dim_name",
-						"idField":"dim_value",
-						"defaultVal":"",
-						 width:280,
-				})
+				
 				
 			}else{
 				alert("出错！");
@@ -285,7 +447,9 @@ class AddModal{
 						 dropFormatter:function(node){
 								return node.model_name;
 						 }
-				})
+				});
+
+
 				
 			}else{
 				alert("出错！");
@@ -313,42 +477,31 @@ class AddModal{
 		});
 	}
 
-	handle(){
+	getAllParams(){
 
-		const _self = this ;
-
-		$("#addModal").on("click", function() {
-
-			requestAnimationFrame(function(){
-		         const $comboDrop = $(".combo-drop");
-				 $comboDrop.parent().removeClass("active");
-				 $comboDrop.hide();
-		    });
-		});
-		
-		$("#addMBtn").click(function(){
-			
-		  const id = "" ;
 		  const status = $(".warn-switch").prop("checked") && "1" || "2";
-		  const kpi_id = _self.zbTreeCombo.box.find(".combo-value").val();
+		  const kpi_id = this.zbTreeCombo.box.find(".combo-value").val();
 
 		  const param_cond = $("#warnCon option:selected").val(),
 		        param_value = $("#warnVal").val();
 
-		  const start_time = _self.calendar.value.map(val=>val.join(""))[0],
-		        end_time = _self.calendar.value.map(val=>val.join(""))[1];
+	      const {value,timeWatchArr,rotate} = this.calendar;
+	      const timestr_1 = rotate === 4 && "@"+timeWatchArr[0].join(":")|| "" ;
+	      const timestr_2 = rotate === 4 && "@"+timeWatchArr[1].join(":")|| "" ;
+		  const start_time = value[0].join("") + timestr_1,
+		        end_time = value[1].join("") + timestr_2;
 
-		  const dim2 = _self.orgTreeCombo.box.find(".combo-value").val(),
-			    dimN = _self.dimN,
-		        dimX = dimN !== "2" && _self.dimCombo.box.find(".combo-value").val() || "";
+		  const dim2 = this.orgTreeCombo.box.find(".combo-value").val(),
+			    dimN = this.dimN > 2 && this.dimN || "",
+		        dimX = this.dimN !== "2" && this.dimCombo.box.find(".combo-value").val() || "";
 
 		  const alarm_level = $(".warnlev:checked").val(),
 		        alarm_type = $(".warnType:checked").val();
 
-		  const model_id = _self.messageCombox.box.find(".combo-value").val(),
-		        model_text = _self.messageCombox.box.find(".combo-text").val();
+		  const model_id = this.messageCombox.box.find(".combo-value").val(),
+		        model_text = this.messageCombox.box.find(".combo-text").val();
 		 
-		  const senduser = _self.userTreeCombo.getValue().map(val=>{
+		  const senduser = this.userTreeCombo.getValue().map(val=>{
 					const send_user_id = val.id ,
 							send_user_name = val.name ;
 		  			return {
@@ -357,37 +510,62 @@ class AddModal{
 		  			}
 		  });
 
-		  const obj = {
-		  	id,
-		  	dim2,
-		  	dimN,
-		  	dimX,
-		  	status,
-		  	kpi_id,
-		  	param_cond,
-		  	param_value,
-		  	start_time,
-		  	end_time,
-		  	alarm_level,
-		  	alarm_type,
-		  	param_value,
-		  	model_id,
-		  	model_text,
-		  	senduser,
+		  const param_user = user_id ;
+		  const id = this.optId ;
+		  return {
+				  	id,
+				  	param_user,
+				  	dim2,
+				  	dimN,
+				  	dimX,
+				  	status,
+				  	kpi_id,
+				  	param_cond,
+				  	param_value,
+				  	start_time,
+				  	end_time,
+				  	alarm_level,
+				  	alarm_type,
+				  	param_value,
+				  	model_id,
+				  	model_text,
+				  	senduser,
 
-		  };
+				  };
+	}
 
-		  console.log(obj);
+	handle(){
 
+		const _self = this ;
+
+		 $addModal.on("click", function() {
+
+			requestAnimationFrame(function(){
+		         const $comboDrop = $(".combo-drop");
+				 $comboDrop.parent().removeClass("active");
+				 $comboDrop.hide();
+		    });
+		});
+
+
+		
+		$addMBtn.click(function(){
+		  const obj = _self.getAllParams();
 		  api.addKpiAlarm(obj).then(res=>{
 		  	if(res){
 				console.log(res);
+				page.getData();
+				page.modal.close($addModal);
 		  	}else{
 				alert("出错！")
 		  	}
 		  })
-			
+		});
 
+		$("#j-mesageTemp").click(function(){
+
+			console.log(_self.messageCombox.config.data);
+			_self.messageTab.loadTab(_self.messageCombox.config.data);
 		});
 	}
 }
@@ -423,25 +601,11 @@ class Page{
 
 		});
 	}
-
-	del(obj){
-
-		const  method = this.state === "layout" && "delLayout" || "delchart";
-
-		api[method](obj).then(res=>{
-			if(!res){
-				alert("删除失败！");
-			}else{
-				alert("删除成功！");
-			}
-		});
-	}
+ 
 
 	handle(){
 		const _self = this ;
-		// 切换 视图与图表
 		$("#j-addBtn").on("click",function(){
-			
 
 			_self.addModal.initRender();
 
@@ -449,11 +613,22 @@ class Page{
 		//批量删去
 		$("#delBtn").click(function(){
 
-			const ids =$.map($tableBox.find(".checkSingle"),function(val){
-					return +val.value;
+			const ids =$.map($tableBox.find(".checkSingle:checked"),function(val){
+					return {id:val.value};
 			}) ;
 
-			_self.del({ids});
+			if(!ids.length){
+				return ;
+			}
+
+			api.deleteAlarm(ids).then(res=>{
+				if(res){
+					alert("删除成功！");
+					_self.getData();
+				}else{
+					alert("删除失败！")
+				}
+			});
 
 		});
 	}

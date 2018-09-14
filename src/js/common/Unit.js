@@ -269,8 +269,9 @@ class SCombobox {
 
 		const $inp = $el.find(".combo-value");
 		this.selValue = "" ;
-		 $inp.val(null);
-		 $inp.siblings(".combo-text").val(null);
+		$inp.val(null);
+		$inp.siblings(".combo-text").val(null);
+		this.config.validCombo && $inp.parent().addClass("no-fill");
 		$el.find(".active").removeClass("active");
 			
 	}
@@ -862,6 +863,11 @@ class SComboTree {
 		const $inp = $el.find(".combo-value");
 		$inp.val(null);
 		$inp.siblings(".combo-text").val(null);
+		
+		this.config.validCombo && $inp.parent().addClass("no-fill");
+		
+		this.config.treeConfig.checkbox && $el.find(".tree-inp").prop("checked",false).removeClass("has-chec") || $el.find(".active").removeClass("active");
+		
 
 	}
 	updateInpBox($drop,node){

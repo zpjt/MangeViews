@@ -47,6 +47,16 @@ class API {
 				})
 			);
 	}
+	deleteAlarm(obj){
+		return Promise.resolve(
+				$.ajax({
+					method:"post",
+					url:URL+"deleteAlarm",
+					contentType:"application/json",
+					data:JSON.stringify(obj),
+				})
+			);
+	}
 
 }  
 
