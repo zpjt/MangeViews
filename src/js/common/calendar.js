@@ -401,7 +401,7 @@ class View{
 		this.viewBox.on("blur",".wacth-time",function(){
 			const $this = $(this);
 			const index = +$this.attr("echo-index");
-			self.timeWatch[index] = $this.val();
+			self.timeWatch[index] = $this.val().padStart(2,"0");
 			self.Calendar.updateShowSel();
 		});
 		

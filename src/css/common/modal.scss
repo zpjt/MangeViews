@@ -1,5 +1,5 @@
 $themeColor:#00a0e9;
-$height:50px;
+$height:40px;
 $active:#BDE4F4;
 $duration:.3s;
 
@@ -74,7 +74,7 @@ $duration:.3s;
 	}
 	
 	.m-action{
-		padding:15px 15px $height 15px;
+		padding:12px;
 	}
 	.tip-txt{
 		padding:10px;
@@ -86,14 +86,9 @@ $duration:.3s;
 		}
 	}
 	.m-foot{
-		position: absolute;
 		height:$height;
-		
 		line-height:$height;
-		bottom:0;
-		left:0;
 		text-align:center;
-		
 	}
 }
 .s-modal.m-show{

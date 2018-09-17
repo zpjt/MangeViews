@@ -7,6 +7,7 @@ const PATHS = {
 	editTemplate:path.join(__dirname,"./src/js/editTemplate/index.js"),
 	hsViews:path.join(__dirname,"./src/js/hsViews/index.js"),
 	kpiWarning:path.join(__dirname,"./src/js/kpiWarning/index.js"),
+	test:path.join(__dirname,"./src/js/test/index.js"),
 	build:path.join(__dirname,"dist"),
 	publicPath:"/",
 };
@@ -82,6 +83,14 @@ module.exports=function(env,argv){
 				template:"./src/router/kpi_Warning.html",
 				chunks:["kpiWarning","vendor","manifest"],//对应关系,main.js对应的是index.html
 			}),
+			new htmlPlugin({
+				title: "test",
+				filename:'myTest.html',
+	            inject:'body',
+	            hash:false,
+				template:"./src/myTest.html",
+				chunks:["test","vendor","manifest"],//对应关系,main.js对应的是index.html
+			}),
 			new CleanWebpackPlugin(['dist']), //清除打包后的目录
 			new extractPlugin({
 					filename:"css/[name].css",
@@ -144,6 +153,7 @@ module.exports=function(env,argv){
 				editTemplate: PATHS.editTemplate,
 				hsViews: PATHS.hsViews,
 				kpiWarning: PATHS.kpiWarning,
+				test: PATHS.test,
 			},
 			mode:env,
 			output: {

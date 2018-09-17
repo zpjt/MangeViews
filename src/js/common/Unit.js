@@ -7,6 +7,7 @@ import { Calendar } from "js/common/calendar.js";
 class Unit {
 
 	constructor(){
+		this.tipInit();
 		this.initSearch();
 	}
 
@@ -47,6 +48,25 @@ class Unit {
 		
 		return result ;
 
+	}
+	tipToast(txt,status=true){
+
+		const icon = ``;
+
+		const itemStr = `<div class="tip-item tip1">
+							<p class="tip-close">
+								<span class="j-close"><i class="fa fa-times"></i></span>
+							</p>
+							<p class="tip-txt"><i class="fa fa-warning"></i><span>${txt}</span></p>
+							<div class="tip-progress"></div>
+						</div>`;
+	  $("#tipToast").append(itemStr);
+
+	  const $tip  = $(".tip-item:last-child");
+
+	  setTimeout(function(){
+		$tip.remove();
+	  },2000);
 	}
 
 
@@ -137,6 +157,11 @@ class Unit {
 		const color = {"#g-success":"#A5DC86","#g-load":"grey","#g-error":"red"};
 		$svg.attr({"xlink:href":status,"stroke":color[status]});
 		$("#g-out").attr("stroke",color[status]);
+	}
+	tipInit(){
+		$("#tipToast").on("click",".j-close",function(){
+			 $(this).closest(".tip-item").remove();
+		});
 	}
 }
 
@@ -492,6 +517,7 @@ class Tree{
 		const defaultConfig = {
 			"data":[],
 			"textField":"text",
+			"search":true,
 			"idField":"id",
 			"childIcon":"fa fa-user-circle-o",
 			"parIcon":"fa fa-folder-open-o",
@@ -515,15 +541,24 @@ class Tree{
 		this.config = Object.assign({},defaultConfig,config);
 		this.box = $el ;
 		this.init();
-
+		this.handle();
 	}
 
 	init(){
 
-		const {data} = this.config;
+		const {data,search} = this.config;
 		const str = this.renderOrgJson(data,0);
-		this.box.html(`<ul class="s-tree">${str.join("")}</ul>`);
-		this.handle();
+		const searchStr = search  ? `<div class="tree-search">
+										<label >
+											<input type="text" class="s-inp" placeholder="搜索..." />
+											<span class="search-close">
+												<i class="fa fa-times"></i> 
+											</span>
+										</label>
+										<button class="s-btn j-search"><i class="fa fa-search-plus"></i></button>
+									</div>` : "";
+		this.box.html(`${searchStr}<ul class="s-tree">${str.join("")}</ul>`);
+		
 	}
 
 	changeType(checkbox){
@@ -532,6 +567,58 @@ class Tree{
 		this.init();
 	}
 
+	seachTree(key){
+			
+		const {data,childrenField,textField,judgeRelation} = this.config ;
+
+
+		function filterJson(arr){
+
+			return arr.filter(val=>{
+				const child = val[childrenField];
+				const type = judgeRelation(val);
+				const text = val[textField];
+
+				if(type){
+
+					if(child.length){
+
+						const result = filterJson(child) ;
+
+						val[childrenField] = result ;
+						
+						return result.length;
+			
+					}else{
+						return false ;
+					}
+
+				}else{
+
+					const is_key = val[textField].includes(key);
+
+
+					if(child.length){
+
+						const result = filterJson(child) ;
+							val[childrenField] = result ;
+						
+						return result.length || is_key;
+			
+					}else{
+
+
+						return is_key;
+					}
+				}
+			})
+
+		}
+		const copy_data = JSON.parse(JSON.stringify(data));
+		
+		return filterJson(copy_data);
+
+	}
 
     renderOrgJson(arr,_lev){
 
@@ -570,6 +657,17 @@ class Tree{
 			
 			}
 		})
+	}
+
+	async reload(key=""){
+
+		let data = data = this.config.data;
+		if(key){
+
+			data = this.seachTree(key);		
+		}
+		const str = this.renderOrgJson(data,0);
+		this.box.find(".s-tree").html(str);
 	}
 	
 	parentComponent(child,data){
@@ -627,7 +725,7 @@ class Tree{
 
 		this.box.on("click",".tree-slide-icon",function(e){
 			
-			e.stopPropagation();
+		// e.stopPropagation();
 			const parLi = $(this).closest(".tree-li");
 			const $parDiv = $(this).parent();
 
@@ -638,7 +736,12 @@ class Tree{
 
     	});
 
-    	this.box.on("click",".child-item",function(){
+    	this.box.on("click",function(e){
+			e.stopPropagation();
+    	});
+
+    	this.box.on("click",".child-item",function(e){
+
 			const $this = $(this);
 			const node = self.findNode( +$this.attr("echo-id"));
 		
@@ -647,7 +750,7 @@ class Tree{
 			if(checkbox){
 				
 			}else{
-				
+				//關閉下拉框
 				$this.closest(".s-tree").find(".active").removeClass("active");
 				$this.addClass("active");
 			}
@@ -655,6 +758,34 @@ class Tree{
 			clickCallback(node,$this);
 
     	});
+
+    	this.box.on("click",".search-close",function(){
+			const $this = $(this);
+			$this.siblings(".s-inp").val(null);
+			$this.hide();
+
+			self.reload();
+		
+    	});
+
+    	this.box.on("click",".j-search",function(){
+			const $this = $(this);
+			const $close = $this.siblings("label").children(".search-close");
+
+			$close.show();
+
+			const key = $close.siblings(".s-inp").val().trim();
+
+			if(!key){
+				return ;
+			}
+
+		    self.reload(key);
+
+
+			
+    	});
+
 
     	this.box.on("click",".par-item",function(){
 			const $this = $(this);
@@ -674,7 +805,8 @@ class Tree{
 
     	this.box.on("click",".tree-inp",function(e){
 
-    		 e.stopPropagation();
+    	//	 e.stopPropagation();
+
 			const $this= $(this);
     		const status = $this.prop("checked");
     		const type =  $this.hasClass("par-checkinp");

@@ -315,8 +315,8 @@ $border:#E4E4E4;
 	//	visibility:hidden;
 	//	opacity:0;
 		display:none;
-		max-height:300px;
-		overflow:auto;
+//		max-height:300px;
+//		overflow:auto;
 		background:$inpBg;
 		border:1px solid $default;
 		box-shadow: 2px 3px 18px 0px rgba(0, 0, 0, 0.16);
@@ -332,6 +332,33 @@ $border:#E4E4E4;
 		.drop-item.active {
 			background-color: #aee6ff;
 			border-radius: 2px;
+		}
+		.tree-search{
+			width:100%;
+			height:32px;
+			display:flex;
+			label{
+				position: relative;
+				border:1px solid $themeColor;
+				border-bottom:none;
+				flex:auto;
+			}
+			.s-inp{
+				width: 100%;
+			}
+			.search-close{
+				position: absolute;
+				display:none;
+				right:8px;
+				top:4px;
+				font-size:18px;
+				cursor: pointer;
+			}
+			.s-btn{
+				background: $themeColor;
+				font-size:18px;
+				border-radius:0 4px 4px 0;
+			}
 		}
 	}
 }

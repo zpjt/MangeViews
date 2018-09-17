@@ -1,1002 +1,4 @@
 
-//初始化页面类
-class InitPage extends EasyUITab{
-    dropMenuConfig=[
-        {"icon":"fa-file-text",text:"创建视图",type:"view"},
-        {"icon":"fa-folder",text:"创建分类",type:"catalogue"},
-    ]
-
-    constructor(){
-        super();
-        this.init();
-    }
-    
-    init(){
-        
-        this.setPageHeight($ViewContainer,160);
-        this.tabInit();
-        this.tabCardInit([{layout_name:"我的创建",index:0,layout_id:-2}]);
-        this.InitIconBox($iconBox);
-        this.orgBoxInit();
-        this.initUnit();
-        
-    }
-
-    initUnit(){
-        // 日历
-        this.calendar = new Calendar($(".dataTime"),$("#viewShowTime"),{
-            rotate:4,
-            style:2
-        });
-        // 目录选择下拉框
-        this.parCatalogSel = new SCombobox($("#parName"),{
-            "textField":"layout_name",
-            "idField":"layout_id",
-            "prompt":"请选择所属分类...",
-            "width":300,
-        });
-
-        this.modal = new SModal();
-
-
-    }
-
-    InitIconBox($el){
-        API_szViews.getAllLayout_icon().then(res=>{
-
-            const {par,child}=res;
-            const par_strArr = par.map(val=>{
-                const {name,id} = val ;
-                return `
-                        <span class="sicon ${name}" echo-data="${id}"></span> 
-
-                        `
-            });
-
-            const child_strArr = child.map(val=>{
-                const {name,id} = val ;
-                return `
-                        <span class="sicon ${name}" echo-data="${id}"></span> 
-                        `
-            });
-
-            const str = `
-                        <div class="iconBox-item">${child_strArr.join("")}</div>    
-                        <div class="iconBox-item">${par_strArr.join("")}</div>  
-                        `
-            $el.html(str);
-        });
-    }
-
-    tabConfig(idField){
-
-        return {
-            idField:idField,
-            tabId:"#tabBox",
-            frozenColumns: this.frozenColumns(idField),
-            columns: [
-                [{
-                    field: 'layout_name',
-                    title: '视图名称',
-                    width: "24%",
-                    formatter: function(val,rowData,index) {
-
-                        const {layout_icon_name,layout_type} = rowData;
-                        const arr = ["","node-catalogue","node-file"];
-                        return `<div class="tab-node ${arr[+rowData.layout_type]}" echo-data="${index}"><i class="sicon ${layout_icon_name}">&nbsp;</i><span>${val}</span></div>` ;
-                    }
-                }, 
-                {
-                    field: 'layout_type',
-                    title: '类型',
-                    width: "10%",
-                    formatter: function(val,rowData,index) {
-
-                        return `<span class="${val===2 ? "tab-type" : null }">${val===1 ? "分类" :"视图"}</span>`;
-                    }
-                }, 
-                {
-                    field: 'create_user_name',
-                    title: '创建人',
-                    width: "14%",
-                },
-                
-                 {
-                    field: 'updata_time',
-                    title: '更新时间',
-                    width: "18%",
-                },{
-                    field: 'optBtn',
-                    title: '操作',
-                    align:"center",
-                    width: "30%",
-                    formatter: function(val, rowData,index) {
-                        
-                        let str="" ;
-                        switch (rowData.layout_type){
-
-                            case 1 ://目录
-                                  str =`
-                                        <div class="tab-opt s-btn s-Naira" node-sign="icon">
-                                                <i class="sicon sicon-btn-3"></i>
-                                                <span>图标</span> 
-                                        </div>
-                                        <div class="tab-opt s-btn s-Naira" node-sign="rename">
-                                                <i class="sicon sicon-btn-4"></i>   
-                                                <span>重命名</span>    
-                                        </div>  
-                                    `;
-
-                                break;
-                            case 2 ://文件
-                                 str =`
-                                        <div class="tab-opt s-btn s-Naira" node-sign="icon">
-                                                <i class="sicon sicon-btn-3"></i>   
-                                                <span>图标</span>
-                                        </div>
-                                        <div class="tab-opt s-btn s-Naira" node-sign="rename">
-                                                <i class="sicon sicon-btn-4"></i>   
-                                                <span>重命名</span>
-                                        </div>
-                                        <div class="tab-opt s-btn s-Naira" node-sign="pre">
-                                                <i class="fa fa-eye"></i>
-                                                <span>预览</span>     
-                                        </div>
-                                        <div class="tab-opt s-btn s-Naira" node-sign="issue">
-                                                <i class="fa fa-paper-plane-o"></i> 
-                                                <span>发布</span>
-                                        </div>
-                                        <div class="tab-opt s-btn s-Naira" node-sign="copy">
-                                                <i class="sicon sicon-btn-1"></i>   
-                                                <span>复制</span>
-                                        </div>
-                                        
-                                        
-                                    `;
-                                break;
-                        }
-
-                        return `
-                                <div class="tabBtnBox" echo-data='${index}' >
-                                        ${str}
-                                </div>
-                            `;
-                    }
-                }]
-            ],
-        };
-    }
-
-    tabInit(menuIndexArr=[0],type="tab"){
-        API_szViews.getAllLayout().then(res=>{
-                
-            const  allData = [res] ;
-
-            $ViewContainer.data("tabData",allData);
-            
-            let tabData=JSON.stringify(allData);
-                tabData=JSON.parse(tabData);
-
-            menuIndexArr.map(function(val){
-                tabData = tabData[val].sub
-            });
-
-            type==="tab"?this.loadTab(tabData):this.catalogueInit(tabData);
-
-        })
-    }
-
-    catalogueInit(tabData){
-        
-        const str = tabData.map((val,index)=>{
-            const {layout_icon_name,layout_name,layout_id,layout_type} = val ;
-            const type = layout_type ===1 && "view-catalogue" || "view-file";
-
-            let str = `
-                    <div class="tab-opt rotate-btn rotate-icon" node-sign="icon" echo-text="图标"><span class="sicon sicon-btn-3"></span></div>
-                    <div class="tab-opt rotate-btn rotate-rename" node-sign="rename" echo-text="重命名"><span class="sicon sicon-btn-4"></span></div>
-                    `;
-            const fileopt = `
-                    <div class="tab-opt rotate-btn rotate-pre" node-sign="pre" echo-text="预览"><span class="fa fa-eye"></span></div>
-                    <div class="tab-opt rotate-btn rotate-issue" node-sign="issue" echo-text="发布"><span class="fa fa-paper-plane-o "></span></div>
-                    <div class="tab-op rotate-btn rotate-copy" node-sign="copy" echo-text="复制"><span class="sicon sicon-btn-1"></span></div>
-                    `;
-
-                str = layout_type !==1 &&  str + fileopt || str ;
-
-            return `
-                    <div class="catalogue-item " >
-                        <div class="view-show ${type}" echo-data="${index}">
-                            <p><i class="sicon ${layout_icon_name}"></i></p>
-                            <p class="catalogue-name"><span>${layout_name}</span></p>
-                        </div>
-                        <div class="view-opt" echo-data="${index}">
-                            ${str}
-                        </div>
-                    </div>
-                  `
-        });
-        $catalogueBox.html(str);
-        $catalogueBox.data("getData",tabData);
-        this.cataFooterInit();
-    }
-    cataFooterInit(){
-        const str = `
-                <div class="footer-item">
-                    <i class="fa fa-bookmark-o">&nbsp;</i>
-                    <span>点击获取文件信息</span>
-                    <br>
-                    <i class="fa fa-bookmark-o">&nbsp;</i>
-                    <span>双击进入目录</span>
-                </div>
-                `;
-        $catalogueBox.siblings(".cata-footer").html(str);
-    }
-    cataFooterRender(data){
-
-        const {layout_type,create_user_name,layout_name,updata_time,layout_icon_name} =data;
-        
-        var str = `
-                    <div class="cata-info footer-item">
-                        <span class="sicon ${layout_icon_name.trim()}"></span>
-                        <span>
-                           <span><b>文件名：</b>${layout_name}</span><br><span><b>包含对象：</b>${data.sub.length}个</span>
-                          </span>
-                    </div>
-                    <div class="footer-item" style="width:25%">
-                        <b>创建时间：</b>
-                        <br />
-                        <span style="padding-left:5em">${updata_time}</span>
-                    </div>
-                    <div class="footer-item" style="width:15%">
-                        <b>创建人：</b>
-                        <br />
-                        <span style="padding-left:4em">${create_user_name}</span>
-                    </div>
-                    <div class="footer-item" style="width:15%">
-                        <b>文件类型：</b>
-                            <br />
-                        <span style="padding-left:5em">${layout_type===1?"分类文件夹":"视图文件"}</span>
-                    </div>
-                    `
-        $catalogueBox.siblings(".cata-footer").html(str);
-    }
-
-    loadTab(data){
-        this.creatTab(data,$tab,this.tabConfig("layout_id"));
-    }
-    tabCardInit(menuArr){
-        $tabCard.data("menuArr",menuArr);
-        const leg = menuArr.length;
-        const str = menuArr.map((val,ind)=>{
-            const {layout_name,index}=val;
-            const is_last = ind === leg-1;
-
-            const icon_str = !is_last && `&nbsp;&nbsp;<i class="fa fa-angle-right fa-lg">&nbsp;&nbsp;</i>` || "";
-            
-            return `<div class="card" echo-data="${index}"><span>${layout_name}</span>${icon_str}</div>` ;
-        })
-        
-
-        $tabCard.html(str.join(""));
-    }
-
-    changeTabcard($this){ // 进入目录
-
-        const tabData = $tab.datagrid("getData").rows;
-
-
-        const index = +$this.attr("echo-data");
-        const childArr = tabData[index].sub;
-
-        this.loadTab(childArr);
-        const {layout_name,layout_id}=tabData[index];
-        const lastData = $tabCard.data("menuArr");
-
-        lastData.push({layout_name,index,layout_id});
-        this.tabCardInit(lastData);
-
-    }
-
-    getCurTabData(menuArr,curIndex){
-        
-        let tabData = $ViewContainer.data("tabData");
-        let i = 0;
-        while(i<=curIndex){
-            tabData=tabData[menuArr[i].index].sub;
-            i++;
-        }
-        return tabData;
-    }
-
-    handleCard($this){//分类选项卡
-        const menuArr = $tabCard.data("menuArr");
-        const leg =menuArr.length;
-        const index = $this.index();
-
-        if(index=== leg-1){
-            return ;
-        }
-
-        const tabData =this.getCurTabData(menuArr,index);
-        
-
-        const styleIndex = $(".style-sel").index();
-        styleIndex ? this.catalogueInit(tabData) :this.loadTab(tabData);
-        const newmenuArr=menuArr.slice(0,index+1);
-        this.tabCardInit(newmenuArr);
-
-    }
-    changeStyle($this){
-        if($this.hasClass("style-sel")){
-            return ;
-        }
-
-        const  index = $this.index();
-
-        page.modal.close($styleView.eq(1-index),"style-active");
-        page.modal.show($styleView.eq(index),"style-active");
-
-        $this.addClass("style-sel").siblings(".style-item").removeClass("style-sel");
-
-        if(index){
-            const tabData = $tab.datagrid("getData").rows;
-            this.catalogueInit(tabData);
-        }else{
-            const tabData = $catalogueBox.data("getData");
-            this.loadTab(tabData);
-        }
-
-    }
-
-    addCatalogue(type,obj,style){
-    
-        API_szViews.checkName(obj)
-        .then(res=>{
-            return res ? API_szViews.addView(type,{user_id,...obj}) : "重名" ;
-        })
-        .then(res=>{
-
-            if(res === "重名"){
-                alert(res);
-                return ;
-            }
-
-            if(res){ //true
-                const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-                      return  val.index ;
-                }) ;
-                 this.tabInit(menuIndexArr,style);
-                 page.modal.close($addMView);
-            }else{
-            }
-
-        }).catch(error=>{
-
-            console.log(error);
-        })
-    }
-
-    dropMenuCallback=(state)=>{
-
-            const lev = $tabCard.data("menuArr").length;
-        
-            let dropMenuConfig = this.dropMenuConfig.slice();
-            if(lev===1){
-                dropMenuConfig.splice(0,1);
-            }else if(lev>3){
-                dropMenuConfig.splice(1,1);
-            }
-
-            UnitOption.renderDropMenu($menuBox,!state?dropMenuConfig:[]);
-    }
-
-    orgBoxInit(){
-
-        
-        API_szViews.getLayoutUserTree().then(res=>{
-
-            if(res){
-                const str = this.renderOrgJson(res.sub,0);
-                
-                $org.html(str.join(""));
-            }
-
-        });
-
-        $org.on("click",".slide-icon",function(){
-            
-            
-
-            const parLi = $(this).closest(".org-li");
-            const $parDiv = $(this).parent();
-
-            $parDiv.hasClass("org-active") && $parDiv.removeClass("org-active") || $parDiv.addClass("org-active");
-
-            const parMenu =parLi.children(".par-menu"); 
-            parMenu.slideToggle();
-
-        });
-
-        $org.on("click",".org-inp",function(){
-
-            const status =$(this).prop("checked");
-            const type = $(this).hasClass("par-checkinp");
-            const par_li = $(this).closest(".org-li");
-
-            if(type){
-                par_li.find(".has-chec").removeClass("has-chec");
-                par_li.find(".org-inp").prop("checked",status);
-            }
-
-            let lev = par_li.attr("lev");
-            if(lev!=="1"){
-                
-                let up_par_li = $(this).closest(".org-li");
-
-                while (lev > 1 ){
-                      up_par_li = up_par_li.parent().parent();
-                      lev = +up_par_li.attr("lev");
-                      const checkEl = up_par_li.children(".menuItem").find(".org-inp");
-                      const ul_par =  up_par_li.children(".par-menu") ;
-                      const ul_par_leg = ul_par.children().length;
-                      const check_leg = ul_par.children().children(".menuItem").find(".org-inp:checked").length;
-
-                     if(check_leg === 0 ){ //一个没选
-                        checkEl.siblings("label").removeClass("has-chec");
-                        checkEl.prop("checked",false);
-
-                        
-                        
-                     }else if( check_leg < ul_par_leg ){
-
-                        checkEl.prop("checked",false);
-                        checkEl.siblings("label").addClass("has-chec");
-
-
-                    
-                     }else{// 全选 
-
-                        checkEl.siblings("label").removeClass("has-chec");
-                        checkEl.prop("checked",false);
-
-                        checkEl.prop("checked",true);
-                        checkEl.siblings("label").removeClass("has-chec");
-                     }
-
-                      const is_has_chec = up_par_li.find(".has-chec").length;
-
-                     if(check_leg == 0 &&  is_has_chec){
-                        checkEl.prop("checked",false);
-                        checkEl.siblings("label").addClass("has-chec");
-                     }
-
-                }
-                
-            }
-            
-            
-
-            const selArr = [].slice.call($(".child-checkinp:checked"));
-            const strArr = selArr.map(val=>{
-                    const name = val.getAttribute("echo-name");
-                    const id = val.value ;
-
-                    return  `<li echo-id="${id}" class="sel-item menuItem">
-                                <i class="fa fa-user-circle-o">&nbsp;</i>
-                                <b>${name}</b>
-                             </li>`
-
-            });
-            $("#orgSel").html(strArr.join(""));
-
-        });
-
-    }
-
-    renderOrgJson(arr,_lev){
-
-        let lev = _lev ;
-            lev ++ ;
-        return arr.map((val,index)=>{
-            
-            const {type,id,name,sub,par_id} = val;
-
-            let data = {id , name ,lev,par_id} ;
-
-            if(type===0){
- 
-                let  childrenEl = this.renderOrgJson(sub,lev);
-
-                return this.parentComponent(childrenEl,data);
-
-            }else{
-
-                const item = this.childComponent(data);
-            
-                return  item;                   
-            
-            }
-        })
-    }
-    
-    parentComponent(child,data){
-
-        let {name,id,lev,par_id}= data;
-
-        const  indent =new Array(lev).fill(`<span class="indent"></span>`).join("");
-
-        return (`
-            <li  lev="${lev}" class="org-li">
-                <div class="menuItem par-item" echo-id="${id}">
-                    ${indent}
-                    <span class="s-checkbox">
-                        <input type="checkbox" class="par-checkinp org-inp"  par="${par_id}" value="${id}" /><label class="fa fa-square-o" ></label>
-                    </span>
-                    <i class="fa fa-folder-open-o"></i>
-                    <span>${name}</span><span class="slide-icon"><i class="fa fa-caret-down  "></i></span>
-                </div>
-                <ul class="par-menu">${child.join("")}</ul>
-            </li>
-        `);
-
-    }
-
-    childComponent(data){
-
-        let {name,id,lev}= data;
-        const  indent =new Array(lev).fill(`<span class="indent"></span>`).join("");
-    
-        return (`
-            <li lev="${lev}" class="org-li">
-                <div class="menuItem child-item" echo-id="${id}">
-                ${indent}
-                <span class="s-checkbox">
-                        <input type="checkbox" class="child-checkinp org-inp" value="${id}" echo-name="${name}" /><label class="fa fa-square-o" ></label>
-                </span>
-                <i class="fa fa-user-circle-o">&nbsp;</i>
-                ${name}
-                </div>
-            </li>
-        `);     
-    }
-   
-}
-
-
-const page = new  InitPage();
-
-$(window).on("click",function(){
-          $(".active-menu").removeClass("active-menu");
-          $(".icon-active").removeClass("icon-active");
-          $(".dataTime").hide();
-});
-
-//切换选项卡
-$tabCard.on("click",".card",function(){
-    const $this = $(this);
-    page.handleCard($this);
-
-});
-
-//  进入目录
-$tabContainer.on("click",".node-catalogue",function(){
-    const $this = $(this);
-    page.changeTabcard($this);
-
-});
-
-// 进入模板编辑器
-$tabContainer.on("click",".node-file",function(){
-    const $this = $(this);
-
-    const index = +$this.attr("echo-data");
-
-    const style = $(".style-sel").index();
-    const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
-
-
-    $("#content",window.parent.document).addClass("no-head");
-    $("#slide",window.parent.document).animate({"width":0},500,function(){
-    //  window.location.href="editTemplate";
-        window.location.href="./editTemplate.html";
-                
-    });
-});
-
-
-
-$catalogueBox.on("dblclick",".view-catalogue",function(){
-
-    clearTimeout(timer);
-    const $this = $(this);
-    const tabData = $catalogueBox.data("getData");
-    const index = +$this.attr("echo-data");
-    const childArr = tabData[index].sub;
-    page.catalogueInit(childArr);
-    const {layout_name,layout_id}=tabData[index];
-    const lastData = $tabCard.data("menuArr");
-
-    lastData.push({layout_name,index,layout_id});
-    page.tabCardInit(lastData);
-
-
-});
-
-let timer = null;
-const rotateMenu = new RotateMenu();
-
-$catalogueBox.on("click",".view-show",function(){
-    const $this = $(this);
-    clearTimeout(timer);
-    timer = setTimeout(function(){
-
-        const index =$this.attr("echo-data");
-        $this.parent().addClass("catalogue-item-sel").siblings().removeClass("catalogue-item-sel");
-        const node = $catalogueBox.data("getData")[index];
-        page.cataFooterRender(node);
-        const rangeAngle = node.layout_type===1 ? 60: 180 ;
-        rotateMenu.setPath($this,rangeAngle);
-
-    }, 200);
-
-});
-
-//切换显示风格
-$("#styleBox").on("click",".style-item",function(){
-    const $this = $(this);
-    page.changeStyle($this);
-});
-
-
-// 下拉框显示
-$("#menuBtn").click(function(e){
-    const $this = $(this);
-     e.stopPropagation();
-    UnitOption.dropMenuHandle($this,page.dropMenuCallback);
-});
-
-
-// 创建类型选择
-$menuBox.on("click",".menu-item",function(e){
-
-    e.stopPropagation();
-    const $this = $(this);
-
-    const type =$this.attr("sign");
-    $addMBtn.attr({"type":type,"method":"create"});
-    $inpName.val(null);
-        
-    const curCatalogueArr = $tab.datagrid("getData").rows.reduce(function(total,curVal){
-            // layout_type : 1 目录 ，0：文件
-            const {layout_name,layout_id,layout_type} = curVal;
-            layout_type === 1 && total.push({layout_name,layout_id});
-             return total;
-    },[]);
-    
-    const menuArr = $tabCard.data("menuArr");
-    const curId = menuArr[menuArr.length-1].layout_id;
-    curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});  
-    
-    page.parCatalogSel.loadData(curCatalogueArr);
-    page.parCatalogSel.setValue(curId);
-    page.modal.show($addMView);
-
-});
-
-//模态框确定按钮
-$addMBtn.click(function(){
-
-    const type = $(this).attr("type");
-    const method = $(this).attr("method");
-    const name = $inpName.val().trim();
-    const par_id = method==="create" ? page.parCatalogSel.getValue() : $ViewContainer.attr("curid");
-    const style = $(".style-sel").index() ? "catalogue":"tab";
-
-
-    if(name){
-        method==="create" ? page.addCatalogue(type,{name,par_id},style) : API_szViews.updataName({name,id:par_id}).then(res=>{
-
-                if(res){
-                        const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-                              return  val.index ;
-                        }) ;
-                         page.tabInit(menuIndexArr,style);
-                         page.modal.close($addMView);
-                }else{
-                    alert("重名");
-                }
-
-            }).catch(res=>{
-
-                console.log(res);
-            })
-    }
-
-});
-
-//删除
-$("#delBtn").click(function(){
-    
-    const selArr = $.map($(".checkSingle:checked"),function(val){
-        return val.value;
-    });
-    
-    if(!selArr.length){
-        return ;
-    }
-    const id = selArr.join(",");
-    page.modal.show($confirmMView);
-    $confirmBtn.attr("delArr",id);
-    
-});
-// 删除模态框确认按钮
-$confirmBtn.click(function(){
-
-    UnitOption.renderTipM($svg_statusBox,"#g-load");
-    const id = $(this).attr("delArr");
-    $tipText.html("");
-    API_szViews.updataRecycle({user_id,id}).then(res=>{
-        $svg_statusBox.addClass("g-status");
-        if(res){
-            const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-                      return  val.index ;
-            }) ;
-            page.tabInit(menuIndexArr);
-            UnitOption.renderTipM($svg_statusBox,"#g-success");
-        }else{
-            UnitOption.renderTipM($svg_statusBox,"#g-error");
-        }
-
-    });
-
-})
-
-//复选框事件
-$tabContainer.on("click",".checkSingle",function(){
-    page.checkSingleHandle($tabContainer);
-});
-
-
-//操作按钮
-$ViewContainer.on("click",".tab-opt",function(e){
-    const type = $(this).attr("node-sign");
-    const index = $(this).parent().attr("echo-data");
-
-    const style = $(".style-sel").index();
-    const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
-
-    const {layout_type,layout_id,layout_icon,layout_icon_name,layout_name} = data ;    
-    const last_layoutId = +$ViewContainer.attr("curId");
-
-    switch(type){
-
-        case "pre":
-            break;
-        case "issue":
-            
-             
-
-                API_szViews.showReleaseLayout(layout_id).then(res=>{
-                                if(res){
-                                    
-                                    page.modal.show($issueMView);
-                                    const {user,starttime,endtime,release} = res;
-                                
-                                    [].slice.call($issueMView.find(".s-switch input")).map((val,index)=>{
-
-                                            switch(index){
-                                                case 0 : //时间
-                                                    const status =  starttime == "-1" ;
-                                                    val.checked= status ;
-
-                                                    if(status){
-                                                        $(val).parent().siblings(".time-inpbox").removeClass("active");
-                                                    }else{
-                                                        $(val).parent().siblings(".time-inpbox").addClass("active");
-                                                        page.calendar.setTime([starttime,endtime]);
-                                                    }
-
-                                                    break;
-                                                case 1 ://用户
-                                                    const status_2 =  user[0] == "-1" ;
-                                                    val.checked= status_2 ;
-
-                                                    if(status_2){
-                                                        $(val).closest(".item-status").siblings(".org-box").removeClass("active");
-                                                    }else{
-                                                        $(val).closest(".item-status").siblings(".org-box").addClass("active");
-
-                                                        $org.find(".org-inp").prop("checked",false).removeClass("has-chec");
-                                                        user.map(val=>{
-
-                                                            $org.find(`.child-checkinp[value=${val}]`).click();
-                                                        })
-
-                                                        
-                                                    }
-                                            
-                                                    break;
-                                                case 2 :
-                                                    const status_3 =  release === 1 ;
-                                                    val.checked= status_3 ;
-                                                    break;
-                                            }
-                                      });
-                                }
-                });
-            break;
-        case "copy":
-            break;
-        case "rename":
-            page.modal.show($addMView);
-            $parName.parent().hide();
-            $addMBtn.attr({"method":"modify"});
-             $inpName.val(layout_name);
-             $inpName.parent().addClass("inp-fill");
-            break;
-        case "icon":
-            e.stopPropagation();
-            const $parContainer = $iconBox.parent();
-            const status = $parContainer.hasClass("icon-active");
-            const $iconBoxItem = $(".iconBox-item");
-
-            $iconBoxItem.css("display","none");
-            $iconBoxItem.eq(2-layout_type).css("display","flex");
-            $(".icon-sel").removeClass("icon-sel");
-            $iconBox.find("."+layout_icon_name.trim()).addClass("icon-sel");
-
-          !status || last_layoutId !== layout_id ? page.modal.show($parContainer,"icon-active") :page.modal.close($parContainer,"icon-active") ;
-            break;
-    }
-
-
-    $ViewContainer.attr("curId",layout_id);
-
-});
-
-
-//选择icon
-$iconBox.on("click",".sicon",function(){
-    $(".icon-sel").removeClass("icon-sel");
-    $(this).addClass("icon-sel");
-});
-//操作icon
-$("#iconFooter").on("click","p",function(){
-
-    const sign = $(this).attr("sign");
-    const $parContainer = $iconBox.parent();
-
-    switch(sign){
-        case "sub":
-            
-            const id = $ViewContainer.attr("curId");
-            const icon_id =$(".icon-sel").attr("echo-data");
-
-            API_szViews.updataIcon({icon_id,id}).then(res=>{
-
-                if(res){
-                    page.modal.close($parContainer,"icon-active") ;
-                    const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-                      return  val.index ;
-                    }) ;
-
-                    const style =$(".style-sel").index() ? "catalogue" :"tab";
-
-                    page.tabInit(menuIndexArr,style);
-                } 
-            
-                
-            });
-
-            break;
-        case "close":
-            page.modal.close($parContainer,"icon-active") ;
-            break;
-    }
-});
-
-$("#iconContainer").on("click",function(e){
-    e.stopPropagation();
-});
-
-//发布
-$("#issueBtn").click(function(){
-
-    const id= +$ViewContainer.attr("curid");
-
-    let user = ["-1"],
-        starttime ="-1",
-        endtime = "-1",
-        release = 1 ;
-
-    const switchs = [].slice.call($issueMView.find(".s-switch input"));
-
-    switchs.map((val,index)=>{
-        const status = val.checked;
-        if(!status){
-            switch(index){
-                case 0:
-                    const timeValue =page.calendar.value;
-                    starttime = timeValue[0].join("");
-                    endtime = timeValue[1].join("");
-                    break;
-                case 1:
-                    const selArr =$.map($issueMView.find(".child-checkinp:checked"),val=>{
-                        return val.value;
-                    });
-                    user = !selArr.length && null || selArr ;
-
-                    break;
-                case 2:
-                     release = 0 ;
-                    break;
-    
-            }
-
-        }       
-    });
-
-
-    if(!user){
-        alert("请选择可见用户！");
-        return ;
-    }
-    
-    API_szViews.ReleaseLayout({id,user,starttime,endtime,release}).then(res=>{
-        if(res){
-            alert("成功！");
-            const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-                      return  val.index ;
-            }) ;
-            page.tabInit(menuIndexArr);
-            page.modal.close($issueMView);
-        }else{
-            alert("发布失败！");
-        }
-    });
-});
-
-//开关
-$issueMView.on("click",".s-switch",function(){
-
-    const type = $(this).attr("sign");
-
-    switch(type){
-
-        case "time":
-            $(this).siblings(".time-inpbox").toggleClass("active");
-            break;
-        case "org":
-            $(this).parent().siblings(".org-box").toggleClass("active");
-            break;
-
-    }
-});
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const kpiTree = {
     "data": [
@@ -10657,338 +9659,892 @@ const orgTree = {
             }, ]
         };
 
-const dimTree = [
-{
-    dim_id: '3',
-    dim_name: '住院重点疾病维度',
-    data: [{
-        dim_value_id: '301',
-        dim_value_name: '急性心肌梗死 '
-    }, {
-        dim_value_id: '302',
-        dim_value_name: '充血性心力衰竭 '
-    }, {
-        dim_value_id: '303',
-        dim_value_name: '脑出血和脑梗死'
-    }, {
-        dim_value_id: '304',
-        dim_value_name: '创伤性颅脑损伤  '
-    }, {
-        dim_value_id: '305',
-        dim_value_name: '消化道出血（无并发症） '
-    }, {
-        dim_value_id: '306',
-        dim_value_name: '累及身体多部位的损伤'
-    }, {
-        dim_value_id: '307',
-        dim_value_name: '细菌性肺炎（成人、无并发症）'
-    }, {
-        dim_value_id: '308',
-        dim_value_name: '慢性阻塞性肺疾病'
-    }, {
-        dim_value_id: '309',
-        dim_value_name: '糖尿病短期并发症与长期并发症 '
-    }, {
-        dim_value_id: '310',
-        dim_value_name: '结节性甲状腺肿'
-    }, {
-        dim_value_id: '311',
-        dim_value_name: '急性阑尾炎伴弥漫性腹膜炎及脓肿'
-    }, {
-        dim_value_id: '312',
-        dim_value_name: '前列腺增生 '
-    }, {
-        dim_value_id: '313',
-        dim_value_name: '肾衰竭'
-    }, {
-        dim_value_id: '314',
-        dim_value_name: '败血症（成人）'
-    }, {
-        dim_value_id: '315',
-        dim_value_name: '高血压（成人）'
-    }, {
-        dim_value_id: '316',
-        dim_value_name: '急性胰腺炎 '
-    }, {
-        dim_value_id: '317',
-        dim_value_name: '恶性肿瘤术后化疗'
-    }, {
-        dim_value_id: '318',
-        dim_value_name: '恶性肿瘤术后维持性化疗'
-    }]
-}, {
-    dim_id: '4',
-    dim_name: '住院重点手术病种维度',
-    data: [{
-        dim_value_id: '401',
-        dim_value_name: '髋、膝关节置换术'
-    }, {
-        dim_value_id: '402',
-        dim_value_name: '椎板切除术或脊柱融合相关手术 '
-    }, {
-        dim_value_id: '403',
-        dim_value_name: '胰腺切除术 '
-    }, {
-        dim_value_id: '404',
-        dim_value_name: '食管切除术'
-    }, {
-        dim_value_id: '405',
-        dim_value_name: '腹腔镜下胆囊切除术'
-    }, {
-        dim_value_id: '406',
-        dim_value_name: '冠状动脉旁路移植术（CABG）'
-    }, {
-        dim_value_id: '407',
-        dim_value_name: '经皮冠状动脉介入治疗（PCI）'
-    }, {
-        dim_value_id: '408',
-        dim_value_name: '颅、脑手术'
-    }, {
-        dim_value_id: '409',
-        dim_value_name: '子宫切除术'
-    }, {
-        dim_value_id: '410',
-        dim_value_name: '剖宫产'
-    }, {
-        dim_value_id: '411',
-        dim_value_name: '阴道分娩'
-    }, {
-        dim_value_id: '412',
-        dim_value_name: '乳腺手术'
-    }, {
-        dim_value_id: '413',
-        dim_value_name: '肺切除术'
-    }, {
-        dim_value_id: '414',
-        dim_value_name: '胃切除术'
-    }, {
-        dim_value_id: '415',
-        dim_value_name: '直肠切除术'
-    }, {
-        dim_value_id: '416',
-        dim_value_name: '肾与前列腺相关手术'
-    }, {
-        dim_value_id: '417',
-        dim_value_name: '血管内修补术'
-    }, {
-        dim_value_id: '418',
-        dim_value_name: '恶性肿瘤手术'
-    }, {
-        dim_value_id: '419',
-        dim_value_name: '甲状腺癌联合根治术'
-    }, {
-        dim_value_id: '421',
-        dim_value_name: ' 喉癌联合根治术 '
-    }, {
-        dim_value_id: '422',
-        dim_value_name: '肺叶切除术'
-    }, {
-        dim_value_id: '423',
-        dim_value_name: '食管部分切除、食管胃弓上吻合术'
-    }, {
-        dim_value_id: '424',
-        dim_value_name: '胃恶性肿瘤手术'
-    }, {
-        dim_value_id: '425',
-        dim_value_name: '肝恶性肿瘤手术'
-    }, {
-        dim_value_id: '426',
-        dim_value_name: '结肠、直肠恶性肿瘤手术'
-    }, {
-        dim_value_id: '428',
-        dim_value_name: '胰腺恶性肿瘤手术'
-    }, {
-        dim_value_id: '429',
-        dim_value_name: '乳腺恶性肿瘤手术'
-    }, {
-        dim_value_id: '430',
-        dim_value_name: '肾恶性肿瘤手术'
-    }, {
-        dim_value_id: '431',
-        dim_value_name: '前列腺癌根治术'
-    }, {
-        dim_value_id: '432',
-        dim_value_name: '根治性膀胱切除 '
-    }, {
-        dim_value_id: '433',
-        dim_value_name: '双侧输卵管-卵癌切除术'
-    }, {
-        dim_value_id: '434',
-        dim_value_name: '全子宫切除术'
-    }, {
-        dim_value_id: '435',
-        dim_value_name: '盆腔淋巴结清扫术'
-    }]
-}, {
-    dim_id: '5',
-    dim_name: '单病种名称维度',
-    data: [{
-        dim_value_id: '501',
-        dim_value_name: '急性心肌梗死'
-    }, {
-        dim_value_id: '502',
-        dim_value_name: '心力衰竭'
-    }, {
-        dim_value_id: '503',
-        dim_value_name: '社区获得性肺炎CAP--住院、成人'
-    }, {
-        dim_value_id: '504',
-        dim_value_name: '髋关节置换术'
-    }, {
-        dim_value_id: '505',
-        dim_value_name: '膝关节置换术'
-    }, {
-        dim_value_id: '506',
-        dim_value_name: '脑梗死STK'
-    }, {
-        dim_value_id: '507',
-        dim_value_name: '社区获得性肺炎--住院、儿童'
-    }, {
-        dim_value_id: '508',
-        dim_value_name: '围术期预防感染(PIP)'
-    }, {
-        dim_value_id: '509',
-        dim_value_name: '剖宫产术（CS）'
-    }, {
-        dim_value_id: '510',
-        dim_value_name: '慢性阻塞性肺疾病（急性加重期住院）'
-    }, {
-        dim_value_id: '511',
-        dim_value_name: '围手术期预防深静脉血栓栓塞（DVT）'
-    }]
-}, {
-    dim_id: '6',
-    dim_name: '前15位疾病维度',
-    data: [{
-        dim_value_id: '600',
-        dim_value_name: '为肿瘤化学治疗疗程'
-    }, {
-        dim_value_id: '601',
-        dim_value_name: '妊娠期发生的糖尿病'
-    }, {
-        dim_value_id: '602',
-        dim_value_name: '未特指的支气管肺炎'
-    }, {
-        dim_value_id: '603',
-        dim_value_name: '其他特指的医疗照顾'
-    }, {
-        dim_value_id: '604',
-        dim_value_name: '其他特指的椎间盘移位'
-    }, {
-        dim_value_id: '605',
-        dim_value_name: '为以前的子宫手术瘢痕给予的孕产妇医疗'
-    }, {
-        dim_value_id: '606',
-        dim_value_name: '分娩时Ⅰ度会阴裂伤'
-    }, {
-        dim_value_id: '607',
-        dim_value_name: '未特指的急性阑尾炎'
-    }, {
-        dim_value_id: '608',
-        dim_value_name: '非胰岛素依赖型糖尿病伴有多个并发症'
-    }, {
-        dim_value_id: '609',
-        dim_value_name: '肺的其他疾患'
-    }, {
-        dim_value_id: '610',
-        dim_value_name: '胎膜早破,在24小时之内产程开始'
-    }, {
-        dim_value_id: '611',
-        dim_value_name: '稽留流产'
-    }, {
-        dim_value_id: '612',
-        dim_value_name: '贫血并发于妊娠、分娩和产褥期'
-    }, {
-        dim_value_id: '613',
-        dim_value_name: '乳头腺瘤'
-    }, {
-        dim_value_id: '614',
-        dim_value_name: '肾盂积水伴有肾和输尿管结石梗阻'
-    }, {
-        dim_value_id: '615',
-        dim_value_name: '未特指的细菌性肺炎'
-    }, {
-        dim_value_id: '616',
-        dim_value_name: '产程和分娩并发脐带绕颈并伴有受压'
-    }, {
-        dim_value_id: '617',
-        dim_value_name: '涉及骨折板和其他内固定装置的随诊医疗'
-    }, {
-        dim_value_id: '618',
-        dim_value_name: '肾积脓'
-    }, {
-        dim_value_id: '700',
-        dim_value_name: '乳房良性肿瘤'
-    }]
-}, {
-    dim_id: '7',
-    dim_name: '前15位手术维度',
-    data: [{
-        dim_value_id: '700',
-        dim_value_name: '子宫下段剖宫产术'
-    }, {
-        dim_value_id: '701',
-        dim_value_name: '会阴侧切缝合术'
-    }, {
-        dim_value_id: '702',
-        dim_value_name: '会阴产科裂伤修补术'
-    }, {
-        dim_value_id: '703',
-        dim_value_name: '分娩时人工破膜'
-    }, {
-        dim_value_id: '704',
-        dim_value_name: '腹腔镜检查术'
-    }, {
-        dim_value_id: '705',
-        dim_value_name: '其他治疗性超声'
-    }, {
-        dim_value_id: '706',
-        dim_value_name: '肛门括约肌切断术'
-    }, {
-        dim_value_id: '707',
-        dim_value_name: '胃镜检查术'
-    }, {
-        dim_value_id: '708',
-        dim_value_name: '宫腔镜检查'
-    }, {
-        dim_value_id: '709',
-        dim_value_name: '痔注射术'
-    }, {
-        dim_value_id: '710',
-        dim_value_name: '其它计算机辅助外科手术'
-    }, {
-        dim_value_id: '711',
-        dim_value_name: '痔切除术'
-    }, {
-        dim_value_id: '712',
-        dim_value_name: '扩张和刮宫术,分娩或流产后'
-    }, {
-        dim_value_id: '713',
-        dim_value_name: '痔套扎术'
-    }, {
-        dim_value_id: '714',
-        dim_value_name: '药物引产,静脉滴注催产素'
-    }, {
-        dim_value_id: '715',
-        dim_value_name: '导尿管插入术'
-    }, {
-        dim_value_id: '716',
-        dim_value_name: '药物置入用于流产'
-    }, {
-        dim_value_id: '717',
-        dim_value_name: '荧光透视的计算机辅助外科手术'
-    }, {
-        dim_value_id: '718',
-        dim_value_name: '冠状动脉造影,两根导管'
-    }, {
-        dim_value_id: '719',
-        dim_value_name: '阑尾切除术,经腹腔镜'
-    }, {
-        dim_value_id: '720',
-        dim_value_name: '耳镜检查术'
-    }, {
-        dim_value_id: '721',
-        dim_value_name: '可曲性光学纤维结肠镜检查术'
-    }]
-}]
+const dimTree = {
+    "dim_id": null,
+    "dim_name": null,
+    "type": null,
+    "dim_value": "-2",
+    "par_id": null,
+    "sub": [
+        {
+            "dim_id": "3",
+            "dim_name": "住院重点疾病维度",
+            "type": "0",
+            "dim_value": "319",
+            "par_id": "-2",
+            "sub": [
+                {
+                    "dim_id": "3",
+                    "dim_name": "急性心肌梗死 ",
+                    "type": "1",
+                    "dim_value": "301",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "充血性心力衰竭 ",
+                    "type": "1",
+                    "dim_value": "302",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "脑出血和脑梗死",
+                    "type": "1",
+                    "dim_value": "303",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "创伤性颅脑损伤  ",
+                    "type": "1",
+                    "dim_value": "304",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "消化道出血（无并发症） ",
+                    "type": "1",
+                    "dim_value": "305",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "累及身体多部位的损伤",
+                    "type": "1",
+                    "dim_value": "306",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "细菌性肺炎（成人、无并发症）",
+                    "type": "1",
+                    "dim_value": "307",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "慢性阻塞性肺疾病",
+                    "type": "1",
+                    "dim_value": "308",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "糖尿病短期并发症与长期并发症 ",
+                    "type": "1",
+                    "dim_value": "309",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "结节性甲状腺肿",
+                    "type": "1",
+                    "dim_value": "310",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "急性阑尾炎伴弥漫性腹膜炎及脓肿",
+                    "type": "1",
+                    "dim_value": "311",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "前列腺增生 ",
+                    "type": "1",
+                    "dim_value": "312",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "肾衰竭",
+                    "type": "1",
+                    "dim_value": "313",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "败血症（成人）",
+                    "type": "1",
+                    "dim_value": "314",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "高血压（成人）",
+                    "type": "1",
+                    "dim_value": "315",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "急性胰腺炎 ",
+                    "type": "1",
+                    "dim_value": "316",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "恶性肿瘤术后化疗",
+                    "type": "1",
+                    "dim_value": "317",
+                    "par_id": "319",
+                    "sub": []
+                },
+                {
+                    "dim_id": "3",
+                    "dim_name": "恶性肿瘤术后维持性化疗",
+                    "type": "1",
+                    "dim_value": "318",
+                    "par_id": "319",
+                    "sub": []
+                }
+            ]
+        },
+        {
+            "dim_id": "4",
+            "dim_name": "住院重点手术维度",
+            "type": "0",
+            "dim_value": "450",
+            "par_id": "-2",
+            "sub": [
+                {
+                    "dim_id": "4",
+                    "dim_name": "髋、膝关节置换术",
+                    "type": "1",
+                    "dim_value": "401",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "椎板切除术或脊柱融合相关手术 ",
+                    "type": "1",
+                    "dim_value": "402",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "胰腺切除术 ",
+                    "type": "1",
+                    "dim_value": "403",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "食管切除术",
+                    "type": "1",
+                    "dim_value": "404",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "腹腔镜下胆囊切除术",
+                    "type": "1",
+                    "dim_value": "405",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "冠状动脉旁路移植术（CABG）",
+                    "type": "1",
+                    "dim_value": "406",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "经皮冠状动脉介入治疗（PCI）",
+                    "type": "1",
+                    "dim_value": "407",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "颅、脑手术",
+                    "type": "1",
+                    "dim_value": "408",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "子宫切除术",
+                    "type": "1",
+                    "dim_value": "409",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "剖宫产",
+                    "type": "1",
+                    "dim_value": "410",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "阴道分娩",
+                    "type": "1",
+                    "dim_value": "411",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "乳腺手术",
+                    "type": "1",
+                    "dim_value": "412",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "肺切除术",
+                    "type": "1",
+                    "dim_value": "413",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "胃切除术",
+                    "type": "1",
+                    "dim_value": "414",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "直肠切除术",
+                    "type": "1",
+                    "dim_value": "415",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "肾与前列腺相关手术",
+                    "type": "1",
+                    "dim_value": "416",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "血管内修补术",
+                    "type": "1",
+                    "dim_value": "417",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "4",
+                    "dim_name": "恶性肿瘤手术",
+                    "type": "1",
+                    "dim_value": "418",
+                    "par_id": "450",
+                    "sub": [
+                        {
+                            "dim_id": "4",
+                            "dim_name": "甲状腺癌联合根治术",
+                            "type": "1",
+                            "dim_value": "419",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": " 喉癌联合根治术 ",
+                            "type": "1",
+                            "dim_value": "421",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "肺叶切除术",
+                            "type": "1",
+                            "dim_value": "422",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "食管部分切除、食管胃弓上吻合术",
+                            "type": "1",
+                            "dim_value": "423",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "胃恶性肿瘤手术",
+                            "type": "1",
+                            "dim_value": "424",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "肝恶性肿瘤手术",
+                            "type": "1",
+                            "dim_value": "425",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "结肠、直肠恶性肿瘤手术",
+                            "type": "1",
+                            "dim_value": "426",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "胰腺恶性肿瘤手术",
+                            "type": "1",
+                            "dim_value": "428",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "乳腺恶性肿瘤手术",
+                            "type": "1",
+                            "dim_value": "429",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "肾恶性肿瘤手术",
+                            "type": "1",
+                            "dim_value": "430",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "前列腺癌根治术",
+                            "type": "1",
+                            "dim_value": "431",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "根治性膀胱切除 ",
+                            "type": "1",
+                            "dim_value": "432",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "双侧输卵管-卵癌切除术",
+                            "type": "1",
+                            "dim_value": "433",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "全子宫切除术",
+                            "type": "1",
+                            "dim_value": "434",
+                            "par_id": "418",
+                            "sub": []
+                        },
+                        {
+                            "dim_id": "4",
+                            "dim_name": "盆腔淋巴结清扫术",
+                            "type": "1",
+                            "dim_value": "435",
+                            "par_id": "418",
+                            "sub": []
+                        }
+                    ]
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "阑尾切除术,经腹腔镜",
+                    "type": "1",
+                    "dim_value": "719",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "耳镜检查术",
+                    "type": "1",
+                    "dim_value": "720",
+                    "par_id": "450",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "可曲性光学纤维结肠镜检查术",
+                    "type": "1",
+                    "dim_value": "721",
+                    "par_id": "450",
+                    "sub": []
+                }
+            ]
+        },
+        {
+            "dim_id": "5",
+            "dim_name": "单病种维度",
+            "type": "0",
+            "dim_value": "500",
+            "par_id": "-2",
+            "sub": [
+                {
+                    "dim_id": "5",
+                    "dim_name": "急性心肌梗死",
+                    "type": "1",
+                    "dim_value": "501",
+                    "par_id": "500",
+                    "sub": []
+                },
+                {
+                    "dim_id": "5",
+                    "dim_name": "心力衰竭",
+                    "type": "1",
+                    "dim_value": "502",
+                    "par_id": "500",
+                    "sub": []
+                },
+                {
+                    "dim_id": "5",
+                    "dim_name": "社区获得性肺炎CAP--住院、成人",
+                    "type": "1",
+                    "dim_value": "503",
+                    "par_id": "500",
+                    "sub": []
+                },
+                {
+                    "dim_id": "5",
+                    "dim_name": "髋关节置换术",
+                    "type": "1",
+                    "dim_value": "504",
+                    "par_id": "500",
+                    "sub": []
+                },
+                {
+                    "dim_id": "5",
+                    "dim_name": "膝关节置换术",
+                    "type": "1",
+                    "dim_value": "505",
+                    "par_id": "500",
+                    "sub": []
+                },
+                {
+                    "dim_id": "5",
+                    "dim_name": "脑梗死STK",
+                    "type": "1",
+                    "dim_value": "506",
+                    "par_id": "500",
+                    "sub": []
+                },
+                {
+                    "dim_id": "5",
+                    "dim_name": "社区获得性肺炎--住院、儿童",
+                    "type": "1",
+                    "dim_value": "507",
+                    "par_id": "500",
+                    "sub": []
+                },
+                {
+                    "dim_id": "5",
+                    "dim_name": "围术期预防感染(PIP)",
+                    "type": "1",
+                    "dim_value": "508",
+                    "par_id": "500",
+                    "sub": []
+                },
+                {
+                    "dim_id": "5",
+                    "dim_name": "剖宫产术（CS）",
+                    "type": "1",
+                    "dim_value": "509",
+                    "par_id": "500",
+                    "sub": []
+                },
+                {
+                    "dim_id": "5",
+                    "dim_name": "慢性阻塞性肺疾病（急性加重期住院）",
+                    "type": "1",
+                    "dim_value": "510",
+                    "par_id": "500",
+                    "sub": []
+                },
+                {
+                    "dim_id": "5",
+                    "dim_name": "围手术期预防深静脉血栓栓塞（DVT）",
+                    "type": "1",
+                    "dim_value": "511",
+                    "par_id": "500",
+                    "sub": []
+                }
+            ]
+        },
+        {
+            "dim_id": "6",
+            "dim_name": "前15位疾病维度",
+            "type": "0",
+            "dim_value": "599",
+            "par_id": "-2",
+            "sub": [
+                {
+                    "dim_id": "6",
+                    "dim_name": "为肿瘤化学治疗疗程",
+                    "type": "1",
+                    "dim_value": "600",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "妊娠期发生的糖尿病",
+                    "type": "1",
+                    "dim_value": "601",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "未特指的支气管肺炎",
+                    "type": "1",
+                    "dim_value": "602",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "其他特指的医疗照顾",
+                    "type": "1",
+                    "dim_value": "603",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "其他特指的椎间盘移位",
+                    "type": "1",
+                    "dim_value": "604",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "为以前的子宫手术瘢痕给予的孕产妇医疗",
+                    "type": "1",
+                    "dim_value": "605",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "分娩时Ⅰ度会阴裂伤",
+                    "type": "1",
+                    "dim_value": "606",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "未特指的急性阑尾炎",
+                    "type": "1",
+                    "dim_value": "607",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "非胰岛素依赖型糖尿病伴有多个并发症",
+                    "type": "1",
+                    "dim_value": "608",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "肺的其他疾患",
+                    "type": "1",
+                    "dim_value": "609",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "胎膜早破,在24小时之内产程开始",
+                    "type": "1",
+                    "dim_value": "610",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "稽留流产",
+                    "type": "1",
+                    "dim_value": "611",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "贫血并发于妊娠、分娩和产褥期",
+                    "type": "1",
+                    "dim_value": "612",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "乳头腺瘤",
+                    "type": "1",
+                    "dim_value": "613",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "肾盂积水伴有肾和输尿管结石梗阻",
+                    "type": "1",
+                    "dim_value": "614",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "未特指的细菌性肺炎",
+                    "type": "1",
+                    "dim_value": "615",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "产程和分娩并发脐带绕颈并伴有受压",
+                    "type": "1",
+                    "dim_value": "616",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "涉及骨折板和其他内固定装置的随诊医疗",
+                    "type": "1",
+                    "dim_value": "617",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "肾积脓",
+                    "type": "1",
+                    "dim_value": "618",
+                    "par_id": "599",
+                    "sub": []
+                },
+                {
+                    "dim_id": "6",
+                    "dim_name": "乳房良性肿瘤",
+                    "type": "1",
+                    "dim_value": "700",
+                    "par_id": "599",
+                    "sub": []
+                }
+            ]
+        },
+        {
+            "dim_id": "7",
+            "dim_name": "前15位手术维度",
+            "type": "0",
+            "dim_value": "699",
+            "par_id": "-2",
+            "sub": [
+                {
+                    "dim_id": "7",
+                    "dim_name": "子宫下段剖宫产术",
+                    "type": "1",
+                    "dim_value": "700",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "会阴侧切缝合术",
+                    "type": "1",
+                    "dim_value": "701",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "会阴产科裂伤修补术",
+                    "type": "1",
+                    "dim_value": "702",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "分娩时人工破膜",
+                    "type": "1",
+                    "dim_value": "703",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "腹腔镜检查术",
+                    "type": "1",
+                    "dim_value": "704",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "其他治疗性超声",
+                    "type": "1",
+                    "dim_value": "705",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "肛门括约肌切断术",
+                    "type": "1",
+                    "dim_value": "706",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "胃镜检查术",
+                    "type": "1",
+                    "dim_value": "707",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "宫腔镜检查",
+                    "type": "1",
+                    "dim_value": "708",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "痔注射术",
+                    "type": "1",
+                    "dim_value": "709",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "其它计算机辅助外科手术",
+                    "type": "1",
+                    "dim_value": "710",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "痔切除术",
+                    "type": "1",
+                    "dim_value": "711",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "扩张和刮宫术,分娩或流产后",
+                    "type": "1",
+                    "dim_value": "712",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "痔套扎术",
+                    "type": "1",
+                    "dim_value": "713",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "药物引产,静脉滴注催产素",
+                    "type": "1",
+                    "dim_value": "714",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "导尿管插入术",
+                    "type": "1",
+                    "dim_value": "715",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "药物置入用于流产",
+                    "type": "1",
+                    "dim_value": "716",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "荧光透视的计算机辅助外科手术",
+                    "type": "1",
+                    "dim_value": "717",
+                    "par_id": "699",
+                    "sub": []
+                },
+                {
+                    "dim_id": "7",
+                    "dim_name": "冠状动脉造影,两根导管",
+                    "type": "1",
+                    "dim_value": "718",
+                    "par_id": "699",
+                    "sub": []
+                }
+            ]
+        }
+    ]
+}
+
 export {kpiTree,orgTree,dimTree}
