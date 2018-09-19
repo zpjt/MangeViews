@@ -36,7 +36,6 @@ class API {
 				})
 			);
 	}
-	
 	addKpiAlarm(obj){
 			return Promise.resolve(
 				$.ajax({
@@ -57,7 +56,37 @@ class API {
 				})
 			);
 	}
+	deleteAlarmModel(obj){
 
+	 return Promise.resolve(
+				$.ajax({
+					method:"post",
+					url:URL+"deleteAlarmModel",
+					contentType:"application/json",
+					data:JSON.stringify(obj),
+				})
+			);
+	}
+	addAlarmModel(obj){
+		return Promise.resolve(
+				$.ajax({
+					method:"post",
+					url:URL+"addAlarmModel",
+					contentType:"application/json",
+					data:JSON.stringify(obj),
+				})
+			);
+	}
+	updateAlarmModel(obj){
+		return Promise.resolve(
+				$.ajax({
+					method:"post",
+					url:URL+"updateAlarmModel",
+					contentType:"application/json",
+					data:JSON.stringify(obj),
+				})
+		);
+	}
 }  
 
 const api = new API();

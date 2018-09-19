@@ -1,29 +1,35 @@
 import "css/kpiWarning.scss";
-
 import {api} from "api/kpiWarning.js";
-
 import {EasyUITab} from "js/common/EasyUITab.js";
 import {Unit, SModal, SComboTree ,SInp,Calendar,SCombobox} from "js/common/Unit.js";
 
-
-/* 
- jq 对象
- @$table：回收表格 
+/**
+ * @user_id ：用户id
  */
-
  const {user_id} = window.jsp_config;
 
+/**
+ * $tableBox description]:预警表格容器
+ * [$table description]：预警表格，用来使用 easyui的datagrid
+ * [$addMBtn description]:添加模态框的确定按钮
+ * [$addModal description]：添加模态框容器
+ * [$dimBox description]：主题维度下拉框的容器
+ * [$gMessage description]：自定义短信模板的布局容器
+ */
 
  const $tableBox = $("#tabBox"),
        $table = $("#tab"),
        $addMBtn = $("#addMBtn"),
        $dimBox = $("#j-dimBox"),
+       $gMessage = $("#g-message"),
        $addModal = $("#addModal");
 
-
+/**
+ * 预警指标表格组件
+ */
 class Table extends EasyUITab{
 
-	constructor(){
+	constructor()	{
        super();
        this.setPageHeight($tableBox,96);
        this.handle();
@@ -169,6 +175,9 @@ class Table extends EasyUITab{
     }
 }
 
+/**
+ * 短信模板表格
+ */
 class MessageTab extends EasyUITab{
 
 	constructor(){
@@ -186,16 +195,36 @@ class MessageTab extends EasyUITab{
 			frozenColumns: this.frozenColumns(idField,{
 				order:false,
 			}),
+		    onAfterEdit:function(rowIndex, rowData, changes){
+
+		    	const has_change = Object.keys(changes);
+
+		    	if(!has_change.length){
+					return ;
+		    	}
+				
+				const method = rowData.id && "updateAlarmModel" || "addAlarmModel" ;
+				api[method](rowData).then(res=>{
+					if(res){
+						method === "addAlarmModel" && page.addModal.getAllAlarmModel();
+						page.unit.tipToast("短信添加成功！");
+					}else{
+						page.unit.tipToast("短信添加失败！");
+					}
+				});	
+		    },
 			columns: [
 				[{
 					field: 'model_name',
 					title: '模板名称',
-					width: "20%",
+					editor:"textbox",
+					width: "25%",
 				}, 
 				{
 					field: 'model_text',
 					title: '模板内容',
-					width: "50%",
+					width: "55%",
+					editor:"textbox",
 					formatter:function(val,rowData){
 						
 						return `<b>${val}</b>`;
@@ -204,15 +233,16 @@ class MessageTab extends EasyUITab{
 				{
 					field: 'optBtn',
 					title: '操作',
-					width: "20%",
-					formatter: function(val, rowData,index) {
+					width: "16%",
+					formatter: function(val,rowData,index) {
+
+						const editStatus = !rowData.id ? "s-editing" : "";
 						
-						let str = `
-										<div class="tab-opt s-btn s-Naira" node-sign="edit">
-												<i class="fa fa-edit"></i>
-												<span>编辑</span>	
+						let str =  `
+										<div class="j-handle s-btn s-Naira ${editStatus}" sign="j-edit">
+												${ editStatus? `<i class="fa fa-check"></i><span>提交</span>` :`<i class="fa fa-edit"></i> <span>编辑</span>`}	
 										</div>
-							   		`;
+							   		` ;
 
 						return `
 								<div class="tabBtnBox" echo-data='${index}' >
@@ -266,9 +296,9 @@ class MessageTab extends EasyUITab{
     }
 }
 
-
-
-
+/**
+ * 添加模态框
+ */
 class AddModal{
 
 	constructor(){
@@ -287,7 +317,7 @@ class AddModal{
 		this.optId = "";
 		this.$title = $("#s-Mtitle");
 		this.messageTab = new MessageTab();
-		//this.messageTab.loadTab();
+		
 	}
 
 	setValue(node){
@@ -372,11 +402,44 @@ class AddModal{
 				$addMBtn.removeAttr("disabled");
 
 			}else{
-				alert("出错！")
+				page.unit.tipToast("指标分类失败！");
 			}
 		})
 	}
+	/**
+	 * [getAllAlarmModel description]
+	 * @param  {Boolean} first [是否第一次加载,第一次不加装短信模板表格]
+	 * @return {[type]}        [description]
+	 */
+	getAllAlarmModel(first=false,reloadCombox = false){
 
+		api.getAllAlarmModel().then(res=>{
+			if(res){
+				if(first){
+					this.messageCombox = new SCombobox($("#messageCombox"),{
+											"data":res,
+											"textField":"model_text",
+											"defaultVal": "",
+											 width:420,
+											 dropFormatter:function(node){
+													return node.model_name;
+											 }
+									});
+				}else{
+						
+					if(reloadCombox){
+						this.messageCombox.loadData(res);
+						//this.messageCombox.clearValue()
+					}else{
+						this.messageTab.loadTab(res);
+					}
+				}
+
+			}else{
+				page.unit.tipToast("短信模板获取失败！");
+			}
+		});
+	}
 	getData(){
 
 		const _me = this ;
@@ -403,7 +466,7 @@ class AddModal{
 				});
 				
 			}else{
-				alert("出错！");
+				page.unit.tipToast("指标获取失败！");
 			}
 		});
 
@@ -423,7 +486,7 @@ class AddModal{
 				});
 				
 			}else{
-				alert("出错！")
+				page.unit.tipToast("科室获取失败！");
 			}
 		});
 
@@ -433,26 +496,7 @@ class AddModal{
 				
 				
 			}else{
-				alert("出错！");
-			}
-		});
-
-		api.getAllAlarmModel().then(res=>{
-			if(res){
-				this.messageCombox = new SCombobox($("#messageCombox"),{
-						"data":res,
-						"textField":"model_text",
-						"defaultVal":"",
-						 width:420,
-						 dropFormatter:function(node){
-								return node.model_name;
-						 }
-				});
-
-
-				
-			}else{
-				alert("出错！");
+				page.unit.tipToast("主题维度获取失败！");
 			}
 		});
 
@@ -472,9 +516,13 @@ class AddModal{
 				});
 				
 			}else{
-				alert("出错！");
+				
+					page.unit.tipToast("用户树获取失败！");
+
 			}
 		});
+		
+		this.getAllAlarmModel(true);
 	}
 
 	getAllParams(){
@@ -537,7 +585,10 @@ class AddModal{
 	handle(){
 
 		const _self = this ;
-
+		/**
+		 * [description]
+		 * 模态框的点击事件，用来隐藏出现的下拉框和日历
+		 */
 		 $addModal.on("click", function() {
 
 			requestAnimationFrame(function(){
@@ -546,30 +597,124 @@ class AddModal{
 				 $comboDrop.hide();
 		    });
 		});
-
-
-		
+		/**
+		 * [description]
+		 * 模态框确定按钮事件
+		 */
 		$addMBtn.click(function(){
+			if($addModal.find('.no-fill').length){
+
+				page.unit.tipToast("请填写完整！");
+				return ;
+					
+			}
 		  const obj = _self.getAllParams();
+		  page.modal.close($addModal);
 		  api.addKpiAlarm(obj).then(res=>{
 		  	if(res){
-				console.log(res);
 				page.getData();
-				page.modal.close($addModal);
+
+				const status = obj.id && "修改" || "添加";
+				
+					page.unit.tipToast(status+"预警指标成功！");
 		  	}else{
-				alert("出错！")
+				
+					page.unit.tipToast(status+"预警指标失败！");
 		  	}
 		  })
 		});
-
+		/**
+		 * [description]
+		 * 自定义短信模板钩子
+		 */
 		$("#j-mesageTemp").click(function(){
-
-			console.log(_self.messageCombox.config.data);
+			$gMessage.show();
 			_self.messageTab.loadTab(_self.messageCombox.config.data);
 		});
+
+		/**
+		 * [description]
+		 * 关闭都短信模板
+		 */
+		$("#j-back").click(function(){
+			$gMessage.hide();
+			_self.getAllAlarmModel(false,true);
+		});
+
+		/**
+		 * [短信模板事件委托:用html标签的属性sing区分]
+		 * @param  {[j-add]} ){		} [新增]
+		 * @param  {[j-del]} ){		} [删去]
+		 * @param  {[j-edit]} ){		} [编辑]
+		 */
+		$gMessage.on("click",".j-handle",function(){
+			const $this = $(this);
+			const sign = $this.attr("sign");
+			const $messageTab = _self.messageTab.tab;
+
+
+			switch(sign){
+				case 'j-add':{
+					
+					const count = $messageTab.datagrid("getRows").length;
+
+					 $messageTab.datagrid("appendRow", {
+						  "model_name": "模板X",
+        				  "model_text": "XXXXX",
+        				  "id":"",
+					 })
+ 					 .datagrid('selectRow', count)
+					 .datagrid('beginEdit', count);
+						
+				}
+				break;
+				case 'j-del':{
+					const ids =$.map($gMessage.find(".checkSingle:checked"),function(val){
+						return {id:val.value};
+					}) ;
+					if(!ids.length){ return };
+					api.deleteAlarmModel(ids).then(res=>{
+											if(res){
+												page.unit.tipToast("删去成功！");
+												_self.getAllAlarmModel();
+											}else{
+												page.unit.tipToast("删去失败！");
+											}
+										});
+				}
+				break;
+				case 'j-edit':{
+				    const index = +$this.parent().attr("echo-data");
+				    let sEditStr = "";
+
+				    if(!$this.hasClass("s-editing")){
+				  
+				    	sEditStr =`<i class="fa fa-check"></i><span>提交</span>`;
+				  		$this.addClass("s-editing");
+				  		$messageTab.datagrid("beginEdit", index);
+				  
+				   }else{
+
+				    	sEditStr =`<i class="fa fa-edit"></i><span>编辑</span>`;
+						$this.removeClass("s-editing");
+						$messageTab.datagrid("endEdit", index);
+							
+				    }
+				   
+				    $this.html(sEditStr);
+					
+				}
+				break;
+			}
+
+		});
+
 	}
 }
 
+/**
+ * 页面类
+ */
 class Page{
 
 	constructor(){
@@ -594,7 +739,7 @@ class Page{
 		api.getAllKpiAlarm().then(res=>{
 
 			if(!res){
-				alert("出错！")
+				page.unit.tipToast("获取预警指标失败！");
 			}else{
 				this.table.loadTab(res);
 			}
@@ -623,10 +768,10 @@ class Page{
 
 			api.deleteAlarm(ids).then(res=>{
 				if(res){
-					alert("删除成功！");
+					page.unit.tipToast("删除预警指标成功！");
 					_self.getData();
 				}else{
-					alert("删除失败！")
+					page.unit.tipToast("删除预警指标失败！");
 				}
 			});
 

@@ -135,23 +135,29 @@
 						<p id="j-mesageTemp" class="j-mesageTemp"><b>自定义短信模板</b></p>
 					</div>
 				</div>
-				<div class="m-set g-message">
+				<div class="m-set g-message" id="g-message">
 					<div class="optBox">
-						<div></div>
+						<div class="m-back">
+							<button class="s-btn" id="j-back">
+									<span>返回</span>
+									<i class="fa fa-undo "></i>
+								</button>
+						</div>
 						<div class="btnBox">
 							<div>
-								<button class="s-btn" >
+								<button class="s-btn j-handle" sign="j-add">
 									<span>新增</span>
 									<i class="fa fa-commenting-o "></i>
 								</button>
 							</div>
-							<div class="del"><button i class="s-btn delBtn"><i class="fa fa-trash fa-lg"></i></button></div>
+							<div class="del"><button class="s-btn delBtn j-handle" sign="j-del"><i class="fa fa-trash fa-lg"></i></button></div>
 						</div>
 					</div>
-					<div class="easy-tabBox" style="width:100%;height: 400px" id="g-tabMessageBox">
+					<div class="easy-tabBox" style="width:100%;height:380px" id="g-tabMessageBox">
 							<table id="g-tabMessage" class="easy-tab" style="width:100%;height:100%"></table>
 					</div>
 				</div>
+				
 				
 			</div>
 			<div class="m-foot">
@@ -211,7 +217,7 @@
 	</div>
 
 	<div class="s-md-overlay"></div>
-
+	<div class="g-tip-toast" id="tipToast"></div>
 	
 	<script src="assert/js/jquery.min.js"></script>
 	<script src="assert/js/jquery.easyui.min.js"></script>

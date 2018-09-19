@@ -4,13 +4,15 @@ import "css/common/common.scss";
 import "css/common/button.scss";
 
 import { Calendar } from "js/common/calendar.js";
+
+
+
 class Unit {
 
 	constructor(){
 		this.tipInit();
 		this.initSearch();
 	}
-
 	JsonTofind(obj,value){
 
 		const defaultConfig = {
@@ -60,7 +62,7 @@ class Unit {
 							<p class="tip-txt"><i class="fa fa-warning"></i><span>${txt}</span></p>
 							<div class="tip-progress"></div>
 						</div>`;
-	  $("#tipToast").append(itemStr);
+	  this.$tipBox.append(itemStr);
 
 	  const $tip  = $(".tip-item:last-child");
 
@@ -159,7 +161,8 @@ class Unit {
 		$("#g-out").attr("stroke",color[status]);
 	}
 	tipInit(){
-		$("#tipToast").on("click",".j-close",function(){
+		this.$tipBox = $("#tipToast");
+		this.$tipBox.on("click",".j-close",function(){
 			 $(this).closest(".tip-item").remove();
 		});
 	}
@@ -235,10 +238,21 @@ class SCombobox {
 	loadData(data,$el=this.box){
 		this.config.data = data;
 		const str = this.renderDrop().join("");
-		$el.children(".combo-drop").html(`<ul>${str}</ul>`);
+		const $drop = $el.children(".combo-drop");
+		$drop.html(`<ul>${str}</ul>`);
+
+		const ids = this.updateInpBox($drop.children());
+
+
+		!ids.length &&  this.config.validCombo && $el.children(".combo-inp").addClass("no-fill");
+
 	}
+	
 
 	initRender(){
+					
+
+
 
 		const {prompt,slideIcon,data,validCombo} = this.config;
 
@@ -252,7 +266,7 @@ class SCombobox {
 					</span>
 				</div>
 				<div class="combo-drop ">
-					<ul>
+					<ul class="drop-ul">
 						${this.renderDrop().join("")}
 					</ul>
 				</div>
@@ -313,7 +327,7 @@ class SCombobox {
 				
 				const $val = $(val);
 			    const id  = $val.attr("echo-id");
-				const node = txts[index] = data.find(val=>val[idField] === id);
+				const node = txts[index] = data.find(val=>val[idField] == id);
 				txts[index] = node &&　node[textField] || "";
 
 				return id;
@@ -321,6 +335,8 @@ class SCombobox {
 		this.selValue = ids;
 		comboText.val(txts.join(","));
 		comboValue.val(ids.join(","));
+
+		return this.selValue ;
 	}
 
 	renderDrop(values=this.selValue){
@@ -725,7 +741,7 @@ class Tree{
 
 		this.box.on("click",".tree-slide-icon",function(e){
 			
-		// e.stopPropagation();
+		    e.stopPropagation();
 			const parLi = $(this).closest(".tree-li");
 			const $parDiv = $(this).parent();
 
@@ -805,7 +821,7 @@ class Tree{
 
     	this.box.on("click",".tree-inp",function(e){
 
-    	//	 e.stopPropagation();
+			e.stopPropagation();
 
 			const $this= $(this);
     		const status = $this.prop("checked");

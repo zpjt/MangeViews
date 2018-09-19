@@ -349,28 +349,22 @@ $slectColor:#aee6ff;
 	overflow:hidden;
 	visibility:hidden;
 	opacity:0;
-	.org-title{
-		background: $themeColor;
-		height:48px;
-		padding:0 10px;
-		border-radius:4px;
-		display:flex;
-		justify-content: space-between;
-		align-items:center;
-		color:white;
-		.search-close{
-			color:white;
-		}
+	.s-tree{
+	   height:216px;
 	}
+	
 	.org-content{
 		display:flex;
 		background: #fff ;
-		height: calc(100% -  48px);
+		height: 100%;
+		border-bottom:1px solid $themeColor;
+		border-right:1px solid $themeColor;
+		box-sizing:border-box;
 
 	}
 	.org-item:first-child{
 			width:65%;
-			border-right:1px solid grey;
+		//	border-right:1px solid grey;
 	}
 	.org-item:last-child{
 			width:35%;
@@ -382,6 +376,17 @@ $slectColor:#aee6ff;
 			.fa{
 				font-size:18px;
 			}
+	}
+	.g-sel-title{
+		height:33px;
+		line-height:30px;
+		text-align:center;
+		background: $themeColor ;
+		color:white;
+	}
+	.g-sel{
+		height:calc(100% - 33px);
+		overflow:auto;
 	}
 }
 

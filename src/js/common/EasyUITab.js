@@ -4,8 +4,8 @@ import "css/common/EasyTab.scss";
 class EasyUITab {
 
 	creatTab(data,$el,tabObj,callback){
-		var self = this ;
-		$el.datagrid({
+		const self = this ;
+		const obj = {
 			data:data,
 			idField:tabObj.idField,
 			singleSelect:true,
@@ -23,7 +23,13 @@ class EasyUITab {
 					self.checkAll(events,tabObj.tabId);
 				});
 			},
-		});
+		};
+
+		if(tabObj.onAfterEdit){
+			obj.onAfterEdit = tabObj.onAfterEdit;
+		}
+
+		$el.datagrid(obj);
 	}
 	checkAll(events,tabId){
 		let $tragetEl = $(events.target);
