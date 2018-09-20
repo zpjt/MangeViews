@@ -3,7 +3,7 @@
 $color:white;
 $themeColor:#00a0e9;
 
-.dropMenu{
+.drop-menu{
 	cursor:pointer;
 	position: relative;
 	z-index:2;
@@ -50,7 +50,7 @@ $themeColor:#00a0e9;
 	}
 }
 
-.dropMenu.active-menu{
+.drop-menu.active{
 		.dropmenu-icon{
 			transform: rotate(180deg);
 		}

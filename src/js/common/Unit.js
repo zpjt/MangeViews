@@ -19,6 +19,7 @@ class Unit {
 			childField:"children",
 			keyField:"id",
 			data:[],
+			
 		}
 
 		const config = Object.assign({},defaultConfig,obj);
@@ -72,25 +73,6 @@ class Unit {
 	}
 
 
-	/*
-	closeModal($el){
-
-		new Promise(res=>{
-			
-			$el.removeClass("m-show");
-			$el.hasClass("s-tip") && this.initTipM($el.find("#tipText"),$el.find("#statusBox"),$el.find("#g-out"));
-			res();
-		}).then(()=>{
-
-			setTimeout(function(){
-				$el.hide();
-			},100);
-		})
-
-	}
-	*/
-
-
 	initSearch(){
 		// 搜索
 		$(".search-btn").click(function(){
@@ -109,40 +91,6 @@ class Unit {
 			const $wrap = $(this).closest(".search-wrap");
 			$wrap.removeClass("active-search");
 		});
-	}
-	dropMenuHandle($el,callback){
-
-		const $wrap = $el.closest(".dropMenu");
-		const state = $wrap.hasClass("active-menu");
-
-		if(state){
-			$wrap.removeClass("active-menu");
-			setTimeout(function(){
-				callback(state);
-			 },100);	
-	
-		}else{
-			
-			callback(state);
-			setTimeout(function(){
-				$wrap.addClass("active-menu");
-			 },0);
-			
-		}
-	}
-	renderDropMenu($el,config){
-
-		const strArr=config.map((val,index)=>{
-
-			const {type,icon,text} = val;
-			    
-			    return `<li class="menu-item" style="top:${index*30}px" sign="${type}">
-			    			<i class="fa ${icon}">&nbsp;&nbsp;</i>
-			    			<span>${text}</span>
-			    		</li>`;
-		});	
-		
-		$el.html(strArr.join(""));
 	}
 	
 	initTipM($tip,$svg,$circle){
@@ -166,6 +114,128 @@ class Unit {
 			 $(this).closest(".tip-item").remove();
 		});
 	}
+}
+
+
+class DropMenu{
+	constructor($el, obj) {
+
+		const defaultConfig = {
+			data: [],
+			buttonIcon: 'fa fa-plus',
+			dropIcon: 'fa fa-chevron-down',
+			buttonTxt:"新增",
+			itemH:30,
+			itemCallback:function(){
+				
+			},
+			slideCallBack:function(){
+
+			}
+		};
+
+		this.config = Object.assign({}, defaultConfig, obj);
+		this.box = $el;
+
+		this.init();
+		this.handle();
+
+	}
+	init() {
+		
+		const buttonStr = this.renderButtons();
+		const dropStr =`<ul class="menu-box">${this.renderDrop().join('')}</ul>`;
+
+		this.box.html(buttonStr + dropStr);
+	}
+
+	renderDrop() {
+		const {
+			data,itemH
+		} = this.config;
+
+		return data.map((val,index) => {
+			const {
+				icon,
+				text,
+				id
+			} = val;
+			return `<li class="menu-item" echo-data = '${id}' style="top:${index*itemH}px">
+  					<span class="drop-icon">
+  						<i class='${icon}'></i>
+  					</span>
+  					<span class="drop-text">
+  						${text}
+  					</span>
+				</li>`
+
+		});
+	}
+
+	renderButtons() {
+
+		const {
+			dropIcon,buttonIcon,buttonTxt
+		} = this.config ;
+
+		return `<div class="menu-btn">
+					<span>
+					  <i class="${buttonIcon}"></i>
+						${buttonTxt}
+					</span>
+					<span class="s-Divider"></span>
+					<span class="dropmenu-icon">
+						<i class="${dropIcon}"></i>
+					</span>
+				</div>`;
+	}
+	reload(data){
+		this.config.data = data ;
+		const str = this.renderDrop().join("");
+		this.box.find(".menu-box").html(str);
+	}
+	handle() {
+      const _self = this ;
+		/**
+		 * [下拉菜单展开]
+		 * @param  {[type]} ){                   	  const $this [description]
+		 * @return {[type]}     [description]
+		 */
+      this.box.on('click','.menu-btn',function(){
+
+      	  const $this = $(this);
+      	  const $par = $this.parent('.drop-menu');
+      	  const $drop = $this.siblings('.menu-box');
+
+      	  if($par.hasClass('active')){
+			$par.removeClass('active');
+      	  	window.requestAnimationFrame(function(){
+				$drop.hide();
+			});
+      	  }else{
+      	  	$drop.show();
+      	  	_self.config.slideCallBack();
+      	  	window.requestAnimationFrame(function(){
+      	  		$par.addClass('active');
+      	  	})
+      	  }
+
+
+      });
+
+      this.box.on('click','.menu-item',function(){
+
+			const $this= $(this);
+
+			_self.config.itemCallback($this);
+		    _self.box.removeClass("active");
+		    _self.box.children(".menu-box").hide();
+
+
+      })
+	}
+	
+
 }
 
 /*
@@ -1112,4 +1182,4 @@ class SComboTree {
 	}
 }
 
-export {Unit,SCombobox,SModal,Calendar,Tree,SComboTree,SInp};
+export {Unit,SCombobox,SModal,Calendar,Tree,SComboTree,SInp,DropMenu};

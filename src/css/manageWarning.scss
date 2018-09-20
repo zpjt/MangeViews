@@ -1,0 +1,39 @@
+@import "./common/search.scss","./common/dropMenu.scss";
+
+$themeColor:#00a0e9;
+
+.active.menu-item{
+	color:white;
+
+}
+
+
+.menu-item{
+	font-weight:bolder;
+	&:hover{
+		transform: scale(1.15);
+	}
+	.drop-icon{
+		font:{
+			size:20px;
+		}
+	}
+
+}
+.menu-item.active{
+	&:after{
+		content:"\f00c";
+		position: absolute;
+		font:normal normal normal 14px/1 FontAwesome;
+		right:10px;
+		top:10px;
+	}
+}
+
+$dropMenuArr:[#000,#aee6ff,#E96500,#E90010];
+
+@for $i from 1 through 4{
+	.menu-item[echo-data='#{$i - 1}']{
+		color: nth($dropMenuArr,$i);
+	}
+}

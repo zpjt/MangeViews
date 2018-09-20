@@ -57,40 +57,41 @@ class EasyUITab {
 		const defaultObj = {
 			disableCheck:null,
 			order:false,
+			checkbox:true,
 		};
 
 		const config = Object.assign({},defaultObj,obj);
-		const {disableCheck,order} = config ;
+		const {disableCheck,order,checkbox} = config ;
 		const checkboxAll = `<div class="tab-checkbox"><span  name="tab_node" checkedStatus="off"  class="tab_node checkAll fa fa-square-o fa-lg"></span></div>`;
 		
-		const checkboxObj = {
-					field: 'custom_checkbox',
-					title: checkboxAll,
-					align: "center",
-					width: 40,
-					formatter: function(value, rowData, rowIndex) {
 
-						const  status = disableCheck && disableCheck(rowData) ? "dis-check" :"checkSingle" ;
+		let columns = [] ;
+		if(checkbox){
+					const checkboxObj = {
+							field: 'custom_checkbox',
+							title: checkboxAll,
+							align: "center",
+							width: 40,
+							formatter: function(value, rowData, rowIndex) {
 
-						const disable = status === "dis-check" && "disabled" || "" ;
-						const tip = status === "dis-check" && "禁止选择" || "" ;
+								const  status = disableCheck && disableCheck(rowData) ? "dis-check" :"checkSingle" ;
 
-
-						return  `<div class="tab-checkbox">
-										<input type="checkbox"
-										       name="tab_node" 
-										       ${disable} 
-										       class="tab_node ${status}" 
-										       value="${field=="无" ? index :rowData[field]}" 
-										       title="${tip}" />
-										<label for="tab_node" class="fa fa-square-o fa-lg"></label></div>`;
-					}
-				}
+								const disable = status === "dis-check" && "disabled" || "" ;
+								const tip = status === "dis-check" && "禁止选择" || "" ;
 
 
-
-		let columns = [checkboxObj] ;
-
+								return  `<div class="tab-checkbox">
+												<input type="checkbox"
+												       name="tab_node" 
+												       ${disable} 
+												       class="tab_node ${status}" 
+												       value="${field=="无" ? index :rowData[field]}" 
+												       title="${tip}" />
+												<label for="tab_node" class="fa fa-square-o fa-lg"></label></div>`;
+							}
+					}		
+			columns.push(checkboxObj);
+		}
 		if(order){
 			columns.push({
 				field: 'custom_order',
@@ -103,6 +104,8 @@ class EasyUITab {
 					}
 			})
 		}
+
+
 		
 		return [columns ] ;
 	}

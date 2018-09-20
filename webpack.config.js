@@ -7,6 +7,8 @@ const PATHS = {
 	editTemplate:path.join(__dirname,"./src/js/editTemplate/index.js"),
 	hsViews:path.join(__dirname,"./src/js/hsViews/index.js"),
 	kpiWarning:path.join(__dirname,"./src/js/kpiWarning/index.js"),
+	manageWarning:path.join(__dirname,"./src/js/manageWarning/index.js"),
+	News:path.join(__dirname,"./src/js/News/index.js"),
 	test:path.join(__dirname,"./src/js/test/index.js"),
 	build:path.join(__dirname,"dist"),
 	publicPath:"/",
@@ -84,6 +86,22 @@ module.exports=function(env,argv){
 				chunks:["kpiWarning","vendor","manifest"],//对应关系,main.js对应的是index.html
 			}),
 			new htmlPlugin({
+				title: "预警记录",
+				filename:'manage_Warning.html',
+	            inject:'body',
+	            hash:false,
+				template:"./src/router/manage_Warning.html",
+				chunks:["manageWarning","vendor","manifest"],//对应关系,main.js对应的是index.html
+			}),
+			new htmlPlugin({
+				title: "消息中心",
+				filename:'News.html',
+	            inject:'body',
+	            hash:false,
+				template:"./src/router/News.html",
+				chunks:["News","vendor","manifest"],//对应关系,main.js对应的是index.html
+			}),
+			new htmlPlugin({
 				title: "test",
 				filename:'myTest.html',
 	            inject:'body',
@@ -153,6 +171,8 @@ module.exports=function(env,argv){
 				editTemplate: PATHS.editTemplate,
 				hsViews: PATHS.hsViews,
 				kpiWarning: PATHS.kpiWarning,
+				manageWarning: PATHS.manageWarning,
+				News: PATHS.News,
 				test: PATHS.test,
 			},
 			mode:env,

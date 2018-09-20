@@ -7,8 +7,8 @@ const URL= baseUrl+control;
 
 class API {
 
-	getAllKpiAlarm(){
-		return Promise.resolve($.get(URL+"getAllKpiAlarm"));
+	getAllKpiAlarm(flag="-1"){
+		return Promise.resolve($.get(URL+"getAllKpiAlarm",{flag}));
 	}
 
 	kpitree(){

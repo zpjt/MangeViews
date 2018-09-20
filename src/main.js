@@ -40,7 +40,7 @@ class Menu{
 		lev++;
 		return arr.map((val,index)=>{
 			
-			const {sub,name,id} = val;
+			const {sub,name,id,menu_type_id} = val;
 
 			let data = {
 				sys_param:val.sys_param,
@@ -50,7 +50,7 @@ class Menu{
 				lev,
 			}
 
-			if(sub.length){
+			if(menu_type_id === 1){
  
 				let  childrenEl = this.mapMenuJson(sub,lev);
 

@@ -8,7 +8,9 @@ $slectColor:#aee6ff;
 	background-color: #ffffff;
 	box-shadow: 2px 3px 18px 0px rgba(0, 0, 0, 0.26);
 }
-
+.active.menu-item{
+	color:white;
+}
 @mixin triangle($top,$left,$borderW){
 	content:"";
 	position: absolute;

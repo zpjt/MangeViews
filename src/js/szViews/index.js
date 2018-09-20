@@ -4,7 +4,7 @@ import "css/common/Svg.scss";
 
 
 import { EasyUITab } from "js/common/EasyUITab.js";
-import {Unit,SCombobox,SModal,Calendar,Tree,SInp} from "js/common/Unit.js";
+import {Unit,SCombobox,SModal,Calendar,Tree,SInp,DropMenu} from "js/common/Unit.js";
 import {API} from "api/szViews.js";
 
 
@@ -349,10 +349,7 @@ class AddModal{
 		this.orgBoxInit();
 	}
 
-	static dropMenuConfig=[
-		{"icon":"fa-file-text",text:"创建视图",type:"view"},
-		{"icon":"fa-folder",text:"创建分类",type:"catalogue"},
-	]
+	
 
 	init(){
 
@@ -373,19 +370,7 @@ class AddModal{
 
 	}
 
-	dropMenuCallback=(state)=>{
-
-    		const lev = $tabCard.data("menuArr").length;
-		
-			let dropMenuConfig = AddModal.dropMenuConfig.slice();
-			if(lev===1){
-				dropMenuConfig.splice(0,1);
-			}else if(lev>3){
-				dropMenuConfig.splice(1,1);
-			}
-
-			UnitOption.renderDropMenu($menuBox,!state?dropMenuConfig:[]);
-    }
+	
 
 	addCatalogue(type,obj,style){
 	
@@ -460,40 +445,8 @@ class AddModal{
 	handle(){
 
 		const _self = this ;
-		// 下拉框显示
-		$("#menuBtn").click(function(e){
-			const $this = $(this);
-			 e.stopPropagation();
-			UnitOption.dropMenuHandle($this,page.addModal.dropMenuCallback);
-		});
 
-
-		// 创建类型选择
-		$menuBox.on("click",".menu-item",function(e){
-
-			e.stopPropagation();
-			const $this = $(this);
-
-			const type =$this.attr("sign");
-			$addMBtn.attr({"type":type,"method":"create"});
-			$inpName.val(null);
-				
-			const curCatalogueArr = $tab.datagrid("getData").rows.reduce(function(total,curVal){
-					// layout_type : 1 目录 ，0：文件
-					const {layout_name,layout_id,layout_type} = curVal;
-					layout_type === 1 && total.push({layout_name,layout_id});
-					 return total;
-			},[]);
-			
-			const menuArr = $tabCard.data("menuArr");
-			const curId = menuArr[menuArr.length-1].layout_id;
-			curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
-			
-			_self.parCatalogSel.loadData(curCatalogueArr);
-			_self.parCatalogSel.setValue(curId);
-			page.modal.show($addMView);
-
-		});
+		
 
 		//模态框确定按钮
 		$addMBtn.click(function(){
@@ -741,8 +694,13 @@ class Page  {
 		this.handle();
 		this.init();
 	}
-
+	static dropMenuConfig=[
+		{"icon":"fa fa-file-text",text:"创建视图",id:"view"},
+		{"icon":"fa fa-folder",text:"创建分类",id:"catalogue"},
+	];
     init(){
+
+    	const _self = this ;
 
 		this.modal = new SModal();
 		this.table = new TableStyle();
@@ -752,11 +710,60 @@ class Page  {
 		this.iconBox = new IconBox();
 		this.inp = new SInp();
 
+		this.dropMenu = new DropMenu($("#dropMenu"),{
+			buttonTxt:"新增",
+			itemCallback:function($this){
+
+				// 创建类型选择
+
+				const type =$this.attr("echo-data");
+				$addMBtn.attr({"type":type,"method":"create"});
+				$inpName.val(null);
+					
+				// layout_type : 1 目录 ，0：文件
+				const curCatalogueArr = $tab.datagrid("getData").rows.reduce(function(total,curVal){
+						const {layout_name,layout_id,layout_type} = curVal;
+						layout_type === 1 && total.push({layout_name,layout_id});
+						 return total;
+				},[]);
+				
+				const menuArr = $tabCard.data("menuArr");
+				const curId = menuArr[menuArr.length-1].layout_id;
+				curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
+				
+				_self.addModal.parCatalogSel.loadData(curCatalogueArr);
+				_self.addModal.parCatalogSel.setValue(curId);
+				page.modal.show($addMView);
+
+
+			},
+			slideCallBack:()=>{
+				this.dropMenuCallback();
+			}
+		});
+
 		this.styleBoxrender();
 		this.tabCardInit([{layout_name:"我的创建",index:0,layout_id:-2}]);
 
  	}
-    
+    dropMenuCallback(state){
+
+    		const lev = $tabCard.data("menuArr").length;
+		
+			let dropMenuConfig = Page.dropMenuConfig.filter(val=>{
+
+				if(lev===1){
+					return val.id === "catalogue";
+				}else if(lev>3){
+					return val.id === "view";
+				}else{
+					return true ;
+				}
+
+			});
+			
+			this.dropMenu.reload(dropMenuConfig);
+    }
     styleBoxrender(menuIndexArr=[0],type="tab"){
 		API_szViews.getAllLayout().then(res=>{
 				
@@ -848,16 +855,11 @@ class Page  {
 
     }
 
-    
-
     handle(){
 
     	$(window).on("click",function(){
 
-    			$(".active-menu").removeClass("active-menu");
           		$(".icon-active").removeClass("icon-active");
-          		$(".dataTime").hide();
-          		$("#catalogueContentmenu").hide();
          
 		});
 		
