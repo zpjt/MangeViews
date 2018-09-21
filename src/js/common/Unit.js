@@ -117,6 +117,106 @@ class Unit {
 }
 
 
+
+
+class MyWebSocket{
+
+	static heartflag = false ;
+	static tryTime = 0 ;
+	
+	constructor(config){
+
+		this.config = {
+						url:"ws://localhost:8099/ManageViews/connect",
+						userId:3,
+					};
+
+
+
+		if (!window.WebSocket) {
+           alert("您的浏览器不支持ws<br/>");
+            return;
+        }
+		
+
+		this.initSocket();
+		this.handle();
+
+
+	}
+
+	initSocket(){
+
+		const {url,userId} = this.config ;
+		
+		this.webSocket = new WebSocket(url+"/"+userId);
+
+	}
+
+	heart() {
+
+        if (MyWebSocket.heartflag){
+           this.webSocket.send("&");
+           console.log("  心跳 <br/>");
+        }
+
+        setTimeout("this.heart()", 10*60*1000);
+
+    }
+
+  	send(message){
+        this.webSocket.send(message);
+    }
+
+
+	handle(){
+
+		const webSocket = this.webSocket ;
+		const _self = this ;
+		// 收到服务端消息
+        webSocket.onmessage = function (msg) {
+            if(msg.data == "&"){
+
+            }else{
+                console.log("  收到消息 : "+msg.data);
+            }
+        };
+
+        // 异常
+        webSocket.onerror = function (event) {
+            MyWebSocket.heartflag = false;
+           console.log(" 异常 ");
+        };
+
+        // 建立连接
+        webSocket.onopen = function (event) {
+            MyWebSocket.heartflag = true;
+            _self.heart();
+           console.log("建立连接成功");
+            MyWebSocket.tryTime = 0;
+        };
+
+        // 断线重连
+        webSocket.onclose = function () {
+            MyWebSocket.heartflag = false;
+            // 重试10次，每次之间间隔10秒
+            if (MyWebSocket.tryTime < 10) {
+                setTimeout(function () {
+                    _self.webSocket = null;
+                    MyWebSocket.tryTime++;
+                    _self.initSocket();
+                    console.log("  第"+MyWebSocket.tryTime+"次重连");
+                }, 3*1000);
+            } else {
+                alert("重连失败.");
+            }
+        };
+
+	}
+}
+
+
+
 class DropMenu{
 	constructor($el, obj) {
 
@@ -283,12 +383,13 @@ class SCombobox {
 			"dropIcon":"fa fa-circle",
 			"textField":"text",
 			"idField":"id",
-			validCombo:true,
+			"validCombo":true,
 			"dropFormatter":null,
 			"multiply":false,
 			"defaultVal":"",
 			 clickCallback:null,
 			 width:260,
+			 textarea:false,
 		}
 
 		this.config = Object.assign({},defaultConfig,config);
@@ -320,20 +421,16 @@ class SCombobox {
 	
 
 	initRender(){
-					
 
-
-
-		const {prompt,slideIcon,data,validCombo} = this.config;
+		const {validCombo} = this.config;
 
 		const is_valid = validCombo && "no-fill" || "" ;
 
+
+
 		return `
-				<div class="combo-inp ${is_valid}">
-					<input type="text" class="s-inp combo-text" placeholder="${prompt}" readOnly="readOnly"/>
-					<input type="hidden" class="s-inp combo-value"  value="${this.selValue}"/>
-					<span class="slide-icon ${slideIcon}">
-					</span>
+				<div class="combo-inp ${is_valid}" >
+					${this.renderInpBox()}
 				</div>
 				<div class="combo-drop ">
 					<ul class="drop-ul">
@@ -408,6 +505,20 @@ class SCombobox {
 
 		return this.selValue ;
 	}
+
+    renderInpBox(){
+
+    	const {textarea , multiply ,prompt,slideIcon} = this.config;
+
+		const htmlType = (textarea || multiply) && `<textarea  class="s-textarea combo-text" placeholder="${prompt}" readOnly="readOnly"></textarea>` || `<input type="text" class="s-inp combo-text" placeholder="${prompt}" readOnly="readOnly"/>`;
+
+    	return `
+					${htmlType}
+					<input type="hidden" class="s-inp combo-value"  value="${this.selValue}"/>
+					<span class="slide-icon ${slideIcon}">
+					</span>
+				`
+    }
 
 	renderDrop(values=this.selValue){
 
@@ -1182,4 +1293,4 @@ class SComboTree {
 	}
 }
 
-export {Unit,SCombobox,SModal,Calendar,Tree,SComboTree,SInp,DropMenu};
+export {Unit,SCombobox,SModal,Calendar,Tree,SComboTree,SInp,DropMenu,MyWebSocket};

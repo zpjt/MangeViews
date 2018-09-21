@@ -52,5 +52,5 @@ class API {
 }  
 
 
-
-export {API};
+const api = new API();
+export {api};

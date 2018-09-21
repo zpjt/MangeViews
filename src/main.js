@@ -144,7 +144,7 @@ $menu.on("click",".menuItem",function(events){
 	$iframe[0].src="./"+url+".html";
 	
 	
-	/* const url=$(this).attr("data-url");
+	/*const url=$(this).attr("data-url");
 	 $iframe[0].src=url;*/
 
 });

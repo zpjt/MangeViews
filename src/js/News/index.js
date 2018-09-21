@@ -104,6 +104,19 @@ class Table extends EasyUITab{
 		this.creatTab(data,$table,this.tabConfig("id"));
     }
 
+    upAlarmSendStatus(ids){
+
+    	api.upAlarmSendStatus(ids).then(res=>{
+
+				if(res){
+					page.unit.tipToast("标记成功！","1");
+					page.getData();
+				}else{
+					page.unit.tipToast("标记失败！",'0');
+				}
+		})	
+    }
+
     handle(){
     	const _self = this ;
 		/**
@@ -122,8 +135,13 @@ class Table extends EasyUITab{
 			const $this = $(this);
 
 			const type = $this.attr("node-sign");
+			const index = $this.parent().attr('echo-data');
+			const node = $table.datagrid('getRows')[index];
+
 			switch(type){
 				case "read":
+					const ids = [{id:node.id}]	
+					_self.upAlarmSendStatus(ids);
 					
 				break;
 				default:
@@ -243,6 +261,14 @@ class Page{
 	handle(){
 		const _self = this ;
 		$("#j-readAll").click(function(){
+			
+			const ids =$.map($tableBox.find(".checkSingle"),val=>{
+
+				return {id:val.value};
+			});
+			if(!ids.length){ return }
+
+			_self.table.upAlarmSendStatus(ids);
 			
 
 		});

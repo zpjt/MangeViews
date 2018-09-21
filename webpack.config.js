@@ -238,7 +238,14 @@ module.exports=function(env,argv){
 		       // clientLogLevel: "none", // cancel console client log
 		        port: '8099', //设置端口号
 		        proxy: {
-		            '/ManageViews': {
+		            '/ManageViews/connect': {
+		                target: 'ws://localhost:8080',
+		                ws:true,
+		                secure: false,
+		               // changeOrigin:true,
+	                    logLevel: 'debug',
+		            },
+		             '/ManageViews': {
 		             //   target: 'http://172.16.13.140:8080',
 		                target: 'http://localhost:8080',
 		                secure: false,

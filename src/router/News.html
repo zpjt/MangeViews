@@ -32,7 +32,7 @@
 			</div>
 			<div class="btnBox">
 				<div>
-					<button class="s-btn j-readAll" id="j-redAll">
+					<button class="s-btn j-readAll" id="j-readAll">
 						<i class="fa fa-check"></i>
 						<b>全部标记为已读</b>
 					</button>
@@ -46,133 +46,7 @@
 				<table id="tab" class="easy-tab" style="width:100%;height:100%"></table>
 		</section>
 	</div>
-	<!-- modal -->
-	<div class="s-modal s-effect-1" id="addModal">
-		<div class="m-content">
-			<div class="m-title">
-				<span id="s-Mtitle" class="m-txt">添加指标预警</span>
-				<span class="m-close m-close-icon" >
-					<i  class="fa fa-times fa-lg"></i>
-				</span>
-			</div>
-			<div class="m-action">
-
-				<div class="m-set">
-					<div class="sel-item">
-						<p class="s-title">智能预警:</p>
-						<label class="s-switch-2">
-								<input type="checkbox" class="warn-switch" checked="checked" name="warning">
-								<span class="switch-ball"></span>
-								    	</label>
-					</div>
-					<div class="sel-item">
-						<p class="s-title"><b class="inp-tip">*</b>指标名称:</p>
-						<div class="s-comboBox" id="zbTree">
-						
-						</div>
-					</div>
-					<div class="sel-item">
-						<div class="sel-item">
-							<p class="s-title"><b class="inp-tip">*</b>机构维度:</p>
-							<div class="s-comboBox" id="orgTree">
-							
-							</div>
-						</div>
-						<div class="sel-item " id="j-dimBox">
-							
-						</div>
-					</div>
-					<div class="sel-item g-calendar">
-						<p class="s-title">时间范围:</p>
-						<div >
-							<span class="time-inpbox calendar-time">
-								<span class="calendar-inp-icon"><i class="fa fa-calendar">&nbsp;</i></span>
-								<input type="text" id="viewShowTime"  read="read"  class="calendar-inpTxt s-inp" readonly="readonly" >
-							</span>
-							<div class="dataTime" id="dataTime"></div>
-						</div>
-					</div>
-					<div class="sel-item set-condition">
-						<p class="s-title">触发条件:</p>
-						<span>指标数据&nbsp;&nbsp;</span>
-						<div >
-							<select name="warnCon" id="warnCon" class="m-select">
-								<option value="1" selected="selected">高于</option>
-								<option value="2">低于</option>
-							</select>
-						</div>
-						<div style="padding-left: 12px;">
-							<input type="text" placeholder="指标值.." value="" required="required" class="s-inp num-valid no-fill" id="warnVal" pattern="^0\.[0-9]+|^[1-9]\d*\.?\d*">
-						</div>
-						<span>&nbsp;&nbsp;预警提醒！</span>
-					</div>
-					<div class="sel-item">
-						<p class="s-title">预警级别:</p>
-					    <div>
-					        <span><input type="radio" class="warnlev s-radio" name="warnlev" checked="checked" value="1"><label>一级</label></span>
-					        <span><input type="radio" class="warnlev s-radio" name="warnlev" value="2"><label>二级</label></span>
-					        <span><input type="radio" class="warnlev s-radio" name="warnlev" value="3"><label>三级</label></span>
-					    </div>
-					</div>
-					<div class="sel-item">
-						<div class="sel-item">
-							<p class="s-title">预警方式:</p>
-							  <div>
-						        <span><input type="radio" class="s-radio warnType" name="warnType" checked="checked" value="1"><label>短信提醒</label></span>
-						        <span><input type="radio" class="s-radio warnType" name="warnType" value="2"><label>平台提醒</label></span>
-						    </div>
-						</div>
-						<div class="sel-item" >
-							<p class="s-title"><b class="inp-tip">*</b>收件人:</p>
-							<div class="s-comboBox u-drop-up" id="userTreeCombobox">
-							
-							</div>
-						</div>
-					</div>
-					<div class="sel-item" >
-						<p class="s-title"><b class="inp-tip">*</b>提醒内容:</p>
-						<div class="s-comboBox u-drop-up" id="messageCombox">
-						
-						</div>
-						<p id="j-mesageTemp" class="j-mesageTemp"><b>自定义短信模板</b></p>
-					</div>
-				</div>
-				<div class="m-set g-message" id="g-message">
-					<div class="optBox">
-						<div class="m-back">
-							<button class="s-btn" id="j-back">
-									<span>返回</span>
-									<i class="fa fa-undo "></i>
-								</button>
-						</div>
-						<div class="btnBox">
-							<div>
-								<button class="s-btn j-handle" sign="j-add">
-									<span>新增</span>
-									<i class="fa fa-commenting-o "></i>
-								</button>
-							</div>
-							<div class="del"><button class="s-btn delBtn j-handle" sign="j-del"><i class="fa fa-trash fa-lg"></i></button></div>
-						</div>
-					</div>
-					<div class="easy-tabBox" style="width:100%;height:380px" id="g-tabMessageBox">
-							<table id="g-tabMessage" class="easy-tab" style="width:100%;height:100%"></table>
-					</div>
-				</div>
-				
-				
-			</div>
-			<div class="m-foot">
-				<button class="s-btn sure-btn" id="addMBtn">确定</button>
-				<span>&nbsp;&nbsp;&nbsp;</span>
-				<button class="s-btn cancel-btn m-close" >取消</button>
-			</div>
-		</div>
-	</div>
 	
-	
-
-	<div class="s-md-overlay"></div>
 	<div class="g-tip-toast" id="tipToast"></div>
 	
 	<script src="assert/js/jquery.min.js"></script>

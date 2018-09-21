@@ -421,6 +421,7 @@ class AddModal{
 											"textField":"model_text",
 											"defaultVal": "",
 											 width:420,
+											 textarea:true,
 											 dropFormatter:function(node){
 													return node.model_name;
 											 }

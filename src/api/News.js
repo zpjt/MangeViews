@@ -19,7 +19,17 @@ class API {
 						data:JSON.stringify(obj),
 					})
 				);
-		}
+	}
+	upAlarmSendStatus(obj){
+		return Promise.resolve(
+					$.ajax({
+						method:"post",
+						url:URL+"upAlarmSendStatus",
+						contentType:"application/json",
+						data:JSON.stringify(obj),
+					})
+				);
+	}
 }  
 
 const api = new API();

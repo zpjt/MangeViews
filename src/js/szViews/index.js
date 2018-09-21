@@ -4,8 +4,8 @@ import "css/common/Svg.scss";
 
 
 import { EasyUITab } from "js/common/EasyUITab.js";
-import {Unit,SCombobox,SModal,Calendar,Tree,SInp,DropMenu} from "js/common/Unit.js";
-import {API} from "api/szViews.js";
+import {Unit,SCombobox,SModal,Calendar,Tree,SInp,DropMenu,MyWebSocket} from "js/common/Unit.js";
+import {api} from "api/szViews.js";
 
 
 
@@ -14,9 +14,6 @@ const {user_id,catalogSrc} = window.jsp_config;
 
 //工具类实例
 const UnitOption = new Unit();
-
-// API请求类实例
-const API_szViews = new API();
 
 /*
   JQ对象
@@ -374,14 +371,14 @@ class AddModal{
 
 	addCatalogue(type,obj,style){
 	
-		API_szViews.checkName(obj)
+		api.checkName(obj)
 		.then(res=>{
-			return res ? API_szViews.addView(type,{user_id,...obj}) : "重名" ;
+			return res ? api.addView(type,{user_id,...obj}) : "重名" ;
 		})
 		.then(res=>{
 
 			if(res === "重名"){
-				alert(res);
+				UnitOption.tipToast("重名，换一个名称！");
 				return ;
 			}
 
@@ -391,7 +388,10 @@ class AddModal{
 				}) ;
 				 page.styleBoxrender(menuIndexArr,style);
 				 page.modal.close($addMView);
+
+				UnitOption.tipToast("新增成功！");
 			}else{
+				UnitOption.tipToast("新增失败！");
 			}
 
 		}).catch(error=>{
@@ -402,7 +402,7 @@ class AddModal{
     orgBoxInit(){
 
     	
-    	API_szViews.getLayoutUserTree().then(res=>{
+    	api.getLayoutUserTree().then(res=>{
 
 			if(res){
 
@@ -436,6 +436,8 @@ class AddModal{
 							return val.type == 0 ;
 					 }
 				});
+			}else{
+				UnitOption.tipToast("获取用户失败！");
 			}
 
     	});
@@ -459,7 +461,7 @@ class AddModal{
 
 
 			if(name){
-				method==="create" ? _self.addCatalogue(type,{name,par_id},style) : API_szViews.updataName({name,id:par_id}).then(res=>{
+				method==="create" ? _self.addCatalogue(type,{name,par_id},style) : api.updataName({name,id:par_id}).then(res=>{
 
 						if(res){
 								const menuIndexArr = $tabCard.data("menuArr").map(val=>{
@@ -467,8 +469,9 @@ class AddModal{
 								}) ;
 								 page.styleBoxrender(menuIndexArr,style);
 								 page.modal.close($addMView);
+								 UnitOption.tipToast("新增成功！");
 						}else{
-							alert("重名");
+							UnitOption.tipToast("重名，换个名称！");
 						}
 
 					}).catch(res=>{
@@ -518,20 +521,21 @@ class AddModal{
 
 
 			if(!user){
-				alert("请选择可见用户！");
+				UnitOption.tipToast("请选择可见用户！","2");
 				return ;
 			}
 			
-			API_szViews.ReleaseLayout({id,user,starttime,endtime,release}).then(res=>{
+			api.ReleaseLayout({id,user,starttime,endtime,release}).then(res=>{
 				if(res){
-					alert("成功！");
+					UnitOption.tipToast("发布成功！","1");
+				
 					const menuIndexArr = $tabCard.data("menuArr").map(val=>{
 							  return  val.index ;
 					}) ;
 					page.styleBoxrender(menuIndexArr);
 					page.modal.close($issueMView);
 				}else{
-					alert("发布失败！");
+					UnitOption.tipToast("发布失败！","0");
 				}
 			});
 		});
@@ -584,7 +588,7 @@ class DelModal{
 			UnitOption.renderTipM($svg_statusBox,"#g-load");
 			const id = $(this).attr("delArr");
 			$tipText.html("");
-			API_szViews.updataRecycle({user_id,id}).then(res=>{
+			api.updataRecycle({user_id,id}).then(res=>{
 				$svg_statusBox.addClass("g-status");
 				if(res){
 					const menuIndexArr = $tabCard.data("menuArr").map(val=>{
@@ -611,29 +615,36 @@ class IconBox{
 	}
 
 	InitIconBox($el){
-		API_szViews.getAllLayout_icon().then(res=>{
+		api.getAllLayout_icon().then(res=>{
 
-			const {par,child}=res;
-			const par_strArr = par.map(val=>{
-				const {name,id} = val ;
-				return `
-					    <span class="sicon ${name}" echo-data="${id}"></span> 
+			if(res){
+				const {par,child}=res;
+				const par_strArr = par.map(val=>{
+					const {name,id} = val ;
+					return `
+						    <span class="sicon ${name}" echo-data="${id}"></span> 
 
-						`
-			});
+							`
+				});
 
-			const child_strArr = child.map(val=>{
-				const {name,id} = val ;
-				return `
-					    <span class="sicon ${name}" echo-data="${id}"></span> 
-						`
-			});
+				const child_strArr = child.map(val=>{
+					const {name,id} = val ;
+					return `
+						    <span class="sicon ${name}" echo-data="${id}"></span> 
+							`
+				});
 
-			const str = `
-						<div class="iconBox-item">${child_strArr.join("")}</div>	
-						<div class="iconBox-item">${par_strArr.join("")}</div>	
-						`
-			$el.html(str);
+				const str = `
+							<div class="iconBox-item">${child_strArr.join("")}</div>	
+							<div class="iconBox-item">${par_strArr.join("")}</div>	
+							`
+				$el.html(str);
+			}else{
+				UnitOption.tipToast("图标获取失败！","0");
+		
+			}
+
+			
 		});
     }
 
@@ -656,7 +667,7 @@ class IconBox{
 					const id = $ViewContainer.attr("curId");
 					const icon_id =$(".icon-sel").attr("echo-data");
 
-					API_szViews.updataIcon({icon_id,id}).then(res=>{
+					api.updataIcon({icon_id,id}).then(res=>{
 
 						if(res){
 							page.modal.close($parContainer,"icon-active") ;
@@ -667,6 +678,9 @@ class IconBox{
 							const style =$(".style-sel").index() ? "catalogue" :"tab";
 
 							page.styleBoxrender(menuIndexArr,style);
+							UnitOption.tipToast("图标更新成功！","1");
+						}else{
+							UnitOption.tipToast("图标更新失败！","0");
 						} 
 					
 						
@@ -765,19 +779,29 @@ class Page  {
 			this.dropMenu.reload(dropMenuConfig);
     }
     styleBoxrender(menuIndexArr=[0],type="tab"){
-		API_szViews.getAllLayout().then(res=>{
-				
-			const  allData = [res] ;
-			$ViewContainer.data("tabData",allData);
-			let tabData=JSON.stringify(allData);
-			    tabData=JSON.parse(tabData);
-			menuIndexArr.map(function(val){
-				tabData = tabData[val].sub
-			});
+		api.getAllLayout().then(res=>{
 
-			type==="tab"?this.table.loadTab(tabData):this.catalogue.catalogueInit(tabData);
+			if(res){
+				const  allData = [res] ;
+				$ViewContainer.data("tabData",allData);
+				let tabData=JSON.stringify(allData);
+				    tabData=JSON.parse(tabData);
+				menuIndexArr.map(function(val){
+					tabData = tabData[val].sub
+				});
+
+				type==="tab"?this.table.loadTab(tabData):this.catalogue.catalogueInit(tabData);
+			
+			}else {
+
+				UnitOption.tipToast("视图获取失败！","0");
+
+			}
+				
+			
 
 		})
+			
     }
     
     tabCardInit(menuArr){
@@ -855,7 +879,12 @@ class Page  {
 
     }
 
+   
+
+
     handle(){
+
+    	let test = null ;
 
     	$(window).on("click",function(){
 
@@ -891,10 +920,18 @@ class Page  {
 			switch(type){
 
 				case "pre":
+
+					test = new MyWebSocket();
+
+					//test.send("&")
+
+
+
+
 					break;
 				case "issue":
 					
-					  	API_szViews.showReleaseLayout(layout_id).then(res=>{
+					  	api.showReleaseLayout(layout_id).then(res=>{
 							if(res){
 								
 								page.modal.show($issueMView);
@@ -934,10 +971,15 @@ class Page  {
 											break;
 									}
 							 	 });	
+							}else{
+								UnitOption.tipToast("视图详情获取失败！","0");
 							}
 						});
 					break;
 				case "copy":
+
+				test.send(layout_name);
+
 					break;
 				case "rename":
 					page.modal.show($addMView);

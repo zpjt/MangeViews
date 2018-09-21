@@ -298,6 +298,17 @@ $border:#E4E4E4;
 		//	pointer-events:none;
 			cursor: pointer;
 		}
+		/* 文本框 */
+		.s-textarea{
+		  padding-top:10px;
+		  box-sizing:border-box;
+		  height: 100%;
+		  resize: none;
+		  vertical-align: middle;
+		  border:none;
+		  background: none;
+		  outline:none;
+		}
 		.slide-icon{
 			color:#a8afbd;
 			padding:0 4px;
@@ -390,17 +401,7 @@ div.u-drop-up{
 }
 
 
-/* 文本框 */
-.s-textarea{
-  padding-top:10px;
-  box-sizing:border-box;
-  height: 100%;
-  resize: none;
-  vertical-align: middle;
-  border:none;
-  background: none;
-  outline:none;
-}
+
 
 /* 数字验证框 */
 input.num-valid{
