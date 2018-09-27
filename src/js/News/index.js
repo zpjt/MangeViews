@@ -39,19 +39,23 @@ class Table extends EasyUITab{
 				[ 
 				
 				{
+					field: 'kpi_name',
+					title: '预警指标',
+					width: "15%",
+				},{
 					field: 'model_text',
 					title: '提醒内容',
 					width: "32%",
 				},{
 					field: 'send_time',
 					title: '预警时间',
-					width: "20%",
+					width: "12%",
 				},
 				{
 					field: 'alarm_level',
 					title: '预警级别',
 					align:"center",
-					width: "15%",
+					width: "10%",
 					formatter:function(val){
 
 						const levStr = ["","一级","二级","三级","四级"][ +val];
@@ -65,7 +69,7 @@ class Table extends EasyUITab{
 					field: 'send_status',
 					title: '消息状态',
 					align:"center",
-					width: "12%",
+					width: "10%",
 					formatter:function(val){
 
 						const status = val === "2" && "已读" || "未读" ;

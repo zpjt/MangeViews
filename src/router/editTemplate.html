@@ -119,12 +119,45 @@
 	<div class="s-modal s-effect-2" id="setComponentMd" >
 		<div class="m-content">
 			<div class="m-title">
-				<span>
+				<span class="view-logo">
 					<b>所选组件：</b>
 					<span id="modalType"></span>
 				</span>
-				<span class="m-tab">指标选择</span>
-				<span class="m-tab">属性设置</span>
+
+				<div class="g-tab-box">
+					<span class="m-tab">
+						指标选择
+						<svg   class="tab-line">
+							<g id="">
+								<path  id="lines" d="M 0 22 L0 0 L84 22" stroke-width="2px" stroke="red" fill="none"/>
+							</g>	
+						</svg>
+
+					</span>
+					<span class="tab-progress">
+						<svg  class="tab-line">
+							<g id="">
+								<path  id="lines" d="M 0 22 L0 0 L84" stroke-width="2px" stroke="red" fill="none"/>
+							</g>	
+						</svg>
+					</span>
+					<span class="m-tab">
+						属性选择
+						<svg   class="tab-line">
+							<g id="">
+								<path  id="lines" d="M 0 22 L0 0 L84 22" stroke-width="2px" stroke="red" fill="none"/>
+							</g>	
+						</svg>
+					</span>
+					
+					<svg  class="tab-line">
+						<defs>
+							<path  id="lines" d="M 0 22 L0 0 L84" stroke-width="2px" stroke="red" fill="none"/>
+						</defs>
+					</svg>
+					
+				</div>
+
 				<span class="m-close m-close-icon" >
 					<i  class="fa fa-times fa-lg"></i>
 				</span>
@@ -193,7 +226,7 @@
 									<div class="sel-item">
 										<p class="s-title">组件名称:</p>
 										<div class="s-inp-box">
-											<input type="text" id="componentName" class="s-inp normal-inp no-fill" placeholder="填写组件名称" >
+											<input type="text" id="componentName" class="s-inp normal-inp no-fill" placeholder="填写组件名称..." >
 										</div>
 									</div>
 									<div class="sel-item " id="publicDim">

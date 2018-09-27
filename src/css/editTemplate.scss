@@ -301,22 +301,62 @@ $border:#E9E9E9;
 		font-size:28px;
 		vertical-align: middle;
 	}
+
+
+	.m-title{
+		height: 60px;
+    	line-height: 60px;
+    	text-align:center;
+	}
 }
 .s-modal{
-	 .m-tab:nth-child(2){
-  		background: url("../img/tab-bg1.png") 0 0 no-repeat;
+	.view-logo{
+		position: absolute;
+		left:20px;
 	}
-	.m-tab:nth-child(3){
-  		background: url("../img/tab-bg2.png") 0 0 no-repeat;
+	.g-tab-box{
+		display:flex;
+		position: absolute;
+		align-items:center;
+		margin-left:50%;
+		transform:translateX(-50%);
 	}
+	.m-tab{
+		padding:10px 12px;
+		line-height:14px;
+		cursor: pointer;
+		border:2px solid black;
+	}
+    .tab-progress{
+
+		width:80px;
+		height:4px;
+		background: black ;
+    
+    }	
+	.tab-line{
+		position: absolute;
+		left:0;
+		top:0;
+		width:100%; 
+		height:100%;
+	}
+	
+
+	/*  .m-tab:nth-child(2){
+	  		background: url("../img/tab-bg1.png") 0 0 no-repeat;
+		}
+		.m-tab:nth-child(3){
+	  		background: url("../img/tab-bg2.png") 0 0 no-repeat;
+		} */
 }
 .other{
-	.m-tab:nth-child(2){
-  		background: url("../img/tab-bg2.png") 0 0 no-repeat;
+	/* .m-tab:nth-child(2){
+	  		background: url("../img/tab-bg2.png") 0 0 no-repeat;
 	}
 	.m-tab:nth-child(3){
-  		background: url("../img/tab-bg1.png") 0 0 no-repeat;
-	}
+	  		background: url("../img/tab-bg1.png") 0 0 no-repeat;
+	} */
 	.wrap{
 		transform:translateX(-840px);
 	}
@@ -340,7 +380,6 @@ $border:#E9E9E9;
 			height:420px;
 			padding-left:20px;
 			overflow:auto;
-		//	background:  url("../img/m-bg1.png") 0 0 no-repeat;
 		}
 		.del-zb{
 			&:hover{
@@ -390,6 +429,9 @@ $border:#E9E9E9;
 				}
 				#zbTree{
 				   height:360px;
+				}
+				.s-tree{
+					max-height:330px;
 				}
 				.zb-opt{
 					height:40px;

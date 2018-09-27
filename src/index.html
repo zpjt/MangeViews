@@ -36,16 +36,37 @@
 			<div class="content no-head"  id="content">
 				<ul class="head" >
 					<li>
-						<div id="logo"></div>
-					</li>
-					<li>
 						<p id="theme">
 							<b>医疗决策质量分析</b>
 						</p>
 					</li>
 					<li>
 						<ul class="roleBox">
-						<li ><span class="fa fa-bell-o"></span></li>
+						<li class="g-news">
+							<div class="j-news" id="j-news">
+								<span class="fa fa-bell-o"></span>
+								<span class="message-tip" id='messageTip'>
+									
+								</span>
+							</div>
+							<div class="m-news" id="news">
+								<ul class="messages-ul"></ul>
+								<div class="m-footer" >
+									<span id="j-allMark">
+										<i class="fa fa-check-circle-o"></i> 	
+										<b> 全部标记为已读</b>
+
+									</span>
+									<span id="j-allMessage">
+										<a href="./News.html" target="myFrameName">
+											查看全部 
+											<i class="fa fa-angle-double-right"></i> 
+										</a>
+									</span>
+								</div>
+							</div>
+							
+						</li>
 						<li  id="user">
 							<span id="userOption"><i class="fa fa-user">&nbsp;</i>demo</span>
 							<ul class="userOpt" id="userOpt">
@@ -62,7 +83,7 @@
 					</li>
 				</ul>  
 				<div id="routerConter" class="router-box">
-					<iframe frameborder="0" id="router"></iframe>
+					<iframe frameborder="0" id="router" name="myFrameName"></iframe>
 				</div>
 			</div>
 		</div>
@@ -72,7 +93,7 @@
 		window.jsp_config={
 			baseUrl:'/ManageViews/',
 			base:'main/',
-			user_id:"10",
+			user_id:"144",
 			role_id:"70000",
 		};
 	</script>

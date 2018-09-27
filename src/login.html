@@ -12,52 +12,108 @@
 	
 </head>
 <body>
-	<div>
-		<div class="head">
-			<div class="container" >
-				<p class="name">长城网科·智慧医疗</p>
-			</div>
-		</div>
-		<div class="content">
-			<div class="container login-box">
-				<div class="icon"></div>
-				<div class="login">
-					<div class="login-modal">
-						<div class="modal-head">	
-							<p class="modal-title">医疗决策质量分析-登录</p>
-							<p class="code"> </p>
+	<div class="page theme-2">
+		<aside class="g-animate">
+			<div class="roate-container">
+				<div class="screen-bg"></div>
+				<div id="roate1">
+					<div class="roate-item icon-roate-1"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item icon-roate-2"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item icon-roate-3"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item icon-roate-4"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+				</div>
+				<div id="roate2">
+					<div class="roate-item icon-sq-1"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item icon-sq-2"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+					<div class="roate-item"></div>
+				</div>
+			</div>	
+
+		</aside>
+		<section class="g-content">
+
+			<div class="g-login">
+				<header>
+					<p class="m-title">管理者视图</p>
+					<p class="m-sub-title">欢迎回来,请登录您的账号和密码！</p>
+				</header>
+				<div class="g-inpBox">
+					<div class="m-item">
+						<span class="g-input">
+							<input class="inp-field " type="text" id="user">
+							<label class="inp-label" for="user">
+								<span class="lab-content ">账户</span>
+							</label>
+							<svg class="graphic" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+								<path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
+							</svg>
+						</span>
+						<p class="warn" id="user_warn"></p>
+					</div>
+					<div class="m-item">
+						<span class="g-input">
+							<input class="inp-field " type="password" id="pwd">
+							<label class="inp-label " for="pwd">
+								<span class="lab-content ">密码</span>
+							</label>
+							<svg class="graphic " width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+								<path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
+							</svg>
+						</span>
+						<p class="warn" id="pwd_warn"></p>
+					</div>
+					<div class="g-remind">
+						<input id="remind" type="checkbox" class="inp-check"  data-text="Black, circled" >
+						<label aria-label="" role="checkbox" for="remind" class="checkbix"><span class="shape"></span>记住我</label>
+					</div>
+					<div class="g-submit">
+						<div>
+							<button id="j-login" class="particles-button s-btn">
+								登录
+							</button>
 						</div>
-						<div class="inp-box">
-							<div class="inp-item">
-								<label for="user"><i class="fa fa-user "></i></label>
-								<input type="text" class="inp" id="user">
-								<p class="warn" id="user_warn"></p>
-							</div>
-							<div class="inp-item">
-								<label for="pwd"><i class="fa fa-lock"></i></label><input type="password" class="inp" id="pwd">
-								<p class="warn" id="pwd_warn"></p>
-							</div>
-							<div class="inp-item">
-								<button id="btnLogin">
-									<i class="fa  " id="submitLoad"></i>
-									<span class="sr-only">Loading...</span>
-									<span>登录</span>
-								</button>
-							</div>
-							<p class="warn" id="state_warn"></p>
-						</div>
+						<p class="warn" id="warn"></p>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="footer">
-			<div class="container">
-				 <p>请使用火狐和谷歌以获得更好的体验&nbsp;<a href="/data/web_static/file/Firefox-latest.exe" download="FireFox.exe">火狐浏览器下载地址</a></p>
-		    	 <p class="Copyright">Copyright 2017 深圳市长城网信息科技股份有限公司 版权所有</p>
-			</div>
-		   
+			<footer class="g-footer">
+				<p>技术支持：深圳市长城网科技股份有限公司</p>
+				<p><a href="#">Copyright 2000 szgwnet.com,All rights reservied.</a></p>
+			</footer>
+		</section>
+		<div class="m-circle">
+			<svg xmlns="http://www.w3.org/2000/svg"  xmlns:xlink="http://www.w3.org/1999/xlink" viewbox="0 0 200 200" >
+				<g fill="#0AA8E8" stroke="" stroke-width="none">
+					<circle r="100" cx="200" cy="0" />
+					<circle r="20" cx="60" cy="80"  />
+					<circle r="30" cx="120" cy="150" />
+				</g>
+				
+			</svg>
 		</div>
 	</div>
+	
 	<script src="assert/js/jquery.min.js"></script>
 	<script src="assert/js/md5.js"></script>
 	<script>
@@ -68,3 +124,24 @@
 	</script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

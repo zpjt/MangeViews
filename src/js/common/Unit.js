@@ -119,103 +119,6 @@ class Unit {
 
 
 
-class MyWebSocket{
-
-	static heartflag = false ;
-	static tryTime = 0 ;
-	
-	constructor(config){
-
-		this.config = {
-						url:"ws://localhost:8099/ManageViews/connect",
-						userId:3,
-					};
-
-
-
-		if (!window.WebSocket) {
-           alert("您的浏览器不支持ws<br/>");
-            return;
-        }
-		
-
-		this.initSocket();
-		this.handle();
-
-
-	}
-
-	initSocket(){
-
-		const {url,userId} = this.config ;
-		
-		this.webSocket = new WebSocket(url+"/"+userId);
-
-	}
-
-	heart() {
-
-        if (MyWebSocket.heartflag){
-           this.webSocket.send("&");
-           console.log("  心跳 <br/>");
-        }
-
-        setTimeout("this.heart()", 10*60*1000);
-
-    }
-
-  	send(message){
-        this.webSocket.send(message);
-    }
-
-
-	handle(){
-
-		const webSocket = this.webSocket ;
-		const _self = this ;
-		// 收到服务端消息
-        webSocket.onmessage = function (msg) {
-            if(msg.data == "&"){
-
-            }else{
-                console.log("  收到消息 : "+msg.data);
-            }
-        };
-
-        // 异常
-        webSocket.onerror = function (event) {
-            MyWebSocket.heartflag = false;
-           console.log(" 异常 ");
-        };
-
-        // 建立连接
-        webSocket.onopen = function (event) {
-            MyWebSocket.heartflag = true;
-            _self.heart();
-           console.log("建立连接成功");
-            MyWebSocket.tryTime = 0;
-        };
-
-        // 断线重连
-        webSocket.onclose = function () {
-            MyWebSocket.heartflag = false;
-            // 重试10次，每次之间间隔10秒
-            if (MyWebSocket.tryTime < 10) {
-                setTimeout(function () {
-                    _self.webSocket = null;
-                    MyWebSocket.tryTime++;
-                    _self.initSocket();
-                    console.log("  第"+MyWebSocket.tryTime+"次重连");
-                }, 3*1000);
-            } else {
-                alert("重连失败.");
-            }
-        };
-
-	}
-}
-
-
 
 class DropMenu{
 	constructor($el, obj) {
@@ -487,7 +390,7 @@ class SCombobox {
         const comboText = inpBox.children(".combo-text"),
         	  comboValue=inpBox.children(".combo-value");
 
-        const {data,idField,textField} = this.config;
+        const {data,idField,textField,multiply,validCombo} = this.config;
 
 		const txts = [];
 		const ids = $.map($drop.children(".active"),(val,index)=>{
@@ -502,6 +405,10 @@ class SCombobox {
 		this.selValue = ids;
 		comboText.val(txts.join(","));
 		comboValue.val(ids.join(","));
+
+		if(validCombo){
+			!ids.join(",") ? inpBox.addClass("no-fill") :inpBox.removeClass("no-fill");
+		}
 
 		return this.selValue ;
 	}
@@ -543,9 +450,7 @@ class SCombobox {
 		//选择item
 		this.box.on("click",".drop-item",function(e){
 
-			if(self.config.multiply){
-			//	e.stopPropagation();	
-			}
+		
 
 			e.stopPropagation();
 
@@ -559,6 +464,7 @@ class SCombobox {
 				if(is_self){
 					return ;
 				}
+
 				status = self.getValue();
 				$this.addClass("active").siblings().removeClass("active");
 				
@@ -589,10 +495,7 @@ class SCombobox {
 
 			const is_active = par.hasClass("active");
 
-			!is_active ? self.showDown(par) : self.hideUp(par,function($el){
-				const $inp = par.find(".combo-value");
-				 $inp.val() && $inp.parent().removeClass("no-fill") || $inp.parent().addClass("no-fill");
-			});
+			!is_active ? self.showDown(par) : self.hideUp(par);
 
 		});
 
@@ -615,13 +518,10 @@ class SCombobox {
 		 const $drop = par.children(".combo-drop");
        	 $drop.hide();
 
-       	 this.config.validCombo && this.valid(par.children(".combo-inp"));
+    
 	}
 
-	valid($par){
-		const $inp = $par.children(".combo-value");
-       	$inp.val() ? $par.removeClass("no-fill") : $par.addClass("no-fill");
-	}
+	
 }
 
 /*
@@ -762,6 +662,7 @@ class Tree{
 		this.config.checkbox = checkbox;
 		this.box.unbind();
 		this.init();
+		this.handle();
 	}
 
 	seachTree(key){
@@ -1138,6 +1039,7 @@ class SComboTree {
 			"defaultVal":"",
 			 validCombo:true,
 			 width:300,
+			 textarea:false,
 		}
 
 		this.config = Object.assign({},defaultConfig,config);
@@ -1156,18 +1058,13 @@ class SComboTree {
 
 	initRender(){
 
-		const {prompt,slideIcon} = this.config;
+		const checkbox = !!this.config.treeConfig.checkbox  ;
 
-		const checkbox = this.config.treeConfig.checkbox || false ;
-
-		const inpStr = !checkbox && `<input type="text" class="s-inp combo-text" placeholder="${prompt}" readOnly="readOnly"/>` || `<textarea type="text" class="s-textarea combo-text" placeholder="${prompt}" readOnly="readOnly"/></textarea>` ;
+		const inpStr = this.renderInpBox(checkbox);
 
 		return `
 				<div class="combo-inp no-fill">
 					${inpStr}
-					<input type="hidden" class="s-inp combo-value"  value=""/>
-					<span class="slide-icon ${slideIcon}">
-					</span>
 				</div>
 				<div class="combo-drop ">
 					<ul class="s-tree"></ul>
@@ -1196,11 +1093,8 @@ class SComboTree {
 		this.config.validCombo && $inp.parent().addClass("no-fill");
 		
 		this.config.treeConfig.checkbox && $el.find(".tree-inp").prop("checked",false).removeClass("has-chec") || $el.find(".active").removeClass("active");
-		
-
 	}
 	updateInpBox($drop,node){
-		
 		const {checkbox} = this.tree.config;
 		const inpBox = $drop.siblings();
         const comboText = inpBox.children(".combo-text"),
@@ -1224,6 +1118,10 @@ class SComboTree {
 
 		comboText.val(txts.join(","));
 		comboValue.val(ids.join(","));
+
+		if(this.config.validCombo){
+			!ids.join(",") ? inpBox.addClass("no-fill") :inpBox.removeClass("no-fill");
+		}
 	}
 
 	renderDrop(){
@@ -1256,6 +1154,27 @@ class SComboTree {
 		this.tree = new Tree(treeBox,treeConfig);
 	}
 
+	changeType(checkbox,$el=this.box){
+
+		this.tree.changeType(checkbox);
+		$el.find(".combo-inp").html(this.renderInpBox(checkbox));
+	
+	}
+
+	renderInpBox(checkbox){
+
+		const {prompt,slideIcon,textarea} = this.config;
+
+		const inpStr = (textarea || checkbox) && `<textarea type="text" class="s-textarea combo-text" placeholder="${prompt}" readOnly="readOnly"/></textarea>` ||  `<input type="text" class="s-inp combo-text" placeholder="${prompt}" readOnly="readOnly"/>`;
+
+		return `
+					${inpStr}
+					<input type="hidden" class="s-inp combo-value"  value=""/>
+					<span class="slide-icon ${slideIcon}">
+					</span>
+				`
+	}
+
 	handle(){
 
 		const self = this ;
@@ -1284,13 +1203,8 @@ class SComboTree {
 	hideUp(par){
 		 par.removeClass("active");
          par.children(".combo-drop").hide();
-    	 this.config.validCombo && this.valid(par.children(".combo-inp"));
 	}
 
-	valid($par){
-		const $inp = $par.children(".combo-value");
-       	 	$inp.val() ? $par.removeClass("no-fill") : $par.addClass("no-fill");
-	}
 }
 
-export {Unit,SCombobox,SModal,Calendar,Tree,SComboTree,SInp,DropMenu,MyWebSocket};
+export {Unit,SCombobox,SModal,Calendar,Tree,SComboTree,SInp,DropMenu};

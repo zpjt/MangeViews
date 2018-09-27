@@ -4,7 +4,7 @@ import "css/common/Svg.scss";
 
 
 import { EasyUITab } from "js/common/EasyUITab.js";
-import {Unit,SCombobox,SModal,Calendar,Tree,SInp,DropMenu,MyWebSocket} from "js/common/Unit.js";
+import {Unit,SCombobox,SModal,Calendar,Tree,SInp,DropMenu} from "js/common/Unit.js";
 import {api} from "api/szViews.js";
 
 
@@ -469,7 +469,7 @@ class AddModal{
 								}) ;
 								 page.styleBoxrender(menuIndexArr,style);
 								 page.modal.close($addMView);
-								 UnitOption.tipToast("新增成功！");
+								 UnitOption.tipToast("重命名成功！");
 						}else{
 							UnitOption.tipToast("重名，换个名称！");
 						}
@@ -884,12 +884,10 @@ class Page  {
 
     handle(){
 
-    	let test = null ;
 
     	$(window).on("click",function(){
-
           		$(".icon-active").removeClass("icon-active");
-         
+          		$("#catalogueContentmenu").hide();
 		});
 		
 		//切换选项卡
@@ -920,11 +918,6 @@ class Page  {
 			switch(type){
 
 				case "pre":
-
-					test = new MyWebSocket();
-
-					//test.send("&")
-
 
 
 
@@ -978,15 +971,13 @@ class Page  {
 					break;
 				case "copy":
 
-				test.send(layout_name);
-
 					break;
 				case "rename":
 					page.modal.show($addMView);
 					$parName.parent().hide();
 					$addMBtn.attr({"method":"modify"});
 					 $inpName.val(layout_name);
-					 $inpName.parent().addClass("inp-fill");
+				//	 $inpName.parent().addClass("inp-fill");
 					break;
 				case "icon":
 					e.stopPropagation();

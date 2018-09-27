@@ -1,12 +1,10 @@
 import "css/main.scss";
 
-'use strict';
-
-const {role_id,baseUrl,base} = window.jsp_config;
+const {role_id,baseUrl,base,user_id} = window.jsp_config;
 
 /*jq对象*/
 
-const [$menu,$iframe,$slide]=[$("#menu"),$("#router"),$("#slide")];
+const [$slide]=[$("#slide")];
 
 
 class ApI {
@@ -28,10 +26,12 @@ class Menu{
 
 	constructor(){
 		this.init();
+		this.handle();
 	}
 
 	init(){
-		this.getMenu();
+		this.box = $("#menu");
+	
 	}
 	
 	mapMenuJson(arr,_lev){
@@ -98,130 +98,287 @@ class Menu{
 		`);		
 	}
 
-	getMenu(flag=0){
-		return api.getLeftMenu(role_id,flag).then(res=>{
-			const ElArr = this.mapMenuJson(res.sub,0);
-			$menu.html(ElArr.join(""));
+	handle(){
 
-			return true ;
+		const _self = this ;
 
-		})
+		/*收缩目录*/
+		this.box.on("click",".slide-icon",function(e){
+			e.stopPropagation();
+			const $this = $(this);
+			const $icon = $this.children(".fa");
+			const $childEl = $this.parent().parent().siblings(".par-menu");
+			const is_down = $icon.hasClass("fa-chevron-down");
+
+			if(is_down){
+				$icon.removeClass("fa-chevron-down").addClass("fa-chevron-up");
+				$childEl.slideUp();
+			}else{
+
+				$icon.removeClass("fa-chevron-up").addClass("fa-chevron-down");
+				$childEl.slideDown();
+			}
+		});
+
+		/*切换菜单*/
+		this.box.on("click",".menuItem",function(events){
+
+			$(".active").removeClass("active");
+			$(".active-par").removeClass("active-par");
+
+			const  par_item =  $(this).closest(".par-menu").siblings(".menuItem");
+			par_item.addClass("active-par");
+			$(this).addClass("active");
+
+			Page.activeId = $(this).attr("echo-id");
+
+			const url=$(this).attr("data-url").split("/")[2];
+			page.iframe[0].src="./"+url+".html";
+			
+			
+			/*const url=$(this).attr("data-url");
+			 page.iframe[0].src=url;*/
+
+		});
 	}
 }
 
-const renderMenu = new Menu();
+class SoketNews{
 
-/*收缩目录*/
-$menu.on("click",".slide-icon",function(e){
-	e.stopPropagation();
-	const $icon = $(this).children(".fa");
-	const $childEl = $(this).parent().parent().siblings(".par-menu");
-	const is_down = $icon.hasClass("fa-chevron-down");
-
-	if(is_down){
-		$icon.removeClass("fa-chevron-down").addClass("fa-chevron-up");
-		$childEl.slideUp();
-	}else{
-
-		$icon.removeClass("fa-chevron-up").addClass("fa-chevron-down");
-		$childEl.slideDown();
-	}
-});
-
-/*切换菜单*/
-$menu.on("click",".menuItem",function(events){
-
-	$(".active").removeClass("active");
-	$(".active-par").removeClass("active-par");
-
-	const  par_item =  $(this).closest(".par-menu").siblings(".menuItem");
-	par_item.addClass("active-par");
-	$(this).addClass("active");
-
-	renderMenu.activeId = $(this).attr("echo-id");
-
-	const url=$(this).attr("data-url").split("/")[2];
-	$iframe[0].src="./"+url+".html";
+	static heartflag = false ;
+	static tryTime = 0 ;
 	
-	
-	/*const url=$(this).attr("data-url");
-	 $iframe[0].src=url;*/
+	constructor(config){
 
-});
+		const url = "ws://" + window.location.host+baseUrl;
+		this.messageEl = $("#news");
+		this.messageTip = $("#messageTip");
 
-const closeFun = (function (){
-	let count  =  0 ;
-	return function(){
-		count ++ ;
-		if(count%2){
-			$slide.animate({"width":45},500,function(){
-				$slide.addClass("collapsed");
-				$(".par-menu").removeAttr("style");
-			});
-		}else{
-			$(".slide-icon").html('<i class="fa fa-chevron-down"></i>');
-			$slide.animate({"width":250},500,function(){
-				$slide.removeClass("collapsed");
-			});
-		}
-	}
-})();
-
-/*收缩菜单*/
-$("#slideFoot").click(function(){
-	closeFun();
-});
-
-/*系统操作下拉返回*/
-const $userOptions = $("#userOpt");
-$("#userOption").click(function(){
-	$userOptions.slideToggle();
-});
+		this.config = {
+						url:url+"connect",
+						userId:user_id,
+					};
 
 
-/*系统操作*/
-$userOptions.on("click","li",function(){
 
-	const key = $(this).attr("key");
-
-	switch(key){
-
-		case "password"://修改密码
-
-			break;
-		case "power": //退出登录
+		if (!window.WebSocket) {
+           alert("您的浏览器不支持ws<br/>");
+            return;
+        }
 		
-		//	window.location.href=baseUrl+"login/logOut";
-			 window.location.href="login.html";
-			break;
+
+		this.initSocket();
+		this.handle();
+
+
 	}
-});
 
-/*切换界面*/
-$("#changBox").click(
-	(function(){
-		let count = 0;
+	initSocket(){
+
+		const {url,userId} = this.config ;
 		
-		return function(){
+		this.webSocket = new WebSocket(url+"/"+userId);
 
-			count ++ ;
-			$iframe[0].src="";
-			if(count%2){
-				$("#content").removeClass("no-head");
-				renderMenu.getMenu(1);
-				$(this).addClass("active-view");
-			}else{
+	}
 
-				$("#content").addClass("no-head") 
-				renderMenu.getMenu(0);
-				$(this).removeClass("active-view");
+	heart() {
+
+        if (SoketNews.heartflag){
+           this.webSocket.send("&");
+           console.log("  心跳 <br/>");
+        }
+
+        setTimeout("this.heart()", 10*60*1000);
+
+    }
+
+  	send(message){
+        this.webSocket.send(message);
+    }
+
+
+	handle(){
+
+		const webSocket = this.webSocket ;
+		const _self = this ;
+		// 收到服务端消息
+        webSocket.onmessage = function (msg) {
+
+        	 console.log("  收到消息 : "+msg.data);
+
+        	 const result = msg.data;
+
+            if(result == "&"){
+
+            }else if(result){
+
+            	const data = JSON.parse(msg.data);
+
+            	const str = data.map(val=>{
+
+            		return `<li echo-data="${val.id}">
+            					<p>
+            					${val.name}
+            					<b>${val.time}</b>
+            					</p>
+            					<p>${val.text}</p>
+
+            				</li>`
+            	});
+				_self.messageEl.children(".messages-ul").html(str);
+				const count = data.length ;
+				if(count){
+					_self.messageTip.html(data.length).show();
+				}else{
+					_self.messageTip.hide();
+				}
+            }
+        };
+
+        // 异常
+        webSocket.onerror = function (event) {
+            SoketNews.heartflag = false;
+           console.log(" 异常 ");
+        };
+
+        // 建立连接
+        webSocket.onopen = function (event) {
+            SoketNews.heartflag = true;
+            _self.heart();
+           console.log("建立连接成功");
+            SoketNews.tryTime = 0;
+        };
+
+        // 断线重连
+        webSocket.onclose = function () {
+            SoketNews.heartflag = false;
+            // 重试10次，每次之间间隔10秒
+            if (SoketNews.tryTime < 10) {
+                setTimeout(function () {
+                    _self.webSocket = null;
+                    SoketNews.tryTime++;
+                    _self.initSocket();
+                    console.log("  第"+SoketNews.tryTime+"次重连");
+                }, 3*1000);
+            } else {
+                //alert("重连失败.");
+            }
+        };
+
+	}
+}
+
+
+class Page{
+
+	static activeId = null ;
+
+	constructor(){
+		this.init();
+		this.handle();
+	}
+
+	init(){
+	   this.iframe = $("#router");
+		this.menu = new Menu();
+		this.renderMenu();
+		this.news = new SoketNews();
+	}
+
+	renderMenu(flag=0){
+		return api.getLeftMenu(role_id,flag).then(res=>{
+			const ElArr = this.menu.mapMenuJson(res.sub,0);
+			this.menu.box.html(ElArr.join(""));
+			return true ;
+		});
+	}
+
+	handle(){
+
+		const _self = this;
+
+		const closeFun = (function (){
+			let count  =  0 ;
+			return function(){
+				count ++ ;
+				if(count%2){
+					$slide.animate({"width":45},500,function(){
+						$slide.addClass("collapsed");
+						$(".par-menu").removeAttr("style");
+					});
+				}else{
+					$(".slide-icon").html('<i class="fa fa-chevron-down"></i>');
+					$slide.animate({"width":250},500,function(){
+						$slide.removeClass("collapsed");
+					});
+				}
 			}
-		}
+		})();
+
+		/*收缩菜单*/
+		$("#slideFoot").click(function(){
+			closeFun();
+		});
+
+		/*系统操作下拉返回*/
+		const $userOptions = $("#userOpt");
+		$("#userOption").click(function(){
+			$userOptions.slideToggle();
+		});
 		
+		$("#j-news").click(function(){
+			_self.news.messageEl.slideToggle();
+		});
 
-	})()
-)
+		/*系统操作*/
+		$userOptions.on("click","li",function(){
 
+			const key = $(this).attr("key");
 
+			switch(key){
 
+				case "password"://修改密码
 
+					break;
+				case "power": //退出登录
+				
+				//	window.location.href=baseUrl+"login/logOut";
+					 window.location.href="login.html";
+					break;
+			}
+		});
+
+		/*切换界面*/
+		$("#changBox").click(
+			(function(){
+				let count = 0;
+				
+				return function(){
+
+					count ++ ;
+					_self.iframe[0].src="";
+					if(count%2){
+						$("#content").removeClass("no-head");
+						_self.renderMenu(1);
+						$(this).addClass("active-view");
+					}else{
+
+						$("#content").addClass("no-head");
+						_self.renderMenu(0);
+						$(this).removeClass("active-view");
+					}
+				}
+				
+
+			})()
+		);
+
+		/*标记所有消息*/
+		$("#j-allMark").click(function(){
+				
+			console.log("333333");
+		});
+	}
+}
+
+const page = new Page();

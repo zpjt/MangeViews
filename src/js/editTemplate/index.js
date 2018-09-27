@@ -1,21 +1,120 @@
+import "css/ManageViews.scss";
+import "css/editTemplate.scss";
+
 import {api } from "api/editTemplate.js";
 import {SCombobox, SModal, Calendar, Tree, SComboTree, SInp } from "js/common/Unit.js";
-
 import {View } from "js/ManageViews/view.js";
 
 
-
-import "css/ManageViews.scss";
-import "css/editTemplate.scss";
 /*jq对象*/
-const $setMd = $("#setComponentMd"),
-	$globalBox = $("#globalBox"),
-	$selZbs = $("#selZbs"),
-	$modalType = $("#modalType"),
-	$viewStyleBox = $("#viewStyleBox"),
-	$zbBox = $("#zbTreeBox");
+const $viewStyleBox = $("#viewStyleBox");
+
+/**
+ * 头部组件
+ */
+class HeadOpt {
+	constructor() {
+		this.globalBox = $("#globalBox");
+		this.init();
+		this.handle(22)
+	}
+
+	init() {
+		
+	}
+	handle() {
+		const _self = this ;
+		$("#headOpt").on("click", ".head-btn", function() {
+			const type = $(this).attr("sign");
+			switch (type) {
+				case "filter":
+					break;
+				case "style":
+					page.modal.show(_self.globalBox, "active");
 
 
+					break;
+				case "pre":
+					break;
+				case "save-as":
+					break;
+				case "export":
+					break;
+				case "back":
+					const $slide = $("#slide", window.parent.document);
+					const $head = $("#content", window.parent.document);
+					const width = $slide.hasClass("collapsed") && 45 || 250;
+					$slide.animate({
+						"width": width
+					}, 500, function() {
+						window.history.back();
+						$head.removeClass("no-head");
+					});
+					break;
+
+			}
+		});
+
+		//全局样式设置
+		$("#globalOpt").on("click", ".s-btn", function() {
+			const index = $(this).index();
+
+			switch (index) {
+				case 0:
+					break;
+
+				case 1:
+					page.modal.close(_self.globalBox, "active");
+					break;
+			}
+		});
+	}
+
+}
+
+/**
+ * 左侧所有的组件
+ */
+class ViewComponet {
+	constructor() {
+	  this.handle();
+	}
+
+	init() {
+		
+	}
+
+	handle() {
+		//目标组件的拖拽事件
+		const $eleDrags = $(".component-item");
+		$.map($eleDrags, function(eleDrag) {
+
+			eleDrag.onselectstart = function() {
+				return false;
+			};
+			eleDrag.ondragstart = function(ev) {
+
+				const type = ev.target.getAttribute("echo-type");
+
+				console.log(type);
+
+				ev.dataTransfer.effectAllowed = "move";
+				ev.dataTransfer.setData("type", type);
+				ev.dataTransfer.setDragImage(ev.target, 0, 0);
+				return true;
+			};
+			eleDrag.ondragend = function(ev) {
+				/*拖拽结束*/
+				ev.dataTransfer.clearData("type");
+				return false
+			};
+		});
+	}
+}
+
+/**
+ * 模板组件
+ */
 class TemplateView {
 
 	constructor($el,config) {
@@ -38,11 +137,9 @@ class TemplateView {
 
 
 		const $template = $(".view-item");
-
 		const viewsArr = Array.from($template);
 
 		viewsArr.map((val,index)=>{
-
 			val.ondragover = function(ev) {
 				
 				ev.stopPropagation();
@@ -50,7 +147,6 @@ class TemplateView {
 
 				return true;
 			};
-
 			val.ondrop = function(ev) {
 
 				ev.stopPropagation();
@@ -62,29 +158,34 @@ class TemplateView {
 					return ;
 				}
 
-
 				$this.attr({"echo-type":type});
 				$this.addClass("view-active").siblings().removeClass("view-active");
 					
 				$this.html(`<div class="bgSvg" echo-w="1" echo-y="1" echo-type="1"></div>
        			 <div class="view-content"> </div>`);
 
-				
-
-				viewSetModal.upModalStatus(type);
-
+				page.viewSetModal.upModalStatus(type);
 			};
-
 		});
-
-		
 	}
 }
 
-const page = new TemplateView($("#templateBox"));
 
 
+/**
+ * 指标树组件
+ */
 class ZbComponent {
+	// 注意 表格 id:3 是指标，图形id：3是维度
+	static wd_arr_common = [
+					{
+						"id": "1",
+						"text": "时间"
+					}, {
+						"id": "2",
+						"text": "科室"
+					}
+				];
 
 	constructor(config) {
 
@@ -95,7 +196,11 @@ class ZbComponent {
 
 		this.kpiTree = kpiTree;
 		this.dimTree = dimTree;
+		this.zbBox = $("#zbTreeBox");
+		this.selZbs = $("#selZbs");
+		this.publicDimEl = $("#publicDim");
 		this.init();
+		this.handle();
 	}
 
 
@@ -110,20 +215,15 @@ class ZbComponent {
 			textField: "kpi_name",
 			childrenField: "sub",
 			judgeRelation: function(val) {
-				return val.kpi_type == 0;
+				return val.kpi_type === "0";
 			}
 		});
-
-		this.handle();
 	}
 
 	findDimData(key) {
 		let node = null;
-
 		const data = this.dimTree;
-
 		findFn(data);
-
 		function findFn(arr) {
 			return arr.find(val => {
 				const status = val["dim_id"] == key;
@@ -143,17 +243,18 @@ class ZbComponent {
 
 			});
 		}
-
 		return node;
 	}
 
 	classifyZb(kpi, values) {
-
 		api.GroupKpiByDim({
 			kpi
 		}).then(res => {
 
 			if (res) {
+
+				const wd_arr_common = ZbComponent.wd_arr_common;
+				const viewSetModal = page.viewSetModal;
 
 				const dimArr = Object.keys(res);
 				const excelDim_2 = [];
@@ -221,16 +322,15 @@ class ZbComponent {
 
 					viewSetModal.yAxis.loadData(yAxisData);
 					viewSetModal.yAxis.clearValue();
-
 					viewSetModal.xAxis.loadData(viewSetModal.wd_arr);
-					
 					viewSetModal.xAxis.clearValue();
-					$("#publicDim").show();
-					$("#publicDim").attr("dim-id",dimId);
-					$("#publicDim").attr("dim-name",dImNode.dim_name);
+
+					this.publicDimEl.show();
+					this.publicDimEl.attr("dim-id",dimId);
+					this.publicDimEl.attr("dim-name",dImNode.dim_name);
 
 				} else {
-					$("#publicDim").hide();
+					this.publicDimEl.hide();
 
 					specialWd.pop();
 					const AxisData = specialWd;
@@ -239,16 +339,13 @@ class ZbComponent {
 
 					viewSetModal.wd_arr = AxisData;
 					viewSetModal.yAxis.loadData(yAxisData);
-
-
-
 					viewSetModal.xAxis.loadData( AxisData);
 					viewSetModal.yAxis.clearValue();
 					viewSetModal.xAxis.clearValue();
 				}
 
 				//渲染分类
-				$selZbs.html(htmlStr);
+				this.selZbs.html(htmlStr);
 				// 渲染每个有主题维度的指标下拉框
 				dimArr.length > 1 && $.map($(".dim-item"), val => {
 
@@ -277,7 +374,6 @@ class ZbComponent {
 
 
 		})
-
 	}
 
 	renderZb(node, config) {
@@ -329,7 +425,7 @@ class ZbComponent {
 			return;
 		}
 		this.classifyZb(ids, values);
-		viewSetModal.modal.close($zbBox, "active");
+		page.modal.close(this.zbBox, "active");
 	}
 
 
@@ -337,13 +433,23 @@ class ZbComponent {
 
 		const self = this;
 
+
+		/**
+		 * [指标模态框句柄]
+		 */
 		$("#selZb").click(function() {
+
+			const $zbBox = self.zbBox;
 			if ($zbBox.hasClass("active")) {
 				return;
 			}
-			viewSetModal.modal.show($zbBox, "active");
+			page.modal.show($zbBox, "active");
 		});
 
+
+		/**
+		 * [指标模态框操作]
+		 */
 		$("#zbOpt").on("click", "button", function() {
 
 			const index = $(this).index();
@@ -356,35 +462,24 @@ class ZbComponent {
 
 					break;
 				case 1: // 取消
-					viewSetModal.modal.close($zbBox, "active");
+					page.modal.close(self.zbBox, "active");
 					break;
 			}
 
 		});
-		$setMd.on("click", ".del-zb", function() {
-			const zb = $(this).closest(".zb-item-box");
-			const id = $(this).parent().attr("echo-id");
-			self.zbTree.setValue([id]);
-			zb.remove();
-		});
+		
 	}
 }
 
-
-// 注意 表格 id:3 是指标，图形id：3是维度
-const wd_arr_common = [
-					{
-						"id": "1",
-						"text": "时间"
-					}, {
-						"id": "2",
-						"text": "科室"
-					}
-				];
-
+/**
+ * 模态框组件
+ */
 class ViewSetModal {
-	constructor() {
 
+	constructor() {
+		this.setMd = $("#setComponentMd");
+		this.modalType = $("#modalType");
+		this.viewStyleBox = $("#viewStyleBox");
 		this.viewType ="";
 		this.wd_arr = null;
 		this.getTreeData();
@@ -419,10 +514,8 @@ class ViewSetModal {
 					this.calendar.changeStyle(style);
 					break;
 				case "2": //科室
-					this.orgWd.tree.config.checkbox = status;
-					this.orgWd.tree.box.unbind();
-					this.orgWd.tree.init();
-					this.orgWd.clearValue();
+
+					this.orgWd.changeType(status);
 					break;
 				case wd_id: // 维度值
 					this.dimWd.config.multiply = status;
@@ -444,12 +537,12 @@ class ViewSetModal {
 	upModalStatus(type){
 
 			const icon = $(`.component-item[echo-type=${type}]`).html();
-			$modalType.html(icon);
+			this.modalType.html(icon);
 
 			this.viewType=type;
 		    this.viewStyleBoxTnit();
 		    this.upComboxStatus();
-			this.modal.show($setMd);
+			page.modal.show(this.setMd);
 			this.zbComponent.sureBtnHandle();
 			
 	}
@@ -470,11 +563,6 @@ class ViewSetModal {
 	init() {
 
 		const self = this;
-		// 模态框
-		this.modal = new SModal();
-		this.inp = new SInp();
-		// 指标树
-
 		const kpiTree = this.kpiTree,
 			dimTree = this.dimTree;
 		this.zbComponent = new ZbComponent({
@@ -541,13 +629,13 @@ class ViewSetModal {
 		this.orgWd = new SComboTree($("#orgWd"), {
 			"prompt": "请选择科室...",
 			treeConfig: {
-				"clickAndCheck": false,
+				"clickAndCheck": true,
 				data: orgTree,
 				idField: "dim_value",
 				textField: "dim_name",
 				childrenField: "sub",
 				judgeRelation: function(val) {
-					return val.type == 0;
+					return val.type === "0";
 				}
 			}
 		});
@@ -590,7 +678,7 @@ class ViewSetModal {
 					</div> 
 				</div>
 				`
-		$viewStyleBox.html(htmlStr);
+		this.viewStyleBox.html(htmlStr);
 
 		new SCombobox($("#totalCombo"), {
 			width: 240,
@@ -638,28 +726,23 @@ class ViewSetModal {
 						    </div>
 						</div>
 				`
-		$viewStyleBox.html(htmlStr);
+		this.viewStyleBox.html(htmlStr);
 	}
 
 	pieInit() {
-
 		const htmlStr = ` `;
-		$viewStyleBox.html(htmlStr);
+		this.viewStyleBox.html(htmlStr);
 	}
 	raderInit() {
 		const htmlStr = ` `;
-		$viewStyleBox.html(htmlStr);
+		this.viewStyleBox.html(htmlStr);
 	}
 	scatterInit() {
 		const htmlStr = ` `;
-		$viewStyleBox.html(htmlStr);
+		this.viewStyleBox.html(htmlStr);
 	}
 
-	
-
 	getCommonValue(type,pubDim) {
-
-
 		const fieldObj = {
 			table: {
 				xField: "row_wd",
@@ -704,11 +787,17 @@ class ViewSetModal {
 			}
 		});
 
-		/*time_id：时间段   
-		 _0日,_1时,_2分,_3秒,_4年,_5月,_6季度
-		 时间点   
-		  @0日,@1时,@2分,@3秒,@4年,@5月,@6季度
-		  startTime： 表示从当前时间往前推多少*/
+		/**
+		 * 时间分三种情况，正常时间，筛选时间，动态时间
+		  正常时间：//时间单位：年季月日
+				time_id代表开始时间，time_start代表结束时间，userColumnId代表是否为动态时间，此时userColumnId为0，-1代表动态时间，0代表非动态时间，time_id和time_start的时间可以相同，代表时间点
+		  筛选时间：//时间单位：年季月日
+				startTime代表开始时间，endTime代表结束时间，userColumnId为0，当填写了startTime和endTime这两个字段，会覆盖time_id和time_start，startTime和endTime可以相同代表时间点
+		  动态时间：//时间单位：年季月日时分秒，当前时间往前推
+				0日，1时，2分，3秒，4年，5月，6季 在数字之前加上_代表什么时间单位的时间段给time_id，time_start此时为当前时间往前推的天数，
+				例如 _0,3 代表当前日期往前推3天也就是 20180923,20180924,20180925
+				userColumnId此时必须为-1且startTime与endTime必须为空
+		 */
 
 		const timeObj = {
 			1: "4",
@@ -719,12 +808,14 @@ class ViewSetModal {
 
 		const tags = this.calendar.style == 2 && "_" || "@";
 		const time = this.calendar.value;
-		const time_id = tags + (timeObj[this.calendar.rotate]);
-		const time_end = time[time.length - 1].join("");
-		const time_start = 4;
+		//	const time_id = tags + (timeObj[this.calendar.rotate]);
+		const time_id = time[0].join("");
+		const time_start = time[time.length - 1].join("");
+
+		const userColumnId = "0";
 
 		const startTime = null,
-			endTime = null;
+			  endTime = null;
 
 
 		let kpis = [],
@@ -831,11 +922,11 @@ class ViewSetModal {
 			time_id,
 			orgs,
 			time_start,
-			time_end,
 			kpis,
 			startTime,
 			endTime,
 			chartName,
+			userColumnId,
 		}
 
        if(pubDim){
@@ -961,7 +1052,7 @@ class ViewSetModal {
 
 			if (node.data && node.data.length) {
 
-				api[methodType.save](object).then(res => {
+				/*api[methodType.save](object).then(res => {
 
 					const $box = $(".view-active");
 					const id = res.id,
@@ -977,7 +1068,7 @@ class ViewSetModal {
 						viewTitle
 					}, node, status);
 
-				});
+				});*/
 
 			} else {
 				
@@ -992,9 +1083,9 @@ class ViewSetModal {
 	}
 	handle() {
 		const self = this;
+		const $setMd = this.setMd;
 		// tab切换
 		$setMd.on("click", ".m-tab", function(e) {
-
 			e.stopPropagation();
 			const index = $(this).index();
 
@@ -1004,138 +1095,58 @@ class ViewSetModal {
 			} else {
 				$setMd.removeClass("other");
 			}
-
 		});
 
-		// 模态框操作
+		// 模态框确定按钮操作
 		$("#viewSure").click(function() {
+
+			const noFill = $setMd.find(".no-fill:visible");
+			if(noFill.length){
+				
+				alert("请填完必填项！");
+				return ;
+
+			}
 			self.getSetData();
 		});
 
 		$setMd.on("click", function() {
-
 			requestAnimationFrame(function(){
 		         const $comboDrop = $(".combo-drop");
 				 $comboDrop.parent().removeClass("active");
 				 $comboDrop.hide();
 		    });
 		});
+
+		/**
+		 * [删除已经选择的指标]
+		 */
+		$setMd.on("click", ".del-zb", function() {
+
+			const $this = $(this);
+			const zb = $this.closest(".zb-item-box");
+			const id = $this.parent().attr("echo-id");
+			self.zbComponent.zbTree.box.find(`.child-checkinp[value=${id}]`).click();
+			zb.remove();
+		});
 	}
 }
 
 
+class Page{
+	constructor(){
 
+		// 模态框
+		this.modal = new SModal();
+		this.inp = new SInp();
+		this.viewSetModal = new ViewSetModal();
+		this.viewComponet = new ViewComponet();
 
-class HeadOpt {
-	constructor() {
-		this.init();
-
-	}
-
-	init() {
-		this.handle();
-	}
-	handle() {
-		$("#headOpt").on("click", ".head-btn", function() {
-
-			const type = $(this).attr("sign");
-			switch (type) {
-				case "filter":
-					break;
-				case "style":
-					viewSetModal.modal.show($globalBox, "active");
-
-
-					break;
-				case "pre":
-					break;
-				case "save-as":
-					break;
-				case "export":
-					break;
-				case "back":
-					const $slide = $("#slide", window.parent.document);
-					const $head = $("#content", window.parent.document);
-					const width = $slide.hasClass("collapsed") && 45 || 250;
-					$slide.animate({
-						"width": width
-					}, 500, function() {
-						window.history.back();
-						$head.removeClass("no-head");
-					});
-					break;
-
-			}
-
-
-		});
-
-		//全局样式设置
-		$("#globalOpt").on("click", ".s-btn", function() {
-			const index = $(this).index();
-
-			switch (index) {
-				case 0:
-					break;
-
-				case 1:
-					viewSetModal.modal.close($globalBox, "active");
-					break;
-			}
-		});
-	}
-
-}
-
-class ViewComponet {
-
-	constructor() {
-
-		this.init();
-	}
-
-	init() {
-
-		this.handle();
-	}
-
-	handle() {
-
-		//目标组件的拖拽事件
-		
-		const $eleDrags = $(".component-item");
-			
-
-		$.map($eleDrags, function(eleDrag) {
-
-			eleDrag.onselectstart = function() {
-				return false;
-			};
-
-			eleDrag.ondragstart = function(ev) {
-
-				const type = ev.target.getAttribute("echo-type");
-
-				console.log(type);
-
-				ev.dataTransfer.effectAllowed = "move";
-				ev.dataTransfer.setData("type", type);
-				ev.dataTransfer.setDragImage(ev.target, 0, 0);
-				return true;
-			};
-			eleDrag.ondragend = function(ev) {
-				/*拖拽结束*/
-				ev.dataTransfer.clearData("type");
-				return false
-			};
-		});
-
-		
+	    new HeadOpt(); 
+	    new TemplateView($("#templateBox"));
 	}
 }
 
 
+const page = new Page();
 
-const viewSetModal = new ViewSetModal(),
-	head = new HeadOpt(),
-	viewComponet = new ViewComponet();
