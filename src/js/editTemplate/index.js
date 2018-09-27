@@ -6,8 +6,40 @@ import {SCombobox, SModal, Calendar, Tree, SComboTree, SInp } from "js/common/Un
 import {View } from "js/ManageViews/view.js";
 
 
-/*jq对象*/
-const $viewStyleBox = $("#viewStyleBox");
+/**
+ * 保存组件的数据，最后便于统一保存
+ */
+class DataDB {
+
+	static index = 0 ;
+
+	constructor(){
+		this.viewData = new Map();
+	}
+	add(object,viewType,node){
+
+		const id = ++ DataDB.index;
+
+		const  $box = $(".view-active");
+		const  type = viewType,
+				viewTitle = object.chartName,
+				index = id;
+
+		const views = new View($box, {
+			id,
+			type,
+			index,
+			viewTitle
+		}, node, "2");
+
+		const data = {
+			id,views,object,viewType
+		}
+		this.viewData.set($box[0],data);
+	}
+
+}
+
 
 /**
  * 头部组件
@@ -16,7 +48,7 @@ class HeadOpt {
 	constructor() {
 		this.globalBox = $("#globalBox");
 		this.init();
-		this.handle(22)
+		this.handle()
 	}
 
 	init() {
@@ -121,8 +153,11 @@ class TemplateView {
 		//const {id} = config ;
 	   
 	   this.box = $el;
- 
+	   this.resiziEl = $("#m-resize");
+	   this.gLayout =$("#g-layout");
 	   this.init();
+	   this.startPointX=null;
+	   this.startPointY=null;
 
 	}
 
@@ -133,9 +168,50 @@ class TemplateView {
 		this.handle();
 	}
 
+	showResizeBox($el){
+
+		console.log($el);
+		console.log(333);	
+		const width = $el[0].offsetWidth;
+		const height = $el[0].offsetHeight;
+		const top = $el[0].offsetTop;
+		const left = $el[0].offsetLeft;
+
+		this.resiziEl.css({
+			width,
+			height,
+			top,
+			left,
+		});
+
+	}
+
+	move(e,obj){
+
+		const {startPointX,startPointY} = this;
+
+		const {width,height} = obj;
+
+		const moveX = e.clientX - startPointX ;
+		const moveY = e.clientY - startPointY ;
+
+
+		this.resiziEl.css({
+			width:width+moveX,
+			height:height+moveY,
+		})
+	}
+
+	changeViewSize(){
+
+		$(".view-active").css({
+			"grid-column": "1/3"
+		})
+	}
+
 	handle(){
 
-
+		const _self = this;
 		const $template = $(".view-item");
 		const viewsArr = Array.from($template);
 
@@ -167,6 +243,75 @@ class TemplateView {
 				page.viewSetModal.upModalStatus(type);
 			};
 		});
+
+
+		$("#templateBox").on("click",".view-item",function(){
+			 const $this = $(this);
+			 if($this.hasClass('view-active')){
+			 	return ;
+			 }
+
+			
+			 $this.addClass('view-active').siblings().removeClass("view-active");
+
+			 _self.showResizeBox($this);
+		});
+
+		this.resiziEl.on("mousedown",".u-resize-icon",function(e){
+			const $this= $(this);
+			const type = $this.attr("sign");
+
+			const obj={
+				width:_self.resiziEl.width(),
+				height:_self.resiziEl.height(),
+			}
+
+			_self.gLayout[0].onmousemove=function(e){
+				
+				_self.move(e,obj);
+			}
+		
+
+			_self.startPointX=e.clientX;
+	  		_self.startPointY=e.clientY;
+
+			switch(type){
+				case "m-right":{
+						
+	
+
+				}
+				break;
+				default:
+				break;
+			}
+			
+		});
+
+		_self.gLayout.on("mouseup",function(){
+				console.log("up");
+			_self.gLayout[0].onmousemove = null;
+			
+			_self.changeViewSize();
+
+		})
+
+		/*_self.gLayout[0].onmouseup=function(){
+
+			console.log(222);
+				_self.gLayout[0].onmousemove = null;
+		}*/
+		
+		/*this.resiziEl.on("mouseup",".u-resize-icon",function(){
+			const $this= $(this);
+			const type = $this.attr("sign");
+			
+			console.log("up");
+
+			//_self.gLayout[0].onmousemove=null;
+		});*/
+
+
 	}
 }
 
@@ -1052,6 +1197,8 @@ class ViewSetModal {
 
 			if (node.data && node.data.length) {
 
+					page.viewData.add(object,viewType,node);
+
 				/*api[methodType.save](object).then(res => {
 
 					const $box = $(".view-active");
@@ -1134,14 +1281,14 @@ class ViewSetModal {
 
 
 class Page{
-	constructor(){
+	constructor(g){
 
 		// 模态框
 		this.modal = new SModal();
 		this.inp = new SInp();
 		this.viewSetModal = new ViewSetModal();
 		this.viewComponet = new ViewComponet();
-
+		this.viewData = new DataDB();
 	    new HeadOpt(); 
 	    new TemplateView($("#templateBox"));
 	}

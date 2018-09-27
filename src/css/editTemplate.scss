@@ -47,7 +47,7 @@ $border:#E9E9E9;
 	color:white;
 	display:flex;
 	justify-content: space-between;
-	align-items:center;
+align-items:center;
 	padding: 0 20px;
 	font-size:18px;
 	.head-btn{
@@ -246,6 +246,52 @@ $border:#E9E9E9;
 	}
 
 	@at-root{
+		.m-resize{
+				position: absolute;
+				.u-resize-icon{
+					position: absolute;
+					padding:8px;
+					background: red ;
+				}
+				
+				.t-left{
+					top:0;
+					left:0;
+				}
+				.t-middle{
+					top:0;
+					left:50%;
+					transform:translateX(-50%);
+				}
+				.t-right{
+						top:0;
+						right:0;
+				}
+				.m-left{
+						top:50%;
+						left:0;
+						transform:translateY(-50%);
+				}
+				.m-right{
+						top:50%;
+						right:0;
+						transform:translateY(-50%);
+				}
+				.b-left{
+						bottom:0;
+						left:0;
+				}
+				.b-middle{
+						bottom:0;
+						left:50%;
+						transform:translateX(-50%);
+				}
+				.b-right{
+					bottom:0;
+					right:0;
+				}
+
+			}
 	.components{
 			padding:15px 10px;
 			box-sizing:border-box;
@@ -267,8 +313,11 @@ $border:#E9E9E9;
 		}
 		.template-box{
 			position: relative;
+			height:100%;
+			
 			
 		}
+
 	}
 }
 
@@ -317,20 +366,22 @@ $border:#E9E9E9;
 	.g-tab-box{
 		display:flex;
 		position: absolute;
+		top:10px;
 		align-items:center;
 		margin-left:50%;
 		transform:translateX(-50%);
 	}
 	.m-tab{
+		position: relative;
 		padding:10px 12px;
 		line-height:14px;
 		cursor: pointer;
 		border:2px solid black;
 	}
     .tab-progress{
-
+		position: relative;
 		width:80px;
-		height:4px;
+		height:2px;
 		background: black ;
     
     }	
@@ -454,6 +505,15 @@ $border:#E9E9E9;
 		margin-left:15px;
 
 	}
+}
+
+
+/* 组件样式 */
+.view-item{
+	
+
+
+		
 }
 
 

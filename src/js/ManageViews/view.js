@@ -15,7 +15,7 @@ class View {
 		this.viewTitle = viewTitle; // 组件名称
 		this.id = id; // 组件id
 		this.index = index;//组件的索引
-		this.status = status;
+		this.status = status;// 组件是在编辑器里还是在视图里
 		this.init(data);
 	}
 

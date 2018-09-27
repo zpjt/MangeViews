@@ -1060,10 +1060,12 @@ class SComboTree {
 
 		const checkbox = !!this.config.treeConfig.checkbox  ;
 
+		const noFill = this.config.validCombo &&　"no-fill" || "" ;
+
 		const inpStr = this.renderInpBox(checkbox);
 
 		return `
-				<div class="combo-inp no-fill">
+				<div class="combo-inp ${noFill}">
 					${inpStr}
 				</div>
 				<div class="combo-drop ">
@@ -1158,6 +1160,7 @@ class SComboTree {
 
 		this.tree.changeType(checkbox);
 		$el.find(".combo-inp").html(this.renderInpBox(checkbox));
+		this.config.validCombo && $el.children(".combo-inp").addClass("no-fill");
 	
 	}
 
