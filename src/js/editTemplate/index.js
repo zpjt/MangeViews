@@ -149,29 +149,57 @@ class ViewComponet {
  */
 class TemplateView {
 
+	static positionArr = [
+			["t-left","t-middle","t-right"],
+			["m-left","m-middle","m-right"],
+			["b-left","b-middle","b-right"]
+		];
+
 	constructor($el,config) {
 		//const {id} = config ;
 	   
 	   this.box = $el;
 	   this.resiziEl = $("#m-resize");
 	   this.gLayout =$("#g-layout");
-	   this.init();
 	   this.startPointX=null;
 	   this.startPointY=null;
+	 //  this.activeStartViewSize = null; 
+	   this.changeStatus = false ;
+	   this.init();
+       this.handle();
+	}
+
+	 getInitCellSize(){
+
+	 	if(this.cellSize){
+	 		return  this.cellSize;
+	 	}
+
+		const $viewTemplate = $("#viewTemplate");
+		const width = $viewTemplate.width() / 3;
+		const height = $viewTemplate.height() / 3;
+		this.cellSize ={
+			width,
+			height
+		} ;
+		return this.cellSize ;
 
 	}
 
-	init(){
+	init(e){
+		
+		const positionArr =[].concat(...TemplateView.positionArr);
 
-		const strArr = new Array(9).fill(`<div class="view-item" ></div>`);
-		this.box.html(`<div class="view-template theme2" >${strArr.join("")}</div>`);
-		this.handle();
+		const strArr = positionArr.map(val=>`<div class="view-item ${val}" echo-size="1,1" echo-point="${val}" style="grid-area:${val}">${val}</div>`);
+
+		this.box.html(`<div class="view-template theme2"  id="viewTemplate" style='grid-template-areas:
+		    "t-left t-middle t-right"
+			"m-left m-middle m-right"
+			"b-left b-middle b-right ";'>${strArr.join("")}</div>`);
 	}
 
 	showResizeBox($el){
 
-		console.log($el);
-		console.log(333);	
 		const width = $el[0].offsetWidth;
 		const height = $el[0].offsetHeight;
 		const top = $el[0].offsetTop;
@@ -199,14 +227,78 @@ class TemplateView {
 		this.resiziEl.css({
 			width:width+moveX,
 			height:height+moveY,
-		})
+		});
 	}
 
 	changeViewSize(){
 
-		$(".view-active").css({
-			"grid-column": "1/3"
-		})
+		const  {width,height} = this.getInitCellSize(); 
+		const  curWid = this.resiziEl.width();
+		const  curHei = this.resiziEl.height();
+
+		const roateX = Math.round(curWid / width);
+		const roateY = Math.round(curHei / height);
+	
+		
+		this.changeStatus = false ;
+		this.mergeCell({roateX,roateY});
+	}
+
+	mergeCell(rotate){
+
+		const $activeView = $(".view-active")
+
+		const {roateX,roateY} = rotate;
+		const [curRoateX,curRoteY] = $activeView.attr("echo-size").split(",");
+		const [pointY,pointX] = $activeView.attr("echo-point").split("-");
+
+		const Xaxis = ["left","middle","right"];
+		const Yaxis = ["t","m","b"];
+		const index_X = Xaxis.indexOf(pointX);
+		const index_Y = Yaxis.indexOf(pointY);
+
+
+		function toggle(_x,_y,status){
+
+			Xaxis.slice(index_X + 1,_x+index_X).map(function(val){
+						const viewClass = pointY + "-" + val;
+						$("." + viewClass)[status]("view-hide")
+						.css({
+							"grid-column-end": "span 1",
+							"grid-row-end": "span 1",
+						});
+					});
+
+			const otherCell = Xaxis.slice(index_X,_x + index_X);
+
+			Yaxis.slice(index_Y + 1, _y + index_Y).map(function(y){
+				otherCell.map(x=>{
+					const viewClass = y + "-" + x;
+					$("." + viewClass)[status]("view-hide")
+					.css({
+							"grid-column-end": "span 1",
+							"grid-row-end": "span 1",
+						});
+				});
+			});
+
+		}
+
+
+		toggle(+curRoateX,+curRoteY,"removeClass");
+		toggle(roateX,roateY,"addClass");
+		
+
+		this.resiziEl.hide();
+		
+		$activeView.css({
+			"grid-column-end": "span " + roateX,
+			"grid-row-end": "span " + roateY,
+		});
+
+		$activeView.attr("echo-size",roateX + "," + roateY);
+		
+
 	}
 
 	handle(){
@@ -236,8 +328,10 @@ class TemplateView {
 
 				$this.attr({"echo-type":type});
 				$this.addClass("view-active").siblings().removeClass("view-active");
+
+				const size = $this.attr("echo-size").split(",");
 					
-				$this.html(`<div class="bgSvg" echo-w="1" echo-y="1" echo-type="1"></div>
+				$this.html(`<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="1"></div>
        			 <div class="view-content"> </div>`);
 
 				page.viewSetModal.upModalStatus(type);
@@ -247,10 +341,13 @@ class TemplateView {
 
 		$("#templateBox").on("click",".view-item",function(){
 			 const $this = $(this);
+			 _self.resiziEl.show();
+
 			 if($this.hasClass('view-active')){
 			 	return ;
 			 }
-
+				
+				
 			
 			 $this.addClass('view-active').siblings().removeClass("view-active");
 
@@ -265,15 +362,17 @@ class TemplateView {
 				width:_self.resiziEl.width(),
 				height:_self.resiziEl.height(),
 			}
-
+			
 			_self.gLayout[0].onmousemove=function(e){
 				
 				_self.move(e,obj);
 			}
-		
+			
+			_self.changeStatus = true;
 
 			_self.startPointX=e.clientX;
 	  		_self.startPointY=e.clientY;
+	  	//	_self.activeStartViewSize = Object.assign({},obj); 
 
 			switch(type){
 				case "m-right":{
@@ -289,10 +388,14 @@ class TemplateView {
 		});
 
 		_self.gLayout.on("mouseup",function(){
-				console.log("up");
+				
 			_self.gLayout[0].onmousemove = null;
 			
-			_self.changeViewSize();
+			if(_self.changeStatus){
+				console.log("up");
+				_self.changeViewSize();
+			}
+			
 
 		})
 
@@ -1193,41 +1296,55 @@ class ViewSetModal {
 
 		const object = this[methodType.set]();
 
+		return {
+			methodType,
+			object,
+			viewType
+		}
+
+		
+	}
+
+	createView(){
+
+		const {methodType , object,viewType} = this.getSetData();
+		
 		api[methodType.url](object).then(node => {
 
-			if (node.data && node.data.length) {
+					if (node.data && node.data.length) {
 
-					page.viewData.add(object,viewType,node);
+							page.viewData.add(object,viewType,node);
 
-				/*api[methodType.save](object).then(res => {
+						/*api[methodType.save](object).then(res => {
 
-					const $box = $(".view-active");
-					const id = res.id,
-						type = viewType,
-						status = "2",
-						viewTitle = object.chartName,
-						index = 1;
+							const $box = $(".view-active");
+							const id = res.id,
+								type = viewType,
+								status = "2",
+								viewTitle = object.chartName,
+								index = 1;
 
-					page.table = new View($box, {
-						id,
-						type,
-						index,
-						viewTitle
-					}, node, status);
+							page.table = new View($box, {
+								id,
+								type,
+								index,
+								viewTitle
+							}, node, status);
 
-				});*/
+						});*/
 
-			} else {
-				
-				alert("数据出错！");
+					} else {
+						
+						alert("数据出错！");
 
-			}
+					}
 
 
-		});
+				});
 
-		return [];
 	}
+
+
 	handle() {
 		const self = this;
 		const $setMd = this.setMd;
@@ -1254,7 +1371,7 @@ class ViewSetModal {
 				return ;
 
 			}
-			self.getSetData();
+			self.createView();
 		});
 
 		$setMd.on("click", function() {

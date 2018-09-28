@@ -202,10 +202,19 @@ align-items:center;
 	//	background-image: url(../img/view_bg1.png);
 		.view-template{
 		//	border-radius:10px;
+		/*  grid-template-areas:
+		   "t-left t-middle t-right"
+					"m-left m-middle m-right"
+					"b-left b-middle b-right "; */
+		   
+		   color:white;
 		  padding-top:10px;
 		}
 		.view-item{
 			border:1px dashed rgba(255,255,255,0.46);
+		}
+		.view-item.view-hide{
+			display:none;
 		}
 		.view-item.view-active{
 			border:2px solid red;
