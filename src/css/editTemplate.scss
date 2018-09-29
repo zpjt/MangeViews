@@ -261,45 +261,47 @@ align-items:center;
 					position: absolute;
 					padding:8px;
 					background: red ;
-				}
-				
-				.t-left{
-					top:0;
-					left:0;
-				}
-				.t-middle{
-					top:0;
-					left:50%;
-					transform:translateX(-50%);
-				}
-				.t-right{
+					&[sign="t-left"]{
 						top:0;
-						right:0;
-				}
-				.m-left{
-						top:50%;
 						left:0;
-						transform:translateY(-50%);
-				}
-				.m-right{
-						top:50%;
-						right:0;
-						transform:translateY(-50%);
-				}
-				.b-left{
-						bottom:0;
-						left:0;
-				}
-				.b-middle{
-						bottom:0;
+					}
+					&[sign="t-middle"]{
+						top:0;
 						left:50%;
 						transform:translateX(-50%);
+					}
+					&[sign="t-right"]{
+							top:0;
+							right:0;
+					}
+					&[sign="m-left"]{
+							top:50%;
+							left:0;
+							transform:translateY(-50%);
+					}
+					&[sign="m-right"]{
+							top:50%;
+							right:0;
+							transform:translateY(-50%);
+					}
+					&[sign="b-left"]{
+							bottom:0;
+							left:0;
+					}
+					&[sign="b-middle"]{
+							bottom:0;
+							left:50%;
+							transform:translateX(-50%);
+					}
+					&[sign="b-right"]{
+						bottom:0;
+						right:0;
+					}
+	
 				}
-				.b-right{
-					bottom:0;
-					right:0;
-				}
-
+				
+			
+				
 			}
 	.components{
 			padding:15px 10px;
