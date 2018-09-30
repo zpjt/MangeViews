@@ -5,12 +5,12 @@ class View{
 
 	constructor(container,config){
 
-		const {selTime,CurTime,Calendar,time,timeWatch} = config;
+		const {selTime,CurTime,updateShowSel,time,timeWatch,rotate} = config;
 
 		
-		this.Calendar = Calendar();
+		this.updateShowSel = updateShowSel ;
 		this.time = time;
-		this.rotate = this.Calendar.rotate; // 1:year,2:seraon,3:mons,4:day
+		this.rotate = rotate; // 1:year,2:seraon,3:mons,4:day
 		this.CurTime = CurTime;
 		this.showTime= Object.assign({},selTime);
 		this.selTime = selTime;
@@ -402,7 +402,7 @@ class View{
 			const $this = $(this);
 			const index = +$this.attr("echo-index");
 			self.timeWatch[index] = $this.val().padStart(2,"0");
-			self.Calendar.updateShowSel();
+			self.updateShowSel();
 		});
 		
 		this.viewBox.on("click",".view-item",function(){
@@ -427,7 +427,7 @@ class View{
 			self.selTime.day=day;
 			
 			
-			self.Calendar.updateShowSel();
+			self.updateShowSel();
 			rotate === cur_calendarView+1 && self.updateSel($(this)) || self.updateCalendar() ;
 
 		});
@@ -562,8 +562,8 @@ class Calendar{
 			  timeWatchArr = this.timeWatchArr,
 			  rotate=this.rotate;
 
-		let config= {CurTime,rotate,time,Calendar:()=>{
-			return this ;
+		let config= {CurTime,rotate,time,updateShowSel:()=>{
+			 this.updateShowSel();
 		}};
 
 		if(this.view_2){

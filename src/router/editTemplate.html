@@ -94,14 +94,64 @@
             <section id="g-layout">
                 <div id="templateBox" class="template-box"></div>
                 <div id="m-resize" class="m-resize">
-                	<span class="u-resize-icon " sign="t-left"></span>
-                	<span class="u-resize-icon " sign="t-middle"></span>
-                	<span class="u-resize-icon " sign="t-right"></span>
-                	<span class="u-resize-icon " sign="m-left"></span>
-                	<span class="u-resize-icon " sign="m-right"></span>
-                	<span class="u-resize-icon " sign="b-left"></span>
-                	<span class="u-resize-icon " sign="b-middle"></span>
-                	<span class="u-resize-icon " sign="b-right"></span>
+                	<span class="u-resize-icon " sign="t-left">
+                        <svg class="coner-mark">
+                              <g >
+                                 <use xlink:href="#resizeCorner" x="0" y="0" />
+                              </g>    
+                         
+
+                        </svg>   
+                    </span>
+                	<span class="u-resize-icon " sign="t-middle">
+                        <svg class="coner-mark">
+                           <g >
+                                 <use xlink:href="#xLine" x="0" y="0" />
+                          </g> 
+                        </svg>    
+                    </span>
+                	<span class="u-resize-icon " sign="t-right">
+                     <svg class="coner-mark">
+                           <g >
+                                 <use xlink:href="#resizeCorner" x="0" y="0" />
+                              </g> 
+                        </svg>     
+                    </span>
+                	<span class="u-resize-icon " sign="m-left">
+                     <svg class="coner-mark">
+                          <g >
+                                 <use xlink:href="#yLine" x="0" y="0" />
+                          </g> 
+                        </svg>     
+                    </span>
+                	<span class="u-resize-icon " sign="m-right">
+                     <svg class="coner-mark">
+                           <g >
+                                 <use xlink:href="#yLine" x="0" y="0" />
+                          </g> 
+                        </svg>     
+                    </span>
+                	<span class="u-resize-icon " sign="b-left">
+                     <svg class="coner-mark">
+                           <g >
+                                 <use xlink:href="#resizeCorner" x="0" y="0" />
+                              </g> 
+                        </svg>     
+                    </span>
+                	<span class="u-resize-icon " sign="b-middle">
+                     <svg class="coner-mark">
+                            <g >
+                                 <use xlink:href="#xLine" x="0" y="0" />
+                          </g> 
+                        </svg>     
+                    </span>
+                	<span class="u-resize-icon " sign="b-right">
+                     <svg class="coner-mark">
+                            <g >
+                                 <use xlink:href="#resizeCorner" x="0" y="0" />
+                              </g> 
+                        </svg>     
+                    </span>
                 </div>
                
             </section>
@@ -128,11 +178,7 @@
 						属性选择
 						
 					</span>
-                    <svg style="display: none">
-                        <defs>
-                            <path id="lines" d="M 0 22 L0 0 L76 0 L76 22C" stroke-width="2px" stroke="red" fill="none" />
-                        </defs>
-                    </svg>
+                    
                 </div>
                 <span class="m-close m-close-icon">
 					<i  class="fa fa-times fa-lg"></i>
@@ -235,6 +281,17 @@
             </div>
         </div>
     </div>
+   <svg style="display: none">
+        <defs>
+            <g id="lines">
+                <path  d="M 0 22 L0 0 L76 0 L76 22" stroke-width="2px" stroke="red" fill="none" />
+            </g>
+            <g id="resizeCorner" >
+                <line x1="0" y1="0" x2="20" y2="0" id="xLine"  stroke="red" stroke-width="10px"/>
+                <line x1="0" y1="0" x2="0" y2="20" id="yLine" stroke="red" stroke-width="10px" />
+            </g>
+        </defs>
+    </svg>
     <div class="s-md-overlay"></div>
     <script src="assert/js/jquery.min.js"></script>
     <script src="assert/js/echarts.min.js"></script>

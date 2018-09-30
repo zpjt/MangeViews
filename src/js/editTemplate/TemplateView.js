@@ -9,8 +9,8 @@ class TemplateView {
 			["b-left","b-middle","b-right"]
 		];
 
+
 	constructor($el,config) {
-		//const {id} = config ;
 	   
 	   this.config = config ;
 	   this.box = $el;
@@ -19,11 +19,43 @@ class TemplateView {
 
 	   this.startPointX=null;
 	   this.startPointY=null;
+	   this.cellSize = null ;
 
 	   this.changeStatus = false ;
 	   this.init(64);
        this.handle();
 	}
+
+
+	throttle(fn,interval){
+
+		let timer = null ;
+		let is_first = true ;
+		return function(){
+
+				const _me = this;
+				const _args = arguments;
+
+
+				if(is_first){
+					fn.apply(_me,_args);
+					return is_first = false ; 
+				}
+
+				if(timer){return false}
+
+				timer = setTimeout(function(){
+			
+					window.clearTimeout(timer);
+					timer = null ;
+					fn.apply(_me,_args);
+				}, interval);
+		}
+
+
+	}
+
+	
 
 	 getInitCellSize(){
 
@@ -32,14 +64,19 @@ class TemplateView {
 	 	}
 
 		const $viewTemplate = $("#viewTemplate");
-		const width = $viewTemplate.width() / 3;
-		const height = $viewTemplate.height() / 3;
-		this.cellSize ={
-			width,
-			height
-		} ;
-		return this.cellSize ;
+		const minWidth =  $viewTemplate.width()    / 3 + 10;
+		const minHeight = $viewTemplate.height()   / 3 + 10;
+		const minTop = +$viewTemplate.css("paddingTop").match(/\d+/g)[0];
+		const minLeft = +$viewTemplate.css("paddingLeft").match(/\d+/g)[0];
 
+		this.cellSize = {
+			minWidth,
+			minHeight,
+			minTop,
+			minLeft,
+		} ;
+
+		return this.cellSize ;
 	}
 
 
@@ -57,10 +94,22 @@ class TemplateView {
 
 	showResizeBox($el){
 
-		const width = $el[0].offsetWidth;
-		const height = $el[0].offsetHeight;
+		const width = $el[0].offsetWidth + 20 ;
+		const height = $el[0].offsetHeight + 20;
 		const top = $el[0].offsetTop;
 		const left = $el[0].offsetLeft;
+
+		this.getInitCellSize();
+
+ 		this.curViewSize = {
+ 			curTop:top,
+ 			curLeft:left,
+ 			width,
+ 			height
+ 		}
+
+		
+
 
 		this.resiziEl.css({
 			width,
@@ -71,7 +120,81 @@ class TemplateView {
 
 	}
 
-	move(e,obj,type){
+	move(e,type){
+
+
+		const resiziEl = this.resiziEl;
+
+		const {startPointX,startPointY} = this;
+
+		const moveX = e.clientX - startPointX ;
+		const moveY = e.clientY - startPointY ;
+
+		const directionObject = {
+			left:-1,
+			middle:0,
+			right:1,
+			t:-1,
+			m:0,
+			b:1
+		};
+
+		const positionObject = {
+			left:1,
+			middle:0,
+			right:0,
+			t:1,
+			m:0,
+			b:0,
+		};
+		
+		const {
+			minWidth,
+			minHeight,
+			minTop,
+			minLeft,
+		} = this.cellSize;
+
+		const {
+			width,
+			height,
+			curTop,
+			curLeft,
+		} = this.curViewSize;
+
+
+
+		const [axixY,axixX] = type.split("-");
+
+		let _width = width + moveX*directionObject[axixX];
+		const W = _width < minWidth ;
+		_width = W && minWidth || _width ;
+
+		let _height = height + moveY*directionObject[axixY];
+		const H = _height < minHeight ;
+		_height = H && minHeight || _height ;
+
+
+		let _top = curTop + moveY*positionObject[axixY];
+		
+		let add = null;
+		if(H){
+		  _top = curTop   + ( height - minHeight)*positionObject[axixY] ;
+		}
+
+		let _left =  curLeft + moveX*positionObject[axixX]  ;
+		if(W){
+			_left = curLeft + (width - minWidth)*positionObject[axixX] ;
+		}
+		resiziEl.css({
+			width:_width ,
+			height:_height,
+			top: _top,
+			left:_left,
+		});
+	}
+	movesdsd(e,obj,type){
+
 
 		const resiziEl = this.resiziEl;
 
@@ -98,84 +221,111 @@ class TemplateView {
 			m:0,
 			b:0,
 		};
+		
+		const {
+			minWidth,
+			minHeight,
+			minTop,
+			minLeft,
+			curTop,
+			curLeft,
+		} = this.cellSize;
+
 
 		const [axixY,axixX] = type.split("-");
 
-		resiziEl.css({
-					width:width + moveX*directionObject[axixX],
-					height:height + moveY*directionObject[axixY],
-					top: top + moveY*positionObject[axixY],
-					left: left + moveX*positionObject[axixX],
-		});
+		const _width = width + moveX*directionObject[axixX];
+		const _height = height + moveY*directionObject[axixY];
+		const _top = top + moveY*positionObject[axixY];
+		const _left = left + moveX*positionObject[axixX];
 
 		
-	}
+		const W = _width < minWidth ;
+		const H = _height < minHeight ;
+		const T = _top < minTop ;
+		const L = _left < minLeft ;
 
+		if(T){
+			 resiziEl.css({
+				width:  _width ,
+				height:  _height,
+				top:  minTop,
+				left:  _left,
+		  	});
+
+			 return ;
+		}
+
+		if(L){
+			 resiziEl.css({
+				width:  _width ,
+				height:  _height,
+				top:  _top,
+				left:  minLeft,
+		  	});
+
+			 return ;
+		}
+
+		if( W  ){
+
+			const maxH = Math.max(_height,minHeight);
+		  resiziEl.css({
+			width:  minWidth ,
+			height: maxH ,
+			top:  curTop,
+			left:curLeft,
+		  });
+
+		  return ;
+			 
+		}
+
+		if(  H ){
+
+		  resiziEl.css({
+			width:  _width ,
+			height:  minHeight,
+			top:  curTop,
+			left:  curLeft,
+		  });
+
+		  return ;
+			 
+		}
+
+		resiziEl.css({
+						width:_width ,
+						height:_height,
+						top: _top,
+						left:_left,
+					});
+	}
 	changeViewSize(){
 
-		const  {width,height} = this.getInitCellSize(); 
+		const  {minWidth,minHeight} = this.cellSize; 
+
 		const  curWid = this.resiziEl.width();
 		const  curHei = this.resiziEl.height();
 
-		const roateX = Math.round(curWid / width);
-		const roateY = Math.round(curHei / height);
+		const roateX = Math.round(curWid / minWidth);
+		const roateY = Math.round(curHei / minHeight);
 	
 		
 		this.changeStatus = false ;
 		this.mergeCell({roateX,roateY});
 	}
 
-	getMergeGriditem(rotate){
-
-		
-
-		const $activeView = $(".view-active");
-		const resiziEl = this.resiziEl ;
-
-
-		const [pointY,pointX] = $activeView.attr("echo-point").split("-");
-
-
-		const pointObject={
-				left:0,middle:1,right:2,
-				t:0,m:1,b:2,
-		};
-
-		const xArr = ["-left","-middle","-right"];
-		const yArr = ["t","m","b"];
-
-		const [directionY ,directionX]= resiziEl.attr("echo-direction").split("-");
-
-
-		let handleGridItem = null ;
-
-
-		if(directionY === "t" || directionX === "left"){
-				
-			const y =	pointObject[pointY] - roateY +1;
-			const x =   pointObject[pointX] - roateX +1;
-
-
-			handleGridItem = $(`.${yArr[y]+xArr[x]}`);
-
-		}else{
-
-			handleGridItem = $activeView ;
-		}
-
-
-		return handleGridItem;
-
-	}
+	
 
 	toggleCell(Xaxis,Yaxis,status){
-	
 		Xaxis.map(x=>{
 
 			Yaxis.map(y=>{
 
 				const viewClass = y + "-" + x;
 				$("." + viewClass)[status]("view-hide")
+				.attr("echo-size","1,1")
 				.css({
 						"grid-column-end": "span 1",
 						"grid-row-end": "span 1",
@@ -188,87 +338,78 @@ class TemplateView {
 	mergeCell(rotate){
 
 	
-	//	this.getMergeGriditem(rotate);
-
 
 		const $activeView = $(".view-active");
 		const resiziEl = this.resiziEl ;
 
 		const [directionY ,directionX]= resiziEl.attr("echo-direction").split("-");
-		const {roateX,roateY} = rotate;
-		const [curRoateX,curRoateY] = $activeView.attr("echo-size").split(",");
-
-
-
-		
+		const {roateX:curMergeX,roateY:curMergeY} = rotate;
+		const [lastMergeX,lastMergeY] = $activeView.attr("echo-size").split(",");
 
 		const Xaxis = ["left","middle","right"];
 		const Yaxis = ["t","m","b"];
 
-
 		// 还原之前的；
-		const [pointY,pointX] = $activeView.attr("echo-point").split("-");
-		const index_X = Xaxis.indexOf(pointX);
-		const index_Y = Yaxis.indexOf(pointY);
+		const [originY,originX] = $activeView.attr("echo-point").split("-");
+		const lastIndexX = Xaxis.indexOf(originX);
+		const lastIndexY = Yaxis.indexOf(originY);
 
-		const curXarea = Xaxis.slice(index_X, + curRoateX + index_X);
-		const curYarea = Yaxis.slice(index_Y , + curRoateY + index_Y);
-		this.toggleCell(curXarea,curYarea,"removeClass");
+		const lastAreaX = Xaxis.slice(lastIndexX, + lastMergeX + lastIndexX);
+		const lastAreaY = Yaxis.slice(lastIndexY , + lastMergeY + lastIndexY);
+		this.toggleCell(lastAreaX,lastAreaY,"removeClass");
 
 		//重新合并
-		const pointObject={
-				left:0,middle:1,right:2,
-				t:0,m:1,b:2,
-		};
-
 		let handleGridItem = null ;
-
-		let cur_index_X = null;
-		let cur_index_Y = null;
+		let cur_index_x = null;
+		let cur_index_y = null;
 
 		if(directionY === "t" || directionX === "left"){
 
-			/*if(){
-				y= 0 
-			}*/
-				
-			const y =	(pointObject[pointY] - roateY +1)*test[pointY];
-			const x =   pointObject[pointX] - roateX +1;
-
 			
 
+			const axisobject={
+					left:-1,
+					middle:0,
+					right:0,
+					t:-1,
+					m:0,
+					b:0,
+			};
 
-			handleGridItem = $(`.${ Yaxis[y] + "-" + Xaxis[x]}`);
+			const newOriginY =	Yaxis.indexOf(originY) +  (curMergeY - lastMergeY) * axisobject[directionY];
+			const newOriginX =	Xaxis.indexOf(originX)  +  (curMergeX - lastMergeX) * axisobject[directionX];
 
-			console.log(handleGridItem);
+
+
+			handleGridItem = $(`.${ Yaxis[newOriginY] + "-" + Xaxis[newOriginX]}`);
+
 
 			const [cur_pointY,cur_pointX] = handleGridItem.attr("echo-point").split("-");
-			cur_index_X = Xaxis.indexOf(cur_pointX);
-			cur_index_Y = Yaxis.indexOf(cur_pointY);
+			cur_index_x = Xaxis.indexOf(cur_pointX);
+			cur_index_y = Yaxis.indexOf(cur_pointY);
 
 		}else{
-
 			handleGridItem = $activeView ;
-			cur_index_X = index_X;
-		    cur_index_Y = index_Y;
-
+			cur_index_x = lastIndexX;
+		    cur_index_y = lastIndexY;
 		}
-		
 
-		const cur_Xarea = Xaxis.slice(cur_index_X,  roateX + cur_index_X);
-		const cur_Yarea = Yaxis.slice(cur_index_Y ,  roateY + cur_index_Y);
+		const cur_Xarea = Xaxis.slice(cur_index_x,  curMergeX + cur_index_x);
+		const cur_Yarea = Yaxis.slice(cur_index_y ,  curMergeY + cur_index_y);
 		this.toggleCell(cur_Xarea,cur_Yarea,"addClass");
-		
+
+		/*设置*/
+		$activeView.removeClass("view-active");
 		handleGridItem
 		.css({
-				"grid-column-end": "span " + roateX,
-				"grid-row-end": "span " + roateY,
+				"grid-column-end": "span " + curMergeX,
+				"grid-row-end": "span " + curMergeY,
 		})
-		.attr("echo-size",roateX + "," + roateY)
+		.attr("echo-size",curMergeX + "," + curMergeY)
+		.addClass("view-active")
 		.removeClass("view-hide");
 
 		resiziEl.hide();
-
 	}
 
 	handle(){
@@ -317,7 +458,7 @@ class TemplateView {
 			 _self.resiziEl.show();
 
 			 if($this.hasClass('view-active')){
-			 	return ;
+			// 	returdddd ;
 			 }
 				
 				
@@ -327,22 +468,32 @@ class TemplateView {
 			 _self.showResizeBox($this);
 		});
 
+
+
 		this.resiziEl.on("mousedown",".u-resize-icon",function(e){
 			const $this= $(this);
 			const type = $this.attr("sign");
 
-			const obj={
+		/*	const obj={
 				width:_self.resiziEl.width(),
 				height:_self.resiziEl.height(),
 				top: +_self.resiziEl.css("top").match(/\d+/g)[0],
 				left: +_self.resiziEl.css("left").match(/\d+/g)[0],
-			};
+			};*/
 			_self.resiziEl.attr("echo-direction",type);
+
+
 			
-			_self.gLayout[0].onmousemove=function(e){
+			_self.gLayout[0].onmousemove= _self.throttle(function(isFirst){
+
+				_self.move(isFirst,type);
+
+			} ,60);
+
+			/*_self.gLayout[0].onmousemove= function(e){
 				
 				_self.move(e,obj,type);
-			}
+			}*/
 			
 			_self.changeStatus = true;
 
@@ -364,13 +515,7 @@ class TemplateView {
 		});
 
 		$(window).on("resize",function(){
-			const $viewTemplate = $("#viewTemplate");
-			const width = $viewTemplate.width() / 3;
-			const height = $viewTemplate.height() / 3;
-			_self.cellSize ={
-				width,
-				height
-			} ;
+			_self.getInitCellSize();
 		});
 
 		/*_self.gLayout[0].onmouseup=function(){

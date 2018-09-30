@@ -80,18 +80,6 @@ class Page{
 
 		const _self = this ;
 
-		$("#testObject").click(function(){
-
-		const a =	_self.viewDB;			
-		const b =	_self.viewSetModal;	
-
-		console.log(a,b);	
-
-
-		console.log(a == b.viewDB)	;
-
-
-		})
 	}
 }
 

@@ -42,6 +42,7 @@ class ViewSetModal {
 			rotate: 4,
 			style: 1,
 		});
+		console.log(this.calendar);
 		this.xAxis = new SCombobox($("#XAxis"), {
 			width: 300,
 			"prompt": "请选择横轴维度...",
