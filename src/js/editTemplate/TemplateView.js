@@ -193,115 +193,7 @@ class TemplateView {
 			left:_left,
 		});
 	}
-	movesdsd(e,obj,type){
-
-
-		const resiziEl = this.resiziEl;
-
-		const {startPointX,startPointY} = this;
-		const {width,height,top,left} = obj;
-
-		const moveX = e.clientX - startPointX ;
-		const moveY = e.clientY - startPointY ;
-
-		const directionObject = {
-			left:-1,
-			middle:0,
-			right:1,
-			t:-1,
-			m:0,
-			b:1
-		};
-
-		const positionObject = {
-			left:1,
-			middle:0,
-			right:0,
-			t:1,
-			m:0,
-			b:0,
-		};
-		
-		const {
-			minWidth,
-			minHeight,
-			minTop,
-			minLeft,
-			curTop,
-			curLeft,
-		} = this.cellSize;
-
-
-		const [axixY,axixX] = type.split("-");
-
-		const _width = width + moveX*directionObject[axixX];
-		const _height = height + moveY*directionObject[axixY];
-		const _top = top + moveY*positionObject[axixY];
-		const _left = left + moveX*positionObject[axixX];
-
-		
-		const W = _width < minWidth ;
-		const H = _height < minHeight ;
-		const T = _top < minTop ;
-		const L = _left < minLeft ;
-
-		if(T){
-			 resiziEl.css({
-				width:  _width ,
-				height:  _height,
-				top:  minTop,
-				left:  _left,
-		  	});
-
-			 return ;
-		}
-
-		if(L){
-			 resiziEl.css({
-				width:  _width ,
-				height:  _height,
-				top:  _top,
-				left:  minLeft,
-		  	});
-
-			 return ;
-		}
-
-		if( W  ){
-
-			const maxH = Math.max(_height,minHeight);
-		  resiziEl.css({
-			width:  minWidth ,
-			height: maxH ,
-			top:  curTop,
-			left:curLeft,
-		  });
-
-		  return ;
-			 
-		}
-
-		if(  H ){
-
-		  resiziEl.css({
-			width:  _width ,
-			height:  minHeight,
-			top:  curTop,
-			left:  curLeft,
-		  });
-
-		  return ;
-			 
-		}
-
-		resiziEl.css({
-						width:_width ,
-						height:_height,
-						top: _top,
-						left:_left,
-					});
-	}
-	changeViewSize(){
+	changeViewSize(e){
 
 		const  {minWidth,minHeight} = this.cellSize; 
 
@@ -313,26 +205,363 @@ class TemplateView {
 	
 		
 		this.changeStatus = false ;
-		this.mergeCell({roateX,roateY});
+		const result = this.mergeCell({roateX,roateY});
+
+		if(!result){
+			alert("合并失败");
+			this.resiziEl.hide();
+		}
 	}
 
-	
+	judgeCellOver(cellPar,area){
+		
+		
+		const Xaxis = ["left","middle","right"];
+		const Yaxis = ["t","m","b"];
 
-	toggleCell(Xaxis,Yaxis,status){
-		Xaxis.map(x=>{
 
-			Yaxis.map(y=>{
+		const {cur_Xarea, cur_Yarea} = area ;
 
+		const 	cur_y_index = Yaxis.findIndex(val=> cur_Yarea[0] === val), 
+		     	cur_x_index = Xaxis.findIndex(val=> cur_Xarea[0] === val);
+
+		const cur_x =  cur_x_index + cur_Xarea.length ;
+		const cur_y =  cur_y_index + cur_Yarea.length ;
+
+		const {	par_originX, par_originY, parMergeX, parMergeY} = cellPar;
+
+		const cell_x_index =  Xaxis.findIndex(val=>par_originX === val) ;
+		const cell_y_index =  Yaxis.findIndex(val=>par_originY === val) ;
+		const cell_x =  cell_x_index + +parMergeX ;
+		const cell_y =  cell_y_index + +parMergeY ;
+
+		
+
+		if(cell_x_index < cur_x_index || cell_x > cur_x || cur_y < cell_y || cell_y_index < cur_y_index){
+
+			return true ;
+		
+		}else{
+
+			return false ;
+		}
+		
+		
+	}
+
+	showCell(lastObj,curObj){
+
+		const {lastAreaX, lastAreaY} = lastObj ;
+		const {cur_Xarea, cur_Yarea} = curObj ;
+
+
+		lastAreaY.map(y=>{
+			
+			if(cur_Yarea.includes(y)){
+
+				const lastLeg = lastAreaX.length ;
+				const curLeg = cur_Xarea.length ;
+
+				const add_count = lastLeg - curLeg ;
+
+				const otherX =	add_count <= 0 ? [] : lastAreaX[0] === cur_Xarea[0] ? lastAreaX.slice(curLeg) : lastAreaX.slice(0,add_count);
+				
+				otherX.map(x=>{
+					const viewClass = y + "-" + x;
+					$("." + viewClass)
+					.removeClass("view-hide")
+					.attr({
+						"echo-size":"1,1",
+						"echo-par":"",
+					})
+					.css({
+							"grid-column-end": "span 1",
+							"grid-row-end": "span 1",
+					});
+				});
+				
+			}else{
+
+				lastAreaX.map(x=>{
+					const viewClass = y + "-" + x;
+					$("." + viewClass)
+					.removeClass("view-hide")
+					.attr("echo-size","1,1")
+					.css({
+							"grid-column-end": "span 1",
+							"grid-row-end": "span 1",
+					});
+				});
+			}
+
+			
+		});
+	};
+
+	xCompare(weye){
+
+
+	}
+
+	hideCells(lastObj,curObj,par){
+
+		const {lastAreaX, lastAreaY} = lastObj ;
+		const {cur_Xarea, cur_Yarea} = curObj ;
+		
+		cur_Yarea.map(y=>{
+			
+			if(lastAreaY.includes(y)){
+
+				const lastLeg = lastAreaX.length ;
+				const curLeg = cur_Xarea.length ;
+
+				const add_count = curLeg - lastLeg ;
+
+				const otherX =	add_count <= 0 ? [] : lastAreaX[0] === cur_Xarea[0] ? cur_Xarea.slice(lastLeg) : cur_Xarea.slice(0,add_count);
+				
+				otherX.map(x=>{
+					const viewClass = y + "-" + x;
+
+					if(viewClass===par){
+
+					//	return ;
+
+					}
+
+					$("." + viewClass)
+					.addClass("view-hide")
+					.attr({
+						"echo-size":"1,1",
+						"echo-par":par,
+					})
+					.css({
+							"grid-column-end": "span 1",
+							"grid-row-end": "span 1",
+					});
+				});
+				
+			}else{
+
+				cur_Xarea.map(x=>{
+					const viewClass = y + "-" + x;
+
+					if(viewClass===par){
+
+						//return ;
+
+					}
+					$("." + viewClass)
+					.addClass("view-hide")
+					.attr("echo-size","1,1")
+					.css({
+							"grid-column-end": "span 1",
+							"grid-row-end": "span 1",
+					});
+				});
+			}
+			
+		});
+
+		return true ;
+	}
+
+	hideCell(lastObj,curObj,parName,compareEl){
+
+
+		const {lastAreaX, lastAreaY} = lastObj ;
+		const {cur_Xarea, cur_Yarea} = curObj ;
+		const canMergeArr  = [ ];
+
+		const parArr = [] ;
+
+		const lastLeg = lastAreaX.length ;
+		const curXLeg = cur_Xarea.length ;
+		let is_over = false ;
+
+		for(let i = 0 ,legY = cur_Yarea.length ; i < legY ;i++){
+
+			const y = cur_Yarea[i];
+
+			if(lastAreaY.includes(y)){
+
+				const add_count = curXLeg - lastLeg ;
+				const otherX =	add_count <= 0 ? [] : lastAreaX[0] === cur_Xarea[0] ? cur_Xarea.slice(lastLeg) : cur_Xarea.slice(0,add_count);
+
+				for(let j = 0 , leg = otherX.length; j < leg ; j++){
+
+					console.log({i,j});
+
+					const x = otherX[j];
+					const viewClass = y + "-" + x;
+
+				//	if(viewClass !== parName){
+					
+						const cell = $("." + viewClass);
+						viewClass !== parName && canMergeArr.push(cell);
+					
+						const [cellScaleX , cellScaleY] = cell.attr("echo-size").split(",");
+						console.log(cellScaleX , cellScaleY);
+						const is_scale = (+cellScaleX ) + (+cellScaleY);
+						
+						if(cell.hasClass("view-hide") ){
+							const par = cell.attr("echo-par");
+							if(!parArr.includes(par)){
+								parArr.push(par);
+								const $par = $("." + par);
+								const [par_originY,par_originX] = par.split("-");
+								const [parMergeX,parMergeY] = $par.attr("echo-size").split(",");
+
+								is_over =  this.judgeCellOver({
+									par_originX, par_originY, parMergeX, parMergeY
+								},curObj);
+							}
+							console.log(is_over);
+						}else if(is_scale > 2){
+							
+							 parArr.push(viewClass);
+							 is_over =  this.judgeCellOver({
+								par_originX:x, par_originY:y, parMergeX:cellScaleX, parMergeY:cellScaleY
+							},curObj);
+
+							 console.log(is_over);
+						}
+				//	}
+
+					if(is_over){
+						return false;	
+					}
+
+				}
+
+
+
+
+			}else{
+				
+
+				for(let j = 0  ; j < curXLeg ; j++){
+
+					const x = cur_Xarea[j];
+				
+					const viewClass = y + "-" + x;
+
+				//	if(viewClass !== parName){
+					
+						const cell = $("." + viewClass);
+
+						viewClass !== parName && canMergeArr.push(cell);
+
+
+						const [cellScaleX , cellScaleY] = cell.attr("echo-size").split(",");
+						const is_scale = (+cellScaleX )+ (+cellScaleY);
+
+						if(cell.hasClass("view-hide")){
+
+							const par = cell.attr("echo-par");
+							
+							if(!parArr.includes(par)){
+								parArr.push(par);
+								const $par = $("." + par);
+								const [par_originY,par_originX] = par.split("-");
+								const [parMergeX,parMergeY] = $par.attr("echo-size").split(",");
+
+								is_over =  this.judgeCellOver({
+									par_originX, par_originY, parMergeX, parMergeY
+								},curObj);
+							}
+
+							console.log(is_over);
+						
+						}else if(is_scale > 2){
+							
+							 parArr.push(viewClass);
+							 is_over =  this.judgeCellOver({
+								par_originX:x, par_originY:y, parMergeX:cellScaleX, parMergeY:cellScaleY
+							},curObj);
+
+							 console.log(is_over);
+						}
+			//		}
+
+					
+
+					if(is_over){
+						return false;	
+					}
+
+				}
+
+
+			}
+		}
+
+		canMergeArr.map(val=>{
+
+			val.addClass("view-hide")
+				.attr({
+					"echo-size":"1,1",
+					"echo-par":parName,
+				})
+				.css({
+						"grid-column-end": "span 1",
+						"grid-row-end": "span 1",
+				});
+
+		});
+
+		const {old,news} = compareEl ;
+		if(old !== news ){
+
+			old
+			.removeClass("view-active")
+			.addClass("view-hide")
+			.attr({
+					"echo-size":"1,1",
+					"echo-par":cur_Yarea[0] + "-" + cur_Xarea[0],
+				})
+			.css({
+					"grid-column-end": "span 1",
+					"grid-row-end": "span 1",
+			});
+
+			news
+			.addClass("view-active")
+			.removeClass("view-hide");
+
+		}
+
+
+
+		return true ;
+	}
+
+	toggleCell(Xaxis,Yaxis,status,area){
+
+		const cellar = []
+
+		for(let i = 0 , xLeg = Xaxis.length; i< xLeg; i++){
+
+			for(let j = 0, yLeg = Yaxis.length; j< xLeg; j++){
+
+				
+
+				const x  = Xaxis[i];
+				const y  = Yaxis[j];
 				const viewClass = y + "-" + x;
-				$("." + viewClass)[status]("view-hide")
+				const cell = $("." + viewClass);
+				
+				if(status === "addClass" && this.judgeCellOver(cell,area)){
+					return false;
+				}
+
+				cell[status]("view-hide")
 				.attr("echo-size","1,1")
 				.css({
 						"grid-column-end": "span 1",
 						"grid-row-end": "span 1",
 					});
-			});
-		});
-
+			}
+		}
 	}
 
 	mergeCell(rotate){
@@ -349,19 +578,18 @@ class TemplateView {
 		const Xaxis = ["left","middle","right"];
 		const Yaxis = ["t","m","b"];
 
-		// 还原之前的；
-		const [originY,originX] = $activeView.attr("echo-point").split("-");
+		const activePoint = $activeView.attr("echo-point");
+		const [originY,originX] = activePoint.split("-") ;
 		const lastIndexX = Xaxis.indexOf(originX);
 		const lastIndexY = Yaxis.indexOf(originY);
 
-		const lastAreaX = Xaxis.slice(lastIndexX, + lastMergeX + lastIndexX);
-		const lastAreaY = Yaxis.slice(lastIndexY , + lastMergeY + lastIndexY);
-		this.toggleCell(lastAreaX,lastAreaY,"removeClass");
 
 		//重新合并
 		let handleGridItem = null ;
 		let cur_index_x = null;
 		let cur_index_y = null;
+		let newOriginY = null ;
+		let newOriginX = null ;
 
 		if(directionY === "t" || directionX === "left"){
 
@@ -376,40 +604,92 @@ class TemplateView {
 					b:0,
 			};
 
-			const newOriginY =	Yaxis.indexOf(originY) +  (curMergeY - lastMergeY) * axisobject[directionY];
-			const newOriginX =	Xaxis.indexOf(originX)  +  (curMergeX - lastMergeX) * axisobject[directionX];
+			 const newOriginY_index =	Yaxis.indexOf(originY) +  (curMergeY - lastMergeY) * axisobject[directionY];
+			 const newOriginX_index =	Xaxis.indexOf(originX)  +  (curMergeX - lastMergeX) * axisobject[directionX];
 
+			newOriginY = Yaxis[newOriginY_index];
+			newOriginX = Xaxis[newOriginX_index];
 
-
-			handleGridItem = $(`.${ Yaxis[newOriginY] + "-" + Xaxis[newOriginX]}`);
+			handleGridItem = $(`.${newOriginY + "-" + newOriginX}`);
 
 
 			const [cur_pointY,cur_pointX] = handleGridItem.attr("echo-point").split("-");
 			cur_index_x = Xaxis.indexOf(cur_pointX);
 			cur_index_y = Yaxis.indexOf(cur_pointY);
 
+			/*$activeView
+			.removeClass("view-active")
+			.addClass("view-hide")
+			.attr({
+					"echo-size":"1,1",
+					"echo-par":newOriginY + "-" + newOriginX,
+				})
+			.css({
+					"grid-column-end": "span 1",
+					"grid-row-end": "span 1",
+			});
+
+			handleGridItem
+			.addClass("view-active")
+			.removeClass("view-hide");*/
+
 		}else{
 			handleGridItem = $activeView ;
 			cur_index_x = lastIndexX;
 		    cur_index_y = lastIndexY;
+		    newOriginY = originY ;
+		    newOriginX = originX ;
 		}
 
 		const cur_Xarea = Xaxis.slice(cur_index_x,  curMergeX + cur_index_x);
 		const cur_Yarea = Yaxis.slice(cur_index_y ,  curMergeY + cur_index_y);
-		this.toggleCell(cur_Xarea,cur_Yarea,"addClass");
+
+		const lastAreaX = Xaxis.slice(lastIndexX, + lastMergeX + lastIndexX);
+		const lastAreaY = Yaxis.slice(lastIndexY , + lastMergeY + lastIndexY);
+
+
+		const par = newOriginY + "-" + newOriginX ;
+		const is_over_1 = this.hideCell({
+				lastAreaX,
+				lastAreaY
+			},
+			{
+				cur_Xarea,
+				cur_Yarea
+		},par,{
+			old:$activeView,
+			news:handleGridItem,
+		});
+
+		if( !is_over_1 ){ return false } ;
+
+		// 还原之前的；
+		// 
+		
+
+		
+		this.showCell(
+			{
+				lastAreaX,
+				lastAreaY
+			},
+			{
+				cur_Xarea,
+				cur_Yarea
+		});
 
 		/*设置*/
-		$activeView.removeClass("view-active");
 		handleGridItem
 		.css({
 				"grid-column-end": "span " + curMergeX,
 				"grid-row-end": "span " + curMergeY,
 		})
-		.attr("echo-size",curMergeX + "," + curMergeY)
-		.addClass("view-active")
-		.removeClass("view-hide");
+		.attr("echo-size",curMergeX + "," + curMergeY);
+		
 
 		resiziEl.hide();
+
+		return true ;
 	}
 
 	handle(){
