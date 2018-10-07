@@ -117,7 +117,80 @@ class Unit {
 }
 
 
+class RippleBtn{
+	
+	constructor(option){
 
+		const defaultOption = {
+			opacity:.5,
+			speed:.6,
+			bgColor:"#fff",
+
+		};
+
+		this.config = Object.assign({},defaultOption,option);
+		this.els = $(".m-rippleBtn");
+		this.handle();
+	}
+
+	init(el){
+
+
+	}
+
+	renderRipple($this,e){
+
+		const rect = this.getPosition($this[0],e);
+		this.createRipple($this,rect);
+
+	}
+
+	getPosition(el,e){
+
+		const {width,height,x,y} = el.getBoundingClientRect();
+
+		const radiusRange = Math.max(width,height);
+		const left = e.clientX - x - radiusRange / 2  ;
+		const top =  e.clientY - y - radiusRange / 2 ;
+		return {
+			radiusRange,
+			top,
+			left
+		};
+	}
+
+	createRipple($el,rect){
+
+		const {radiusRange, top, left} = rect ;
+
+		const {opacity,speed,bgColor} = this.config ;
+
+		const str = `<span class="u-ripple" style="opacity:${opacity};background:${bgColor};animation-duration:${speed}s;width:${radiusRange}px;height:${radiusRange}px;top:${top}px;left:${left}px"></span>`;
+
+		$el.append(str);
+
+	}
+
+	handle(){
+
+		const _self = this ;
+		this.els.on("click",function(e){
+
+			const $this = $(this) ;
+			_self.renderRipple($this,e);
+
+
+
+
+		});
+
+		this.els.on("animationend",".u-ripple",function(e){
+			const $this = $(this) ;
+			$this.remove();
+		});
+	}
+
+}
 
 
 class DropMenu{
@@ -1210,4 +1283,4 @@ class SComboTree {
 
 }
 
-export {Unit,SCombobox,SModal,Calendar,Tree,SComboTree,SInp,DropMenu};
+export {Unit,SCombobox,SModal,Calendar,Tree,SComboTree,SInp,DropMenu ,RippleBtn};

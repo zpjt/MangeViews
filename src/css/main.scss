@@ -276,7 +276,7 @@
 			padding-botom:30px;
 		}
 		.change-box{
-			box-shadow:  0 3px 10px 0 #807d83de;
+			box-shadow:  0 0 10px 0 #807d83de;
 		    border-radius: 6px;
 		    text-shadow: 0 0 2px #585e6c;
 		    font-size: 16px;
@@ -323,6 +323,14 @@
 					content:"管理界面";
 					display:none;
 				}
+			}
+			.g-ripple{
+				position:absolute;
+				width: 100%;
+				height: 100%;
+				top:0;
+				left:0;
+				z-index:10;
 			}
 			
 		}

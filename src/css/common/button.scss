@@ -2,7 +2,7 @@ $themeColor:#00a0e9;
 .s-btn{
 	min-width: 30px;
 	min-height: 20px;
-	padding:5px 8px;
+	padding:6px 10px;
     border-radius: 4px;
     outline: none;
 	font-size: 14px;
@@ -21,7 +21,7 @@ $themeColor:#00a0e9;
 	background:white;
 }
 
-
+/* 字体图标按钮，hover图标从上滑下来 */
 .s-Naira{
 	overflow: hidden;
 	position: relative;
@@ -47,4 +47,149 @@ $themeColor:#00a0e9;
 		transition: transform .3s ease ;
 		line-height:30px;
     }
+}
+
+/* 内部扩张效果 */
+.s-sacnite{
+	position: relative;
+	box-sizing:border-box;
+	border:2px solid $themeColor;
+	transition: color .3s,transform .1s linear .1s;
+	&:hover{
+		color:$themeColor;
+		&:before{
+			transform:scale(1);
+		}
+
+	}
+	&:before{
+		content:"";
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		background: #fff ;
+		transform:scale(0);
+		transition:transform .3s linear;
+	}
+	&:active{
+		transform:scale(1.2);
+	}
+}
+
+/* 外部扩张动弹效果 */
+.s-moema{
+	position: relative;
+	transition:transform .2s linear; 
+	&:hover{
+		animation:moema .3s forwards ;
+		&:before{
+			animation:moema_1 .3s .14s forwards ;
+		}
+
+	}
+	&:before{
+		content:"";
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		opacity:0.4;
+		border-radius:4px;
+		background: inherit ;
+		transform:scale(0.8);
+		transition:transform .3s linear; 
+		z-index:-1;
+	}
+	/* &:active{
+		&:before{
+			animation:moema_1 .2s  forwards ;
+		}
+	} */
+	
+}
+
+@keyframes moema{
+	60% {
+    transform: scale(.8,.8);
+	}
+
+	85% {
+	    transform: scale(1.1,1.1);
+	}
+	100% {
+	    transform: scale(1,1);
+	}
+}
+
+@keyframes moema_1{
+	 to {
+        opacity: 0;
+        transform: scale(1.3,1.8)
+    }
+}
+
+/* 下落的闪亮效果 */
+%position{
+		content:"";
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		transition:transform .2s cubic-bezier(.75,0,.125,1);
+		top: -100%;
+		left: 0;
+		z-index:-1;
+}
+.s-aylen{
+	position: relative;
+	z-index:1;
+	overflow:hidden;
+	&:hover{
+		&:before{
+			transform:translateY(100%);
+		}
+		&:after{
+			transform:translateY(100%);
+			transition-delay:.2s;
+		}
+
+	}
+	
+	&:before{
+		@extend %position;
+		background: lighten($themeColor,30%) ;
+
+	}
+
+	&:after{
+		@extend %position;
+		background: lighten($themeColor,10%) ;
+	}
+	
+}
+
+
+
+
+/* 波浪效果 */
+.m-rippleBtn{
+	position: relative;
+	.u-ripple{
+		position: absolute;
+		z-index:10;
+		width: 100%;
+		height: 100%;
+		border-radius:100%;
+		transform: scale(0);
+		animation-name:ripple;
+		animation-timing-function:linear;
+	}
+}
+@keyframes ripple{
+	100%{
+		opacity:0;
+		transform: scale(2.5);
+	}
 }

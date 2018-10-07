@@ -1,8 +1,13 @@
 import "css/main.scss";
+import {RippleBtn} from "js/common/Unit.js";
+import "css/common/button.scss";
 
 const {role_id,baseUrl,base,user_id} = window.jsp_config;
 
 /*jq对象*/
+new RippleBtn();
+
+
 
 const [$slide]=[$("#slide")];
 
