@@ -43,25 +43,30 @@ $border:#E9E9E9;
 .header{
 	height: $title;
 	position: relative;
-	background-color: #000000;
+	background-color: #000;
 	color:white;
 	display:flex;
 	justify-content: space-between;
-align-items:center;
+	align-items:center;
 	padding: 0 20px;
 	font-size:18px;
-	.head-btn{
-				cursor: pointer;
-	}
 	.back{
-		color:#00b0e4;
+		cursor: pointer;
+		text-align:center;
+		padding:0 15px;
+		&:hover{
+			transform:scale(1.2);
+			color:white;
+		}
+		transition: transform .3s ease-in ,color .3s ease-out;
 		font:{
 			size:40px;
 		}
 	}
 	@at-root{
 		.opt-box{
-			&>span{
+			.head-btn{
+				cursor: pointer;
 				text-align:center;
 				padding:0 15px;
 				&:after{
@@ -176,6 +181,12 @@ align-items:center;
 	.opt-box{
 		display:flex;	
 		align-items:center;
+		color:#00b0e4;
+		.head-btn{
+			&:hover{
+				color:white;
+			}
+		}
 	}
 }
 
@@ -446,7 +457,7 @@ align-items:center;
 	
 	.zbBox{
 		.cate-box{
-			height:420px;
+			height:400px;
 			padding-left:20px;
 			overflow:auto;
 		}
@@ -516,14 +527,52 @@ align-items:center;
 				@include active;
 			}
 
+			.setBox{
+
+
+				@mixin border-bg{
+					background-image:url("../img/view_icon.png");
+					background-repeat:no-repeat;
+					display:inline-block;
+					width: 52px;
+					height: 26px;
+					transition:transform .2s ease-out;
+					cursor: pointer;
+					&:hover{
+						transform:scale(1.2);
+					}
+				}
+				margin-left:15px;
+				.g-borderStyle{
+					display:flex;
+					&>span{
+						display:flex;
+						align-items: center;
+					}
+				}
+			
+				.m-border1{
+					@include border-bg;
+					background-position:0 -70px;
+				}
+				.m-border2{
+					@include border-bg;
+					background-position:-50px -70px;
+				}
+				.m-border3{
+					@include border-bg;
+					background-position:-100px -70px;
+				}
+
+			}
+
 		}
 		
 	}
-	.setBox{
-		margin-left:15px;
-
-	}
+	
 }
+
+
 
 
 /* 组件样式 */

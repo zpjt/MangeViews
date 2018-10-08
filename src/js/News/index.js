@@ -1,7 +1,7 @@
 import "css/News.scss";
 import {api} from "api/News.js";
 import {EasyUITab} from "js/common/EasyUITab.js";
-import {Unit, SModal, SComboTree ,SInp,Calendar,SCombobox,DropMenu} from "js/common/Unit.js";
+import {Unit, SModal, SComboTree ,SInp,Calendar,SCombobox,DropMenu ,Search} from "js/common/Unit.js";
 
 /**
  * @user_id ：用户id
@@ -200,6 +200,7 @@ class Page{
 		this.unit = new Unit();
 		this.modal = new SModal();
 		this.inp = new SInp();
+		this.search = new Search($("#u-search"));
 		this.levDrop = "";
 		this.levDropInit();
 		this.getData();

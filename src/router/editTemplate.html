@@ -15,15 +15,15 @@
         <header>
             <div id="headOpt" class="header">
                 <div class="opt-box">
-                    <span class="head-btn" sign="back"><i class="fa fa-chevron-circle-left back" ></i></span>
+                    <span class="back" id="back"><i class="sicon sicon-back " ></i></span>
                     <span echo-text="全局过滤" sign="filter" class="head-btn"><i class="fa fa-filter"></i></span>
                     <span echo-text="全局样式" sign="style" class="head-btn"><i class="fa fa-th-large"></span></i>
                 </div>
                 <div class="opt-box">
-                    <span echo-text="预览" sign="pre" class="head-btn"><i class="fa  fa-eye"></i></span>
-                    <span echo-text="保存" sign="save" class="head-btn"><i class="fa fa-download"></i></span>
-                    <span echo-text="另存为" sign="save-as" class="head-btn"><i class="fa fa-download"></i></span>
-                    <span echo-text="导出" sign="export" class="head-btn" id="testObject"><i class="fa fa-download"></i></span>
+                    <span echo-text="预览" sign="pre" class="head-btn"><i class="sicon sicon-pre"></i></span>
+                    <span echo-text="保存" sign="save" class="head-btn"><i class="sicon sicon-save"></i></span>
+                    <span echo-text="另存为" sign="save-as" class="head-btn"><i class="sicon sicon-save-as"></i></span>
+                    <span echo-text="导出" sign="export" class="head-btn" id="testObject"><i class="sicon sicon-export"></i></span>
                 </div>
             </div>
             <div class="global-box" id="globalBox">
@@ -188,9 +188,9 @@
                 <div class="wrap">
                     <div class="zbBox">
                         <div class="sel-item">
-                            <p class="s-title" style="width:100px">选择监测指标:</p>
+                            <p class="s-title " style="width:100px">选择监测指标:</p>
                             <div style="position: relative;">
-                                <button class="s-btn" id="selZb"><span class="fa fa-plus">&nbsp;</span>添加（多选）</button>
+                                <button class="s-btn  m-rippleBtn" id="selZb"><span class="fa fa-plus">&nbsp;</span>添加（多选）</button>
                                 <div class="zb-box" id="zbTreeBox">
                                     <p class="cate-title">指标选择</p>
                                     <div id="zbTree"></div>
@@ -270,14 +270,25 @@
 								</div> 
 							</div> -->
                             </div>
+                            <div class="cate-box" id="g-commomBox">
+                                <div class="sel-item">
+                                    <p class="s-title">边框样式:</p>
+                                    <div class="g-borderStyle">
+                                        <span><input type="radio" class="border-style s-radio " value="1" name="border-style"><label class="m-border1"></label></span>
+                                        <span><input type="radio"  class="border-style s-radio " value="2" name="border-style"><label class="m-border2"></label></span>
+                                        <span><input type="radio" class="border-style s-radio " value="3" name="border-style"><label class="m-border3"></label></span>
+                                        <span><input type="radio" checked="checked" class="border-style s-radio " value="0" name="border-style"><label> 无 </label></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="m-foot">
-                <button class="s-btn sure-btn" id="viewSure">确定</button>
+                <button class="s-btn sure-btn s-moema" id="viewSure">确 定</button>
                 <span>&nbsp;&nbsp;&nbsp;</span>
-                <button class="s-btn cancel-btn m-close">取消</button>
+                <button class="s-btn s-dashBtn m-close">取 消</button>
             </div>
         </div>
     </div>

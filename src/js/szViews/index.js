@@ -4,7 +4,7 @@ import "css/common/Svg.scss";
 
 
 import { EasyUITab } from "js/common/EasyUITab.js";
-import {Unit,SCombobox,SModal,Calendar,Tree,SInp,DropMenu} from "js/common/Unit.js";
+import {Unit,SCombobox,SModal,Calendar,Tree,SInp,DropMenu ,Search} from "js/common/Unit.js";
 import {api} from "api/szViews.js";
 
 
@@ -723,7 +723,7 @@ class Page  {
 		this.delModal = new DelModal();
 		this.iconBox = new IconBox();
 		this.inp = new SInp();
-
+		this.search = new Search($("#u-search"));
 		this.dropMenu = new DropMenu($("#dropMenu"),{
 			buttonTxt:"新增",
 			itemCallback:function($this){

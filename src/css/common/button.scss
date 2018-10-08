@@ -12,13 +12,10 @@ $themeColor:#00a0e9;
 	cursor: pointer;
 }
 .sure-btn{
-	color:white;
+	//color:white;
+//	color:$themeColor;
+//	border:1px solid $themeColor;
 	background:$themeColor;
-}
-
-.cancel-btn{
-	color:$themeColor;
-	background:white;
 }
 
 /* 字体图标按钮，hover图标从上滑下来 */
@@ -170,12 +167,85 @@ $themeColor:#00a0e9;
 	
 }
 
+/*描边效果 */
+
+%position_1{
+	content:"";
+	position: absolute;
+	width: 0;
+    height: 0;
+    border: solid 2px transparent;
+    z-index: 3;
+    box-sizing: border-box;
+}
+.s-dashBtn{
+	position: relative;
+	&:before{
+		@extend %position_1 ;
+		top:0;
+		left:0;
+		transition: border-color 0s ease-in .8s,width .2s ease-in .6s,height .2s ease-in .4s;
+	}
+	&:after{
+		@extend %position_1 ;
+		right: 0;
+		bottom: 0;
+	    transition: border-color 0s ease-in .4s,width .2s ease-in .2s,height .2s ease-in;
+	}
+	&:hover{
+		&:before{
+			border-top-color: $themeColor;
+		    border-right-color: $themeColor;
+		    width: 100%;
+		    height: 100%;
+		    transition: border-color 0s ease-out 0s,width .2s ease-out 0s,height .2s ease-out .2s;
+
+		}
+		&:after{
+			border-bottom-color:$themeColor;
+		    border-left-color: $themeColor;
+		    width: 100%;
+		    height: 100%;
+		    transition: border-color 0s ease-out .4s,width .2s ease-out .4s,height .2s ease-out .6s;
+				}
+	}
+}
+
+/* 背景斜切 */
+.s-bevell{
+	position: relative;
+	overflow:hidden;
+	transition:color .2s linear .1s;
+	&:before{
+		content:"";
+		position: absolute;
+		width:150%;
+		height:100%;
+		top: 0;
+		left: 0;
+		background: $themeColor;
+		transition:transform .3s linear;
+		transform:rotate(-90deg);
+		transform-origin: 0 100%;
+		border-radius:inherit;
+		z-index: -1;
+	}
+	&:hover{
+		color:white;
+		&:before{
+			transform:rotate(0deg);
+		}
+	}
+
+}
 
 
 
 /* 波浪效果 */
 .m-rippleBtn{
 	position: relative;
+	overflow:hidden;
+	//background:$themeColor;
 	.u-ripple{
 		position: absolute;
 		z-index:10;

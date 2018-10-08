@@ -80,8 +80,14 @@ $duration:.3s;
 	}
 	.m-foot{
 		height:$height;
-		line-height:$height;
 		text-align:center;
+		.m-close{
+			color: $themeColor;
+	    	background: none;
+		}	
+		.s-btn{
+			padding:8px 24px;
+		}	
 	}
 }
 .s-modal.m-show{

@@ -715,8 +715,12 @@ class TemplateView {
 				ev.preventDefault();
 
 				const $this = $(this);
+				/**
+				 * [type 只有左边的组件被设置过type,被拖拽放下的时候会被获取到类型，如果如果拖拽时，获取不到类型，说明拖拽的不是左侧的组件]
+				 * @type {[table,line，....]}
+				 */
 				const type = ev.dataTransfer.getData("type");
-				if(!type || $this.hasClass("view-active")){
+				if(!type || $this.hasClass("view-fill")){
 					return ;
 				}
 
@@ -724,24 +728,16 @@ class TemplateView {
 				$this.addClass("view-active").siblings().removeClass("view-active");
 
 				const size = $this.attr("echo-size").split(",");
-					
-				$this.html(`<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="1"></div>
-       			 <div class="view-content"> </div>`);
-
-				upModalStatus(type);
+				upModalStatus(type,size,$this);
 			};
 		});
 
 
-		$("#templateBox").on("click",".view-item",function(){
+		$("#templateBox").on("click",".view-item",function(e){
+
+			e.stopPropagation();
 			 const $this = $(this);
 			 _self.resiziEl.show();
-
-			 if($this.hasClass('view-active')){
-			// 	returdddd ;
-			 }
-				
-				
 			
 			 $this.addClass('view-active').siblings().removeClass("view-active");
 
@@ -754,26 +750,13 @@ class TemplateView {
 			const $this= $(this);
 			const type = $this.attr("sign");
 
-		/*	const obj={
-				width:_self.resiziEl.width(),
-				height:_self.resiziEl.height(),
-				top: +_self.resiziEl.css("top").match(/\d+/g)[0],
-				left: +_self.resiziEl.css("left").match(/\d+/g)[0],
-			};*/
 			_self.resiziEl.attr("echo-direction",type);
 
-
-			
 			_self.gLayout[0].onmousemove= _self.throttle(function(isFirst){
 
 				_self.move(isFirst,type);
 
 			} ,60);
-
-			/*_self.gLayout[0].onmousemove= function(e){
-				
-				_self.move(e,obj,type);
-			}*/
 			
 			_self.changeStatus = true;
 

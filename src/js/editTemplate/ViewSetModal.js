@@ -1,13 +1,16 @@
 import {ZbComponent} from "./ZbComponent.js" ;
 import {api } from "api/editTemplate.js";
-import {SCombobox, SModal, Calendar, Tree, SComboTree} from "js/common/Unit.js";
+import {SCombobox, SModal, Calendar, Tree, SComboTree ,RippleBtn} from "js/common/Unit.js";
 
 /**
  * 模态框组件
  */
+new RippleBtn();
 class ViewSetModal {
 
 	constructor(config) {
+
+		
 
 		const { modal ,viewDB } = config ;
 		this.modal = modal ;
@@ -17,6 +20,7 @@ class ViewSetModal {
 		this.viewStyleBox = $("#viewStyleBox");
 		this.viewType ="";
 		this.wd_arr = null;
+		this.activeViewObje = null ;
 		this.getTreeData();
 		this.handle();
 		
@@ -34,7 +38,11 @@ class ViewSetModal {
 			kpiTree,
 			dimTree,
 			modal,
-			viewModal,
+			getViewModal:()=>{
+				
+				return self ;
+
+			},
 		});
 
 		// 日历
@@ -165,22 +173,31 @@ class ViewSetModal {
 		}
 	}
 
-	upModalStatus(type){
+	upModalStatus(type,size,$view){
 
-			const icon = $(`.component-item[echo-type=${type}]`).html();
-			this.modalType.html(icon);
+		/*$view.html(`<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="1"></div>
+       			 <div class="view-content"> </div>`);*/
 
-			this.viewType=type;
-		    this.viewStyleBoxTnit();
-		    this.upComboxStatus();
-			this.modal.show(this.setMd);
-			this.zbComponent.sureBtnHandle();
+		this.activeViewObje = {
+			$box:$view,
+			size
+		};
+
+
+		const icon = $(`.component-item[echo-type=${type}]`).html();
+		this.modalType.html(icon);
+
+		this.viewType=type;
+	    this.viewStyleBoxTnit();
+	    this.upComboxStatus();
+		this.modal.show(this.setMd);
+		this.zbComponent.sureBtnHandle(this);
 			
 	}
 
 	upComboxStatus(){
 
-		const status = this.viewType ==="table" ;
+		const status = this.viewType ==="table";
 
 		this.xAxis.config.multiply = status;
 		this.yAxis.config.multiply = status;
@@ -609,7 +626,13 @@ class ViewSetModal {
 
 					if (node.data && node.data.length) {
 
-							this.viewDB.add(object,viewType,node);
+						const {$box,size} = this.activeViewObje;
+						const border_type = $(".border-style:checked").val();
+						const border_str = border_type  === "0" ?"" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${border_type}"></div>`;
+
+						const htmlStr = border_str + `<div class="view-content"></div>`;
+
+							this.viewDB.add(object,viewType,node,{$box,htmlStr});
 
 						/*api[methodType.save](object).then(res => {
 

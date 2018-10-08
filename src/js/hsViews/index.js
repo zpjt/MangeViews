@@ -2,7 +2,7 @@ import "css/hsViews.scss";
 import {api} from "api/hsViews.js";
 
 import {EasyUITab} from "js/common/EasyUITab.js";
-import {Unit, SModal, SComboTree ,SInp} from "js/common/Unit.js";
+import {Unit, SModal, SComboTree ,SInp ,Search} from "js/common/Unit.js";
 
 
 /* 
@@ -227,7 +227,7 @@ class Page{
 		this.modal = new SModal();
 		this.restModal = new RestModal();
 		this.inp = new SInp();
-
+		this.search = new Search($("#u-search"));
 		this.getData();
 	}
 

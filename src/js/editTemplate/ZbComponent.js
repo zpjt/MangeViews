@@ -17,16 +17,17 @@ class ZbComponent {
 
 	constructor(config) {
 
-		const {kpiTree, dimTree, modal ,viewModal} = config;
+		const {kpiTree, dimTree, modal ,getViewModal} = config;
 
 		this.kpiTree = kpiTree;
 		this.dimTree = dimTree;
+		this.getViewModal = getViewModal;
 		this.modal = modal;
 		this.zbBox = $("#zbTreeBox");
 		this.selZbs = $("#selZbs");
 		this.publicDimEl = $("#publicDim");
 		this.init();
-		this.handle(viewModal);
+		this.handle();
 	}
 
 
@@ -257,10 +258,10 @@ class ZbComponent {
 	}
 
 
-	handle(viewSetModal) {
+	handle() {
 
 		const self = this;
-
+        const viewSetModal = this.getViewModal();
 
 		/**
 		 * [指标模态框句柄]

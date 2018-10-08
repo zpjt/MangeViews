@@ -17,19 +17,22 @@ class DataDB {
 
 	static index = 0 ;
 
+
+
 	constructor(){
 		this.viewDB = new Map();
 	}
-	add(object,viewType,node){
+	add(object,viewType,node,viewObj){
+console.log(1);
+		const {$box,htmlStr} = viewObj ;
 
 		const id = ++ DataDB.index;
-
-		const  $box = $(".view-active");
+			$box.html(htmlStr);
 		const  type = viewType,
-				viewTitle = object.chartName,
-				index = id;
+			   viewTitle = object.chartName,
+			   index = id;
 
-		const views = new View($box, {
+		 new View($box, {
 			id,
 			type,
 			index,
@@ -37,16 +40,19 @@ class DataDB {
 		}, node, "2");
 
 		const data = {
-			id,views,object,viewType
+			id,object,viewType,node
 		}
 		this.viewDB.set($box[0],data);
+		$box.addClass("view-fill");
+		console.log(442);
+		console.log(this.viewDB);
 	}
 
 }
 
 
 class Page{
-	constructor(g){
+	constructor(){
 
 		// 模态框
 		this.modal = new SModal();
@@ -68,9 +74,9 @@ class Page{
 	    new HeadOpt({
 	    	modal,
 	    }); 
-	    new TemplateView($("#templateBox"),{
-	   		upModalStatus:(type)=>{
-	   			this.viewSetModal.upModalStatus(type);
+	    this.templateView = new TemplateView($("#templateBox"),{
+	   		upModalStatus:(type,size,$view)=>{
+	   			this.viewSetModal.upModalStatus(type,size,$view);
 	   		},	
 	    });
 
@@ -79,6 +85,11 @@ class Page{
 	handle(){
 
 		const _self = this ;
+
+		const {resiziEl} = _self.templateView ;
+		$("#app").on("click",function(){
+			resiziEl.hide();	
+		});
 
 	}
 }

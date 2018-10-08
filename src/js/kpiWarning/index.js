@@ -1,7 +1,7 @@
 import "css/kpiWarning.scss";
 import {api} from "api/kpiWarning.js";
 import {EasyUITab} from "js/common/EasyUITab.js";
-import {Unit, SModal, SComboTree ,SInp,Calendar,SCombobox} from "js/common/Unit.js";
+import {Unit, SModal, SComboTree ,SInp,Calendar,SCombobox,Search} from "js/common/Unit.js";
 
 /**
  * @user_id ：用户id
@@ -731,7 +731,7 @@ class Page{
 		this.modal = new SModal();
 		this.addModal = new AddModal();
 		this.inp = new SInp();
-
+		this.serach = new Search($("#u-search"));
 		this.getData();
 	}
 

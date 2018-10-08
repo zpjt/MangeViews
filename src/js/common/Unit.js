@@ -11,7 +11,6 @@ class Unit {
 
 	constructor(){
 		this.tipInit();
-		this.initSearch();
 	}
 	JsonTofind(obj,value){
 
@@ -72,26 +71,6 @@ class Unit {
 	  },2000);
 	}
 
-
-	initSearch(){
-		// 搜索
-		$(".search-btn").click(function(){
-			const $wrap = $(this).closest(".search-wrap");
-			const state = $wrap.hasClass("active-search");
-
-			if(state){
-				return ;
-			}
-
-			$wrap.addClass("active-search");
-		});
-
-		// 搜索按钮关闭
-		$(".search-close").click(function(){
-			const $wrap = $(this).closest(".search-wrap");
-			$wrap.removeClass("active-search");
-		});
-	}
 	
 	initTipM($tip,$svg,$circle){
 		
@@ -116,7 +95,63 @@ class Unit {
 	}
 }
 
+/*搜索框组件*/
+class Search{
+	constructor(el,obj){
 
+		const defaultConfig ={
+				serachCallback:function(){},
+				closeCallback:function(){},
+		};
+
+		this.config =  Object.assign({},defaultConfig,obj);
+		this.box = el;
+		this.renderSearch();
+		this.handle();
+	}
+	
+
+	renderSearch(){
+
+		const str = `
+					<div class="input-box">
+						<input type="text" class="s-inp search-inp" id="searchInp" placeholder="搜索关键字....">
+						<button class="s-btn search-btn" id="searchBtn">
+							<span class="search-icon"></span>
+						</button>
+					</div>
+					<span class="search-close" id="searchClose">
+						<i class="fa fa-times fa-2x"></i>
+					</span> `;
+
+
+		this.box.html(str) ;
+	}
+
+	handle(){
+
+		// 搜索
+		const _self = this ;
+		const {box,config:{serachCallback,closeCallback}} = _self ;
+		box.on("click",".search-btn",function(){
+			const state = box.hasClass("active-search");
+			if(state){return ; }
+			box.addClass("active-search");
+			serachCallback();
+
+		});
+		// 搜索按钮关闭
+		box.on("click",".search-close",function(){
+			box.removeClass("active-search");
+			closeCallback();
+		});
+	}
+
+
+}
+
+
+/*水波按钮*/
 class RippleBtn{
 	
 	constructor(option){
@@ -1283,4 +1318,4 @@ class SComboTree {
 
 }
 
-export {Unit,SCombobox,SModal,Calendar,Tree,SComboTree,SInp,DropMenu ,RippleBtn};
+export {Unit,SCombobox,SModal,Calendar,Tree,SComboTree,SInp,DropMenu ,RippleBtn , Search};

@@ -33,19 +33,21 @@ class HeadOpt {
 					break;
 				case "export":
 					break;
-				case "back":
-					const $slide = $("#slide", window.parent.document);
-					const $head = $("#content", window.parent.document);
-					const width = $slide.hasClass("collapsed") && 45 || 250;
-					$slide.animate({
-						"width": width
-					}, 500, function() {
-						window.history.back();
-						$head.removeClass("no-head");
-					});
+				default :
 					break;
-
 			}
+		});
+
+		$("#back").click(function(){
+			const $slide = $("#slide", window.parent.document);
+			const $head = $("#content", window.parent.document);
+			const width = $slide.hasClass("collapsed") && 45 || 250;
+			$slide.animate({
+				"width": width
+			}, 500, function() {
+				window.history.back();
+				$head.removeClass("no-head");
+			});
 		});
 
 		//全局样式设置
