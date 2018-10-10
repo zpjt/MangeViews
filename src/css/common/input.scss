@@ -5,6 +5,7 @@ $default:#ececec;
 $width:200px;
 $slectColor:#aee6ff;
 $border:#E4E4E4;
+$borderWidth:1px;
 
 /* 输入框 */
 .s-inp{
@@ -23,12 +24,12 @@ $border:#E4E4E4;
 }
 
 .no-fill.s-inp{
- 	border:2px solid red;
+ 	border:$borderWidth solid red;
 }
 
  .normal-inp{
 	 border-radius: 4px;
-	 border: solid 2px #e3e3e3;
+	 border: solid $borderWidth #e3e3e3;
 }
    
 .s-inp-box{
@@ -290,7 +291,7 @@ $border:#E4E4E4;
 	.combo-inp{
 		border-radius:4px;
 		box-sizing:border-box;
-		border: solid 2px #ececec;
+		border: solid $borderWidth #ececec;
 		height:$height;
 		line-height:$height - 4px;
 		.combo-text{

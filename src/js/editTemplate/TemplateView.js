@@ -1,3 +1,5 @@
+import {Border } from "js/ManageViews/svgBorder.js";
+import {STable} from "js/ManageViews/sTable.js";
 /**
  * 模板组件
  */
@@ -16,6 +18,7 @@ class TemplateView {
 	   this.box = $el;
 	   this.resiziEl = $("#m-resize");
 	   this.gLayout =$("#g-layout");
+	   this.templateBox = $("#templateBox");
 
 	   this.startPointX=null;
 	   this.startPointY=null;
@@ -298,11 +301,6 @@ class TemplateView {
 		});
 	};
 
-	xCompare(weye){
-
-
-	}
-
 	hideCells(lastObj,curObj,par){
 
 		const {lastAreaX, lastAreaY} = lastObj ;
@@ -389,25 +387,31 @@ class TemplateView {
 
 				for(let j = 0 , leg = otherX.length; j < leg ; j++){
 
-					console.log({i,j});
-
 					const x = otherX[j];
 					const viewClass = y + "-" + x;
 
-				//	if(viewClass !== parName){
 					
 						const cell = $("." + viewClass);
+						if(cell.hasClass("view-fill")){
+								return false ;
+						}
+
 						viewClass !== parName && canMergeArr.push(cell);
 					
 						const [cellScaleX , cellScaleY] = cell.attr("echo-size").split(",");
-						console.log(cellScaleX , cellScaleY);
 						const is_scale = (+cellScaleX ) + (+cellScaleY);
+
+						
 						
 						if(cell.hasClass("view-hide") ){
 							const par = cell.attr("echo-par");
 							if(!parArr.includes(par)){
+								
 								parArr.push(par);
 								const $par = $("." + par);
+								if($par.hasClass("view-fill")){
+									return false ;
+								}
 								const [par_originY,par_originX] = par.split("-");
 								const [parMergeX,parMergeY] = $par.attr("echo-size").split(",");
 
@@ -415,7 +419,6 @@ class TemplateView {
 									par_originX, par_originY, parMergeX, parMergeY
 								},curObj);
 							}
-							console.log(is_over);
 						}else if(is_scale > 2){
 							
 							 parArr.push(viewClass);
@@ -423,9 +426,7 @@ class TemplateView {
 								par_originX:x, par_originY:y, parMergeX:cellScaleX, parMergeY:cellScaleY
 							},curObj);
 
-							 console.log(is_over);
 						}
-				//	}
 
 					if(is_over){
 						return false;	
@@ -433,27 +434,22 @@ class TemplateView {
 
 				}
 
-
-
-
 			}else{
 				
-
 				for(let j = 0  ; j < curXLeg ; j++){
-
 					const x = cur_Xarea[j];
-				
 					const viewClass = y + "-" + x;
 
-				//	if(viewClass !== parName){
-					
 						const cell = $("." + viewClass);
-
 						viewClass !== parName && canMergeArr.push(cell);
-
 
 						const [cellScaleX , cellScaleY] = cell.attr("echo-size").split(",");
 						const is_scale = (+cellScaleX )+ (+cellScaleY);
+
+
+						if(cell.hasClass("view-fill")){
+								return false ;
+						}
 
 						if(cell.hasClass("view-hide")){
 
@@ -462,6 +458,11 @@ class TemplateView {
 							if(!parArr.includes(par)){
 								parArr.push(par);
 								const $par = $("." + par);
+								
+								if($par.hasClass("view-fill")){
+									return false ;
+								}
+
 								const [par_originY,par_originX] = par.split("-");
 								const [parMergeX,parMergeY] = $par.attr("echo-size").split(",");
 
@@ -469,8 +470,6 @@ class TemplateView {
 									par_originX, par_originY, parMergeX, parMergeY
 								},curObj);
 							}
-
-							console.log(is_over);
 						
 						}else if(is_scale > 2){
 							
@@ -479,12 +478,7 @@ class TemplateView {
 								par_originX:x, par_originY:y, parMergeX:cellScaleX, parMergeY:cellScaleY
 							},curObj);
 
-							 console.log(is_over);
 						}
-			//		}
-
-					
-
 					if(is_over){
 						return false;	
 					}
@@ -617,22 +611,6 @@ class TemplateView {
 			cur_index_x = Xaxis.indexOf(cur_pointX);
 			cur_index_y = Yaxis.indexOf(cur_pointY);
 
-			/*$activeView
-			.removeClass("view-active")
-			.addClass("view-hide")
-			.attr({
-					"echo-size":"1,1",
-					"echo-par":newOriginY + "-" + newOriginX,
-				})
-			.css({
-					"grid-column-end": "span 1",
-					"grid-row-end": "span 1",
-			});
-
-			handleGridItem
-			.addClass("view-active")
-			.removeClass("view-hide");*/
-
 		}else{
 			handleGridItem = $activeView ;
 			cur_index_x = lastIndexX;
@@ -685,17 +663,78 @@ class TemplateView {
 				"grid-row-end": "span " + curMergeY,
 		})
 		.attr("echo-size",curMergeX + "," + curMergeY);
+
+
 		
 
 		resiziEl.hide();
 
+		this.reloadView({newEl:handleGridItem,oldEl:$activeView},{
+			curMergeX,curMergeY
+		});
+
 		return true ;
+	}
+
+	reloadView(boxObj,config){
+
+		const {newEl,oldEl} = boxObj;
+
+		const {getViewData} = this.config;
+
+		const data = getViewData(oldEl[0]);
+
+		const {viewType} = data ;
+		const {curMergeX,curMergeY} = config;
+
+		if(newEl !== oldEl){
+			const {delViewData,addViewData} = this.config;
+			oldEl.html(null).removeClass("view-fill");
+			delViewData(oldEl[0]);
+
+			const {object,node,borderType} = data ;
+
+			const border_str = borderType  === "0" ?"" : `<div class="bgSvg" echo-w="${curMergeX}" echo-y="${curMergeY}" echo-type="${borderType}"></div>`;
+
+			const htmlStr = border_str + `<div class="view-content"></div>`;	
+			const viewObj = {
+				$box:newEl,
+				htmlStr,
+				borderType,
+			};
+
+			addViewData(object,viewType,node,viewObj);
+
+
+		}else{
+
+			switch(viewType){
+				case "table":{
+						const {node,borderType} = data ;
+				 new STable(newEl.find(".chart"),{border:borderType},node);	
+				}
+				break;
+				case"chart":{
+					echarts.getInstanceByDom(newEl.find(".chart")[0]).resize();	
+				}
+				break;
+			}
+			
+			const borderBox = newEl.find(".bgSvg");
+			if(borderBox.length){
+				
+				borderBox.attr({"echo-y":curMergeY,"echo-w":curMergeX});
+				const {id ,object:{chartName}} = data ;
+				new Border(borderBox,{id,title:chartName});
+			}
+		}
 	}
 
 	handle(){
 
 		const _self = this;
-		const { upModalStatus } = _self.config;
+		const $templateBox = _self.templateBox;
+		const { upModalStatus ,getViewData ,delViewData} = _self.config;
 
 		const $template = $(".view-item");
 		const viewsArr = Array.from($template);
@@ -733,7 +772,7 @@ class TemplateView {
 		});
 
 
-		$("#templateBox").on("click",".view-item",function(e){
+		$templateBox.on("click",".view-item",function(e){
 
 			e.stopPropagation();
 			 const $this = $(this);
@@ -780,21 +819,55 @@ class TemplateView {
 		$(window).on("resize",function(){
 			_self.getInitCellSize();
 		});
-
-		/*_self.gLayout[0].onmouseup=function(){
-
-			console.log(222);
-				_self.gLayout[0].onmousemove = null;
-		}*/
 		
-		/*this.resiziEl.on("mouseup",".u-resize-icon",function(){
-			const $this= $(this);
-			const type = $this.attr("sign");
-			
-			console.log("up");
+		$templateBox.on("click",".view-optBox ",function(e){
+				e.stopPropagation();
+		});
 
-			//_self.gLayout[0].onmousemove=null;
-		});*/
+		$templateBox.on("click",".btn-handle",function(){
+			$(this).toggleClass("active");
+		});
+
+		$templateBox.on("click",".view-btn",function(){
+
+			const $this = $(this);
+			
+			const type = $this.attr("sign");
+			const par = $this.closest(".view-item");
+			const view = getViewData(par[0]);
+
+			console.log(view);
+			
+			switch(type){
+
+				case "expand":
+					
+					
+					break;
+				case "set":{
+
+					const {object,viewType} = view ;
+
+					console.log(object);
+					console.log(viewType);
+
+				}
+				break;
+				case "compress":
+				
+					break;
+				case "remove":
+
+					delViewData(par[0]);
+					par.html(null);
+					par.removeClass("view-fill");
+
+					break;
+				case "filter":
+
+					break;
+			}
+		});
 
 
 	}

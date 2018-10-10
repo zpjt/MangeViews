@@ -1,4 +1,6 @@
-import {api} from "api/ManageViews.js";
+import {
+	api
+} from "api/ManageViews.js";
 
 
 /*
@@ -11,55 +13,71 @@ import {api} from "api/ManageViews.js";
 
 */
 
-class Chart{
+class Chart {
 
-	constructor($el,config,data){
+	constructor($el, config, data) {
 
-		const {border} = config;
-		this.type="";
-		this.Box=$el;
-		this.init(data,border);
-		this.color=["#1296FB","#8FD6FA","#0088CC","#06B76A","#CBC450","#FD8D1D"];
-		
+		const {
+			border
+		} = config;
+		this.border = border;
+		this.type = "";
+		this.Box = $el;
+		this.init(data);
+		this.color = ["#1296FB", "#8FD6FA", "#0088CC", "#06B76A", "#CBC450", "#FD8D1D"];
+
 	}
 
-	init(res,border){
-		const typeObject={
-			"3":"tabConfig",
-			"4":"lineConfig",
-			"5":"pieConfig",
-			"6":"radarConfig",
-			"7":"scatterConfig",
-		}	
+	init(res) {
+		const typeObject = {
+			"3": "tabConfig",
+			"4": "lineConfig",
+			"5": "pieConfig",
+			"6": "radarConfig",
+			"7": "scatterConfig",
+		}
+
+		const border = this.border;
 
 
-		const {graphInfo:{chartType,chartName,contrastDim,rowDim},data} = res;
-		 
-		this.type=chartType;
+		const {
+			graphInfo: {
+				chartType,
+				chartName,
+				contrastDim,
+				rowDim
+			},
+			data
+		} = res;
+
+		this.type = chartType;
 
 		const option = this[typeObject[this.type]](data);
-			  option.Dim={contrastDim, rowDim,};
+		option.Dim = {
+			contrastDim,
+			rowDim,
+		};
 
-		if(!border){ // 没边框
-			option.title={
-				text:chartName,
-				left:"center",
-				textStyle:{
-					color:"white",
-					fontSize:14,
+		if (border==="0") { // 没边框
+			option.title = {
+				text: chartName,
+				left: "center",
+				textStyle: {
+					color: "white",
+					fontSize: 14,
 				}
 			}
 		};
-		let myChart= echarts.init(this.Box); 
-			myChart.setOption(option);
-			//窗口自适应
-			$(window).on("resize",function(){
-				myChart.resize();
-  		 });
-		 
+		let myChart = echarts.init(this.Box);
+		myChart.setOption(option);
+		//窗口自适应
+		$(window).on("resize", function() {
+			myChart.resize();
+		});
+
 	}
 
-	barConfig(res){
+	barConfig(res) {
 
 		return {
 			legend: {
@@ -161,118 +179,151 @@ class Chart{
 		};
 	}
 
-	pieConfig(res){
+	pieConfig(res) {
 
-		const data =res[0].rowData.map((val,index)=>{
+		console.log(res);
+
+		const {rowData,legend ,roseType} = res[0] ;
+
+		const data = rowData.map((val, index) => {
 
 			return {
- 					"name": res[0].rowDimName[index],
-				    "value": val !="--" && val || 0,
+				"name": res[0].rowDimName[index],
+				//"value": val != "--" && val || 0,
+				value:this.getRandom(),
+				selected: roseType % 2 !== 0 ,
 			}
-		}) ;
+		});
 
 
 		//color:["#1296FB","#8FD6FA","#0088CC","#06B76A","#CBC450","#FD8D1D"],
 
 
-		const startColor = ['#1296FB', '#06B76A', '#00bbce', '#ea865a'];
-		const endColor = ['#1296FB', '#0088CC', '#00c4a5', '#ea2e41'];
+		const startColor = ['#c487ee', '#deb140', '#49dff0', '#034079', '#6f81da', '#00ffb4'];
+		const endColor = ['#1296FB', '#0088CC', '#00c4a5', '#ea2e41','#05ffff', '#ff6584'];
+
+		//  color: ['#c487ee', '#deb140', '#49dff0', '#034079', '#6f81da', '#00ffb4'],
 
 		const borderStartColor = ['#05acff', '#ee36ff', '#05fcfb', '#ffa597'];
 		const borderEndColor = ['#09c1ff', '#8171ff', '#05ffff', '#ff6584'];
 
-		
 
-		
-		const RealData = data.map((val,index)=>{
-			
+
+		const RealData = data.map((val, index) => {
+
 			const itemStyle = {
-					normal: {
-						color: {
-							type: 'linear',
-							x: 0,
-							y: 0,
-							x2: 0,
-							y2: 1,
-							colorStops: [{
-								offset: 0,
-								color: endColor[index] // 0% 处的颜色
-							}, {
-								offset: 1,
-								color: endColor[index] // 100% 处的颜色
-							}],
-							globalCoord: true // 缺省为 false
-						},
-					}
-				};
-				return Object.assign({},val,{itemStyle});
+				normal: {
+					color: {
+						type: 'linear',
+						x: 0,
+						y: 0,
+						x2: 0,
+						y2: 1,
+						colorStops: [{
+							offset: 0,
+							color: startColor[index] // 0% 处的颜色
+						}, {
+							offset: 1,
+							color: endColor[index] // 100% 处的颜色
+						}],
+						globalCoord: true // 缺省为 false
+					},
+				}
+			};
+			return Object.assign({}, val, {
+				itemStyle
+			});
 		});
 
-		const borderData = data.map((val,index)=>{
-			
+		const borderData = data.map((val, index) => {
+
 			const itemStyle = {
-					normal: {
-						color: {
-							type: 'linear',
-							x: 0,
-							y: 0,
-							x2: 0,
-							y2: 1,
-							colorStops: [{
-								offset: 0,
-								color: borderStartColor[index] // 0% 处的颜色
-							}, {
-								offset: 1,
-								color: borderEndColor[index] // 100% 处的颜色
-							}],
-							globalCoord: false // 缺省为 false
-						},
-					}
-				};
-				return Object.assign({},val,itemStyle);
+				normal: {
+					color: {
+						type: 'linear',
+						x: 0,
+						y: 0,
+						x2: 0,
+						y2: 1,
+						colorStops: [{
+							offset: 0,
+							color: borderStartColor[index] // 0% 处的颜色
+						}, {
+							offset: 1,
+							color: borderEndColor[index] // 100% 处的颜色
+						}],
+						globalCoord: false // 缺省为 false
+					},
+				}
+			};
+			return Object.assign({}, val, itemStyle);
 		});
+
+		const config = this.getLegendPosition(legend);
+
+		const legendObj = Object.assign(config.legend, {
+			textStyle: {
+				color: '#f2f2f2',
+				fontSize: 12,
+			},
+			icon: 'circle', //形状
+			data: data,
+		});
+
+
+
+
+		const radius = roseType  < 3 &&  ["10%","60%"] || ['30%', '60%'] ;
+		const roseTypeStr = roseType % 2 === 0  ? "area" : false ;
 		
+		const  rich = {
+		    white: {
+		        color: '#ddd',
+		        align: 'center',
+		        padding: [3, 0]
+		    }
+		};
 
-
+		
 
 		return {
 			tooltip: {
 				show: true,
 				trigger: 'item',
 			},
-			legend: {
-				top:20,
-				left: 20,
-				textStyle: {
-					color: '#f2f2f2',
-					fontSize: 12,
-
-				},
-				icon: 'circle', //形状
-				data: data,
-			},
+			roseType:roseTypeStr,
+			legend:legendObj,
 			series: [
 				// 主要展示层的
 				{
-					radius: ['33%', '61%'],
-					center: ['50%', '50%'],
+					radius:radius,
+					center: config.center,
 					type: 'pie',
 					label: {
-						normal: {
-							show: false
-						},
-						emphasis: {
-							show: false
-						}
-					},
-					labelLine: {
-						normal: {
-							show: false
-						},
-						emphasis: {
-							show: false
-						}
-					},
+		                show: true,
+		                position: 'outside',
+		                color: '#ddd',
+		                formatter: function(params) {
+		                    var percent = 0;
+		                    var total = 0;
+		                    for (var i = 0; i < data.length; i++) {
+		                        total += data[i].value;
+		                    }
+		                    percent = ((params.value / total) * 100).toFixed(0);
+		                    if(params.name !== '') {
+		                        return params.name + '\n{white|' + '占比' + percent + '%}';
+		                    }else {
+		                        return '';
+		                    }
+		                },
+		                rich: rich
+		            },
+		            labelLine: {
+		             //   length:30,
+		            //    length2:100,
+		                show: true,
+		                color:'#ffff'
+		            },
 					name: "",
 					data: RealData,
 					tooltip: {
@@ -345,73 +396,288 @@ class Chart{
 		};
 	}
 
-	lineConfig(res){
+	getRandom(max = 1000) {
 
+		return Math.floor(Math.random() * (max - 80 + 1) + 80);
 
+	}
 
+	getLegendPosition(legend,is_landscape = false) {
 
-		/*
-			legendArr：图例数组，
-			xAxisData:X轴的数据，
-			series:系列对象，
+		const border = this.border;
 
-		*/
+		const top = border === "3" ? 28 : 20;
+		const left_add = is_landscape && 2  || 0;
+		const top_add = border === "3" ? 4 :  3;
+		const grid_top_add = border === "3" ? 8  : 6;
 
-		
-		const xAxisData = res[0].rowDimName.map(val=>{
-			return {
-						value:val,
-						textStyle: {
-							color: "white"
-						}
+		switch (legend) {
+			case "1":
+				{
+
+					const legend = {
+						top: top,
+						left: "4%",
+						orient: 'horizontal',
+					};
+
+					const grid = {
+						//top: top + 40,
+						top: grid_top_add + 20 + "%",
+						left: left_add + 14 +"%",
+						right: "6%",
+						bottom: "12%",
+					};
+
+					const center = [ "50%" , top_add + 55 + "%"];
+
+					return {
+						legend,
+						grid,
+						center,
+					};
+				}
+				break;
+			case "2":
+				{
+
+					const legend = {
+						bottom: 16,
+						left: "4%",
+						orient: 'horizontal',
+					};
+
+					const grid = {
+						top: grid_top_add + 12 + "%",
+						left: left_add + 14 +"%",
+						right: "6%",
+						bottom: "32%",
+					};
+
+					const center = ["50%" , top_add + 45 +"%"];
+
+					return {
+						legend,
+						grid,
+						center,
+					};
+				}
+				break;
+			case "3":
+				{
+					const legend = {
+						top: top,
+						left: 4,
+						orient: 'vertical',
+					};
+
+					const grid = {
+						left: left_add + 30 +"%",
+						top: grid_top_add + 12 + "%",
+						right: "6%",
+						bottom: "14%",
+					};
+
+					const center = ["55%" , top_add + 50 +"%"];
+
+					return {
+						legend,
+						grid,
+						center
 					}
+
+				}
+				break;
+			case "4":
+				{
+					const legend = {
+						top: top,
+						right: 4,
+						orient: 'vertical',
+					};
+
+					const grid = {
+						top: grid_top_add + 14 + "%",
+						right: "24%",
+						left: left_add + 12 +"%",
+						bottom: "14%",
+					};
+
+					const center = ["45%" , top_add + 50 +"%"];
+
+					return {
+						legend,
+						grid,
+						center,
+					}
+				}
+				break;
+			case "5":
+				{
+					const legend = {
+						show: false,
+					};
+
+					const grid = {
+						left: left_add + 14 +"%",
+						right: "6%",
+						top: grid_top_add + 12 + "%",
+						bottom: "14%",
+					};
+
+					const center = ["45%" , top_add + 50 +"%"];
+
+					return {
+						legend,
+						grid,
+						center,
+					}
+
+				}
+				break;
+			default:
+				break;
+		}
+
+
+	}
+
+	lineConfig(res) {
+
+		/**
+		 * @legendArr  {图例数组} 
+		 * @xAxisData  {X轴的数据} 
+		 * @series  {系列对象，} 
+		 * @contrastDimName  {对比的维度} 
+		 * @lineType  {折线类型 1:折线,3：柱状} 
+		 * @legendArr  {图例数组} 
+		 * @legendArr  {图例数组} 
+		 * @return {[type]}     [description]
+		 */
+
+		console.log(res);
+
+		const {rowDimName, landscape, legend, threeD, stack ,lineType} = res[0];
+
+		const Axis = threeD.split(",");
+
+		const xAxisData = rowDimName.map(val => {
+			return {
+				value: val,
+				textStyle: {
+					color: "white"
+				}
+			}
 		});
 
-		let legendArr=[];
-		const series=res.map((val,index)=>{
+		let legendArr = [];
 
-			/*
-				contrastDimName:对比的维度，
+		const color = ['#1a9bfc', '#99da69', '#e32f46', '#7049f0', '#fa704d', '#01babc'];
+		
+		const series = res.map((val, index) => {
 
-			*/
+			const {contrastDimName, rowData } = val;
 
-			const {contrastDimName,lineType,rowData} = val;
-			
-			legendArr[index]=contrastDimName;
-
-			const areaStyle = this.type==="2" && {
-					normal: {
-						color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-							offset: 0,
-							color: 'rgba(199, 237, 250,0.5)'
-						}, {
-							offset: 1,
-							color: 'rgba(199, 237, 250,0.2)'
-						}], false)
-					}
+			legendArr[index] = contrastDimName;
+		
+			const areaStyle = lineType === "1" && landscape === "1" && {
+				normal: {
+	                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+	                    offset: 0,
+	                    color: color[index]
+	                }, {
+	                    offset: 0.8,
+	                    color: 'rgba(255,255,255,0)'
+	                }], false),
+	                // shadowColor: 'rgba(255,255,255, 0.1)',
+	                shadowBlur: 10,
+	                opacity:0.3,
+	            }
 			} || null;
 
-			const data = rowData.map(val=>{
+			/*const data = rowData.map(val=>{
 				return val != "--" && val || null ;
-			});
-			
-			return{
-				name:contrastDimName,
-				type:lineType === "1" && "line" || "bar" ,
+			});*/
+			const data = rowData.map(val => this.getRandom());
+
+			return {
+				name: contrastDimName,
+				type: lineType === "1" && "line" || "bar",
 				areaStyle,
 				smooth: true,
 				showSymbol: true,
 				symbol: 'circle',
-				symbolSize: 6,
-
+				symbolSize: 8,
 				barWidth: 20, //柱图宽度
+				stack: stack === "1" ? "stack" : null,
 				data,
 			}
 		});
 
+		const is_landscape = lineType === "2" && landscape === "1" ;
+
+		const config = this.getLegendPosition(legend,is_landscape);
+
+		const legendObj = Object.assign(config.legend, {
+			textStyle: { //图例文字的样式
+				fontSize: 12,
+				color: "white"
+			},
+			data: legendArr,
+		});
+
+		const gridObj = Object.assign(config.grid, {});
+
+		const flagCategory = {
+				type: 'category',
+				data: xAxisData,
+			    boundaryGap: lineType !== "1",
+				axisLine: { // 轴线
+					show: Boolean(+Axis[0]),
+					lineStyle: {
+						color: "#fff"
+					}
+				},
+				axisTick: { //坐标轴刻度
+					show: Boolean(+Axis[0]),
+				},
+				axisLabel: {
+					//	margin: 10,
+					textStyle: {
+						fontSize: 12
+					}
+				}
+			};
+
+		const flagValue =  {
+			type: 'value',
+			axisLine: { // 轴线
+				show: Boolean(+Axis[1]),
+				lineStyle: {
+					color: "#fff"
+				}
+			},
+			axisTick: { //坐标轴刻度
+				show: Boolean(+Axis[1]),
+			},
+			splitLine: { //网格线
+				show: Boolean(+Axis[1]),
+			},
+			axisLabel: {
+				show: Boolean(+Axis[1]),
+				textStyle: {
+					fontSize: 12
+				}
+			}
+		};
+
+
+		const xAxisObj = is_landscape && flagValue || flagCategory ;
+
+		const yAxisObj = is_landscape && flagCategory || flagValue ;
+
 		return {
-			
-			color:["#1296FB","#8FD6FA","#0088CC","#06B76A","#CBC450","#FD8D1D"],
+			color:['#1a9bfc', '#99da69', '#e32f46', '#7049f0', '#fa704d', '#01babc'],
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {
@@ -426,28 +692,104 @@ class Chart{
 				},
 				extraCssText: 'box-shadow: 0 0 5px rgba(0,0,0,0.3)'
 			},
-			legend: {
-				top:20,
-				left: 20,
-				orient: 'horizontal',
-				textStyle: { //图例文字的样式
-					fontSize: 12,
+			grid: gridObj,
+			legend: legendObj,
+			xAxis: xAxisObj,
+			yAxis: yAxisObj,
+			series: series,
+		};
+	}
+
+	scatterConfig(res) {
+
+		console.log(res);
+		const {rowDimName, landscape,legend, threeD} = res[0];
+		let legendArr = [] ;
+
+		const series = res.map((val, index) => {
+
+			const {contrastDimName, rowData } = val;
+
+			legendArr[index] = contrastDimName;
+		
+			
+				/*const data = rowData.map(val=>{
+					return val != "--" && val || null ;
+				});*/
+				const data = rowData.map(val => this.getRandom());
+
+				return {
+					name: contrastDimName,
+					type: "scatter",
+					smooth: true,
+					showSymbol: true,
+					symbol: 'circle',
+					symbolSize:function(value){
+
+						const val = landscape === "1" && Math.sqrt(value)  || 8;
+						
+						 return val;
+					},
+					data,
+				}
+		});
+		
+
+		const Axis = threeD.split(",");
+
+		const xAxisData = rowDimName.map(val => {
+			return {
+				value: val,
+				textStyle: {
 					color: "white"
-				},
-				data: legendArr,
+				}
+			}
+		});
+
+
+		const config = this.getLegendPosition(legend);
+
+		const legendObj = Object.assign(config.legend, {
+			textStyle: { //图例文字的样式
+				fontSize: 12,
+				color: "white"
+			},
+			data: legendArr,
+		});
+
+		const gridObj = Object.assign(config.grid, {});
+
+		return {
+			color: ["#1296FB", "#8FD6FA", "#0088CC", "#06B76A", "#CBC450", "#FD8D1D"],
+			legend:legendObj ,
+			grid:gridObj,
+			tooltip: {
+				padding: 10,
+				backgroundColor: '#222',
+				borderColor: '#777',
+				borderWidth: 1,
+				formatter: function(obj) {
+
+					const value = obj.value;
+					return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 14px;padding-bottom: 7px;">' +
+						obj.seriesName + ': ' + value + '</div>';
+						
+				}
 			},
 			xAxis: {
 				type: 'category',
 				data: xAxisData,
-				boundaryGap: false,
-				axisLine: {
-					show: false,
+				axisLine: { // 轴线
+					show: Boolean(+Axis[0]),
+					lineStyle: {
+						color: "#fff"
+					}
 				},
-				axisTick: {
-					show: false,
+				axisTick: { //坐标轴刻度
+					show: Boolean(+Axis[0]),
 				},
 				axisLabel: {
-					margin: 10,
+					//	margin: 10,
 					textStyle: {
 						fontSize: 12
 					}
@@ -455,285 +797,96 @@ class Chart{
 			},
 			yAxis: {
 				type: 'value',
-				show:false,
-				
-			},
-			series: series,
+				axisLine: { // 轴线
+					show: Boolean(+Axis[1]),
+					lineStyle: {
+						color: "#fff",
+
+					}
+				},
+				axisTick: { //坐标轴刻度
+					show: Boolean(+Axis[1]),
+				},
+				splitLine: { //网格线
+					show: Boolean(+Axis[1]),
+					lineStyle: {
+		                type: 'dashed',
+						opacity:.6,
+		            }
+				},
+				axisLabel: {
+					show: Boolean(+Axis[1]),
+					textStyle: {
+						fontSize: 12
+					}
+				}
+			} ,
+			series: series
 		};
 	}
 
-	scatterConfig(res) {
+	radarConfig(res) {
 
-			const dataBJ = [
-				[1, 55, 9, 56, 0.46, 18, 6, "良"],
-				[2, 25, 11, 21, 0.65, 34, 9, "优"],
-				[6, 82, 58, 90, 1.77, 68, 33, "良"],
-				[8, 78, 55, 80, 1.29, 59, 29, "良"],
-				[9, 267, 216, 280, 4.8, 108, 64, "重度污染"],
-				[10, 185, 127, 216, 2.52, 61, 27, "中度污染"],
-				[11, 39, 19, 38, 0.57, 31, 15, "优"],
-				[19, 57, 31, 54, 0.96, 32, 14, "良"],
-				[28, 160, 120, 186, 2.77, 91, 50, "中度污染"],
-				[29, 134, 96, 165, 2.76, 83, 41, "轻度污染"],
-				[31, 46, 5, 49, 0.28, 10, 6, "优"]
-			];
-
-			const dataGZ = [
-				[1, 26, 37, 27, 1.163, 27, 13, "优"],
-				[2, 85, 62, 71, 1.195, 60, 8, "良"],
-				[7, 64, 30, 28, 0.924, 51, 2, "良"],
-				[11, 84, 39, 60, 0.964, 25, 11, "良"],
-				[23, 93, 77, 104, 1.165, 53, 7, "良"],
-				[25, 146, 84, 139, 1.094, 40, 17, "轻度污染"],
-				[27, 81, 48, 62, 1.619, 26, 3, "良"],
-				[28, 56, 48, 68, 1.336, 37, 9, "良"],
-				[29, 82, 92, 174, 3.29, 0, 13, "良"],
-				[30, 106, 116, 188, 3.628, 101, 16, "轻度污染"],
-				[31, 118, 50, 0, 1.383, 76, 11, "轻度污染"]
-			];
-
-			const dataSH = [
-				[1, 91, 45, 125, 0.82, 34, 23, "良"],
-				[3, 83, 60, 84, 1.09, 73, 27, "良"],
-				[4, 109, 81, 121, 1.28, 68, 51, "轻度污染"],
-				[7, 106, 77, 114, 1.07, 55, 51, "轻度污染"],
-				[15, 108, 80, 121, 1.3, 85, 37, "轻度污染"],
-				[19, 97, 71, 113, 1.17, 88, 31, "良"],
-				[22, 104, 77, 119, 1.09, 73, 48, "轻度污染"],
-				[27, 39, 24, 39, 0.59, 50, 19, "优"],
-				[28, 93, 68, 96, 1.05, 79, 29, "良"],
-				[30, 174, 131, 174, 1.55, 108, 50, "中度污染"],
-				[31, 187, 143, 201, 1.39, 89, 53, "中度污染"]
-			];
-
-			const schema = [{
-				name: 'date',
-				index: 0,
-				text: '日'
-			}, {
-				name: 'AQIindex',
-				index: 1,
-				text: 'AQI指数'
-			}, {
-				name: 'PM25',
-				index: 2,
-				text: 'PM2.5'
-			}, {
-				name: 'PM10',
-				index: 3,
-				text: 'PM10'
-			}, {
-				name: 'CO',
-				index: 4,
-				text: '一氧化碳（CO）'
-			}, {
-				name: 'NO2',
-				index: 5,
-				text: '二氧化氮（NO2）'
-			}, {
-				name: 'SO2',
-				index: 6,
-				text: '二氧化硫（SO2）'
-			}];
-
-
-			const itemStyle = {
-				normal: {
-					opacity: 0.8,
-					shadowBlur: 10,
-					shadowOffsetX: 0,
-					shadowOffsetY: 0,
-					shadowColor: 'rgba(0, 0, 0, 0.5)'
-				}
-			};
-
-			return  {
-				color: [
-					'#dd4444', '#fec42c', '#80F1BE'
-				],
-				legend: {
-					left: 20,
-					y: 'top',
-					data: ['北京', '上海', '广州'],
-					textStyle: {
-						color: '#fff',
-						fontSize: 12
-					}
-				},
-				grid: {
-					x: 100,
-					x2: 100,
-					y: '18%',
-					y2: '10%'
-				},
-				tooltip: {
-					padding: 10,
-					backgroundColor: '#222',
-					borderColor: '#777',
-					borderWidth: 1,
-					formatter: function(obj) {
-						const value = obj.value;
-						return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 14px;padding-bottom: 7px;">' +
-							obj.seriesName + ' ' + value[0] + '日：' +
-							value[7] +
-							'</div>' +
-							schema[1].text + '：' + value[1] + '<br>' +
-							schema[2].text + '：' + value[2] + '<br>' ;
-					}
-				},
-				xAxis: {
-					type: 'value',
-					name: '日期',
-					nameGap: 16,
-					nameTextStyle: {
-						color: '#fff',
-						fontSize: 14
-					},
-					max: 31,
-					axisLine: {
-						show:false,
-						
-					},
-					axisTick: {
-						show: false,
-					},
-					 splitLine: {
-			            show: false
-			        }
-				},
-				yAxis: {
-					type: 'value',
-					show:false,
-
-				},
-				visualMap: [{
-					left:0,
-					top: '5%',
-					dimension: 2,
-					min: 0,
-					max: 250,
-					itemWidth: 15,
-					itemHeight: 70,
-					calculable: true,
-					precision: 0.1,
-					text: ['圆形大小：PM2.5'],
-					textGap: 30,
-					textStyle: {
-						color: '#fff'
-					},
-					inRange: {
-						symbolSize: [10, 70]
-					},
-					outOfRange: {
-						symbolSize: [10, 70],
-						color: ['rgba(255,255,255,.2)']
-					},
-					controller: {
-						inRange: {
-							color: ['#c23531']
-						},
-						outOfRange: {
-							color: ['#444']
-						}
-					}
-				}, {
-					right: '0',
-					top: '5%',
-					dimension: 6,
-					min: 0,
-					max: 50,
-					itemHeight: 70,
-					itemWidth: 15,
-					calculable: true,
-					precision: 0.1,
-					text: ['明暗：二氧化硫'],
-					textGap: 30,
-					textStyle: {
-						color: '#fff'
-					},
-					inRange: {
-						colorLightness: [1, 0.5]
-					},
-					outOfRange: {
-						color: ['rgba(255,255,255,.2)']
-					},
-					controller: {
-						inRange: {
-							color: ['#c23531']
-						},
-						outOfRange: {
-							color: ['#444']
-						}
-					}
-				}],
-				series: [{
-					name: '北京',
-					type: 'scatter',
-					itemStyle: itemStyle,
-					data: dataBJ
-				}, {
-					name: '上海',
-					type: 'scatter',
-					itemStyle: itemStyle,
-					data: dataSH
-				}, {
-					name: '广州',
-					type: 'scatter',
-					itemStyle: itemStyle,
-					data: dataGZ
-				}]
-			};
-	}
-
-	radarConfig(res){
+		const {rowDimName,legend ,area} = res[0] ;
 
 		const color = "#189cbb";
 		const scale = 1;
 
-		const radar =  res[0].rowDimName.map(val=>{
+		const radar = rowDimName.map(val => {
 			return {
-				text:val,
-				max:function(row){
-					return row.max*1.5;
-				}
+				text: val,
+				max: function(row) {
+					return row.max * 1.5;
+				},
 			}
 		});
-		const legend =[];
-		const data = res.map((val,index)=>{
+		const legendArr = [];
+		const data = res.map((val, index) => {
 
-			const {rowData,contrastDimName} = val;
-			legend[index] = contrastDimName ;
+			const {
+				rowData,
+				contrastDimName
+			} = val;
+			legendArr[index] = contrastDimName;
+
 			return {
-				value: rowData,
+				value: rowData.map(item=>this.getRandom()),
 				name: contrastDimName
 			}
 		});
-		return  {
-			color:["#1296FB","#8FD6FA","#0088CC","#06B76A","#CBC450","#FD8D1D"],
+
+
+			const config = this.getLegendPosition(legend);
+
+			const legendObj = Object.assign(config.legend, {
+				textStyle: {
+					color: '#f2f2f2',
+					fontSize: 12,
+				},
+				itemWidth: 12,
+				itemHeight: 12,
+				data: legendArr,
+			});
+
+
+		return {
+			color: ["#1296FB", "#8FD6FA", "#0088CC", "#06B76A", "#CBC450", "#FD8D1D"],
 			tooltip: {
 				trigger: 'axis'
 			},
-			legend: {
-		          top: 20,
-		          left: 20,
-		          itemWidth: 12,
-		          itemHeight: 12,
-		          data: legend,
-		          textStyle: {
-		              color: '#fff'
-		          }
-		     },
+			legend:legendObj,
 			radar: [{
 				indicator: radar,
-				center: ['50%', '50%'],
-				radius: '50%',
+				center: config.center,
+				radius: '55%',
+				shape: area === "1" && "polygon" ||"circle",
 				name: {
 					textStyle: {
 						color: "white",
 						fontSize: 12,
-						fontWeight: 'bold'
 					}
 				},
+				nameGap:10,//指示器名称和指示器轴的距离。
 				splitLine: {
 					lineStyle: {
 						color: '#0b5263',
@@ -742,15 +895,16 @@ class Chart{
 					},
 				},
 				splitArea: {
-		            areaStyle: {
-	                  color: 'rgba(127,95,132,.3)',
-	                  opacity: 1,
-	                  shadowBlur: 45,
-	                  shadowColor: 'rgba(0,0,0,.5)',
-	                  shadowOffsetX: 0,
-	                  shadowOffsetY: 15,
-		            }
-		        },
+					areaStyle: {
+						color: '#E9E6C9',
+						opacity: 1,
+						shadowBlur: 45,
+						shadowColor: 'rgba(0,0,0,.5)',
+						shadowOffsetX: 0,
+						shadowOffsetY: 15,
+						opacity:0.5
+					}
+				},
 				axisLine: {
 					show: true,
 					lineStyle: {
@@ -765,32 +919,34 @@ class Chart{
 					trigger: 'item'
 				},
 				data: data,
-				symbolSize: 2 * scale,
+				symbolSize: 2,
 				itemStyle: {
 					normal: {
 						borderColor: '#ffc72b',
-						borderWidth: 3 * scale,
+						borderWidth: 2,
 					}
 				},
 				lineStyle: {
 					normal: {
 						color: "#fff",
-						width: 3 * scale
+						width: 2
 					}
 				},
 				areaStyle: {
-	               normal: {
-	                  shadowBlur: 13,
-	                  shadowColor: 'rgba(127,95,132,.3)',
-	                  shadowOffsetX: 0,
-	                  shadowOffsetY: 10,
-	                  opacity: 1
-	              }
-	          	},
+					normal: {
+						shadowBlur: 13,
+						shadowColor: 'rgba(127,95,132,.3)',
+						shadowOffsetX: 0,
+						shadowOffsetY: 10,
+						opacity: .6
+					}
+				},
 			}, ]
 		};
 
 	}
 
 }
-export {Chart};
+export {
+	Chart
+};

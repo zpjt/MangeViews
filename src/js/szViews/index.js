@@ -456,30 +456,69 @@ class AddModal{
 			const type = $(this).attr("type");
 			const method = $(this).attr("method");
 			const name = $inpName.val().trim();
+			if(!name){return ; }
+
 			const par_id = method==="create" ? _self.parCatalogSel.getValue() : $ViewContainer.attr("curid");
 			const style = $(".style-sel").index() ? "catalogue":"tab";
 
-
-			if(name){
-				method==="create" ? _self.addCatalogue(type,{name,par_id},style) : api.updataName({name,id:par_id}).then(res=>{
+			switch(method){
+				case "create":{
+					_self.addCatalogue(type,{name,par_id},style);
+				}
+					break;
+				case "copy":{
+					const tabCardArr = $tabCard.data("menuArr");
+					api.checkName({par_id:tabCardArr[tabCardArr.length-1].layout_id,name})
+					.then(res=>{
 
 						if(res){
-								const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-									  return  val.index ;
-								}) ;
-								 page.styleBoxrender(menuIndexArr,style);
-								 page.modal.close($addMView);
-								 UnitOption.tipToast("重命名成功！");
+							api.copyLayout(par_id,name).then(res=>{
+								
+									if(res){
+										const menuIndexArr = tabCardArr.map(val=>{
+										  return  val.index ;
+										}) ;
+										page.styleBoxrender(menuIndexArr,style);
+								 		page.modal.close($addMView);
+										UnitOption.tipToast("视图复制成功！","1");
+
+									}else{
+										UnitOption.tipToast("视图复制失败！","0");
+									}
+
+							})
 						}else{
-							UnitOption.tipToast("重名，换个名称！");
+
+							UnitOption.tipToast("该视图名称已经存在！","2");
 						}
+						
+					});
+					}
+					break;
+				case "modify":{
+					api.updataName({name,id:par_id}).then(res=>{
+							if(res){
+									const menuIndexArr = $tabCard.data("menuArr").map(val=>{
+										  return  val.index ;
+									}) ;
+									 page.styleBoxrender(menuIndexArr,style);
+									 page.modal.close($addMView);
+									 UnitOption.tipToast("重命名成功！");
+							}else{
+								UnitOption.tipToast("重名，换个名称！");
+							}
 
-					}).catch(res=>{
+						}).catch(res=>{
 
-						console.log(res);
-					})
+							console.log(res);
+						});
+					}
+					break;	
+				default:
+					break;
 			}
-
+			
+		
 		});
 
 		//发布
@@ -747,6 +786,7 @@ class Page  {
 				
 				_self.addModal.parCatalogSel.loadData(curCatalogueArr);
 				_self.addModal.parCatalogSel.setValue(curId);
+				$parName.parent().show();
 				page.modal.show($addMView);
 
 
@@ -879,11 +919,8 @@ class Page  {
 
     }
 
-   
-
-
     handle(){
-
+		const _self = this ;
 
     	$(window).on("click",function(){
           		$(".icon-active").removeClass("icon-active");
@@ -918,8 +955,9 @@ class Page  {
 			switch(type){
 
 				case "pre":
-
-
+				
+					$("#content",window.parent.document).addClass("no-head");
+					window.location.href="./ManageViews.html?layout_id="+layout_id;
 
 					break;
 				case "issue":
@@ -965,12 +1003,15 @@ class Page  {
 									}
 							 	 });	
 							}else{
-								UnitOption.tipToast("视图详情获取失败！","0");
+								
 							}
 						});
 					break;
 				case "copy":
 
+					page.modal.show($addMView);
+					$parName.parent().hide();
+					$addMBtn.attr({"method":"copy"});
 					break;
 				case "rename":
 					page.modal.show($addMView);

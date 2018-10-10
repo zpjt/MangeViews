@@ -87,11 +87,10 @@ class View {
 						<span class="fa fa-bars" ></span>
 					</div>
 	        		<div class="view-btns" echo-id="${this.id}" echo-index="${this.index}">
-						<span class="fa fa-refresh view-btn" sign="refresh" title="刷新"></span>
+						<span class="fa fa-trash view-btn" sign="remove" title="删除"></span>
 						<span class="fa fa-expand view-btn" sign="expand" title="最大化"></span>
-						<span class="fa fa-file-excel-o view-btn" sign="excel" title="导出excel"></span>
-						<span class="fa fa-file-image-o view-btn" sign="image" title="导出图片"></span>
 						<span class="fa fa-filter view-btn" sign="filter" title="筛选"></span>
+						<span class="fa fa-edit view-btn" sign="set" title="设置"></span>
 					</div>
 					
 	        	</div>`;
@@ -100,7 +99,7 @@ class View {
 
 	renderContent(){
 
-		return `${ this.status==1 && this.renderViewOpt1() || this.renderViewOpt2()}<div class="chart"></div>`;
+		return `${ this.status == 1 && this.renderViewOpt1() || this.renderViewOpt2()}<div class="chart"></div>`;
 	}
 }
 

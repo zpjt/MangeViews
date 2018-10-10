@@ -1,13 +1,14 @@
 import "css/common/STable.scss";
-import {api} from "api/ManageViews.js";
 
 class STable {
 
 
 	constructor($el,config,data){
 		const {border} = config;
+		this.border = border ;
 		this.container = $el;
 		this.init(data);
+
 	}
 	
 	init(res){
@@ -19,9 +20,16 @@ class STable {
 		const tabHead = this.renderTableHead(data);
 		const tabBody = this.renderTableBody(data);
 		const totalH = this.container.height();
-		
+
+		const border = this.border;
+
+		const titleStr = border === "0" ? `<p class="s-table-title">${chartName}</p>` : "" ;
+		//const titleStr =  `<p class="s-table-title">${this.border === "0" && chartName || ""}</p>` ;
+		const top_add = border === "0" ? 0 :　30 ;
+		const bottom_add = border === "0" ? 10 :　0 ;
 		const str =  `
-						<div  class="s-tableBox fix-tab">
+						<div  class="s-tableBox fix-tab" style="margin-top: ${top_add}px;">
+								${titleStr}
 								<table class="tab-list tab-head">
 									<thead>
 									    ${tabHead.join("")}   
@@ -39,7 +47,7 @@ class STable {
 
 		const wrap = this.container.find(".table-body-wrap");
 		const height = totalH-row_wd.length*50 ;
-		wrap.css("height", totalH - this.container.find(".tab-head").height()-20);		
+		wrap.css("height", totalH - this.container.find(".tab-head").height() - 10 - top_add -bottom_add);		
 
 		const is_overflow = wrap.height() - wrap.children("table").height() > 0 ;
 

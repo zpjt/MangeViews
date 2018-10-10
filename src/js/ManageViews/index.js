@@ -14,7 +14,9 @@ class App{
 
 
 	constructor(){
-		this.layout_id = $(".active",parent.document).attr("echo-id");
+	//	this.layout_id = $(".active",parent.document).attr("echo-id");
+		this.layout_id = this.getLayoutId();
+		
 		this.items=[];
 		this.init();
 		this.handle();
@@ -23,6 +25,13 @@ class App{
 
 	init(){
 		this.renderModal();
+	}
+
+	getLayoutId(){
+		
+		return window.location.search.split("=")[1];
+
+
 	}
 
 	createView(config){
@@ -66,7 +75,7 @@ class App{
 
 
 
-					$container.html(str);
+					$container.html(res.model);
 					const url = $("#template").css("backgroundImage");
 					$maxWindow.css("backgroundImage",url);
 				
@@ -339,7 +348,7 @@ class App{
 
 						break;
 				}
-			})
+			});
 	}
 }
 

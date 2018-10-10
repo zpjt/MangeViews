@@ -3,15 +3,21 @@
 	color:white;
 	width:95%;
 	margin:auto;
+	.s-table-title{
+		height:24px;
+		text-align: center;	
+	}
 	.tab-head{
-		background:#2E4289;
+		//background:#2E4289;
+		background:#3996a7a1;
 		border-radius:4px 4px 0  0;
 	}
 	.table-body-wrap {
-		background:#253779;
+	//	background:#253779;
+		background:#2463868f;
 		border-radius:0 0 8px  8px;
 		tr:hover{
-			background:#1E2E67;
+			background:#72e9e2eb;
 		}
 	}
 	.tab-list{

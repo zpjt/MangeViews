@@ -23,11 +23,11 @@ class DataDB {
 		this.viewDB = new Map();
 	}
 	add(object,viewType,node,viewObj){
-console.log(1);
-		const {$box,htmlStr} = viewObj ;
+
+		const {$box,htmlStr,borderType} = viewObj ;
 
 		const id = ++ DataDB.index;
-			$box.html(htmlStr);
+		$box.html(htmlStr);
 		const  type = viewType,
 			   viewTitle = object.chartName,
 			   index = id;
@@ -40,11 +40,26 @@ console.log(1);
 		}, node, "2");
 
 		const data = {
-			id,object,viewType,node
+			id,object,viewType,node,borderType
 		}
 		this.viewDB.set($box[0],data);
 		$box.addClass("view-fill");
-		console.log(442);
+
+		console.log(this.viewDB);
+	}
+	get(dom){
+		return  this.viewDB.get(dom);
+	}
+	remove(dom){
+		this.viewDB.delete(dom);
+		console.log(this.viewDB);
+	}
+
+	set(dom,obj){
+
+		new 
+		this.viewDB.set(dom,obj);	
+
 		console.log(this.viewDB);
 	}
 
@@ -78,10 +93,22 @@ class Page{
 	   		upModalStatus:(type,size,$view)=>{
 	   			this.viewSetModal.upModalStatus(type,size,$view);
 	   		},	
+	   		getViewData:(dom)=>{
+				return this.viewDB.get(dom);
+	   		},
+	   		delViewData:(dom)=>{
+	   			this.viewDB.remove(dom);
+	   		},
+	   		addViewData:(object,viewType,node,viewObj)=>{
+	   			this.viewDB.add(object,viewType,node,viewObj);
+	   		}
 	    });
 
 	    this.handle();
 	}
+
+	
+
 	handle(){
 
 		const _self = this ;

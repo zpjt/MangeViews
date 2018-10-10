@@ -48,6 +48,9 @@ class API {
 	showReleaseLayout(layout_id){
 		return Promise.resolve($.post(URL+"showReleaseLayout",{layout_id}));
 	}
+	copyLayout(layoutId,layoutName){
+		return Promise.resolve($.post(URL+"copyLayout",{layoutId,layoutName}));
+	}
 
 }  
 

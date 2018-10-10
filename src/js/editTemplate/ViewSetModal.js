@@ -175,14 +175,10 @@ class ViewSetModal {
 
 	upModalStatus(type,size,$view){
 
-		/*$view.html(`<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="1"></div>
-       			 <div class="view-content"> </div>`);*/
-
 		this.activeViewObje = {
 			$box:$view,
 			size
 		};
-
 
 		const icon = $(`.component-item[echo-type=${type}]`).html();
 		this.modalType.html(icon);
@@ -198,6 +194,12 @@ class ViewSetModal {
 	upComboxStatus(){
 
 		const status = this.viewType ==="table";
+
+		const xAxisBox = this.xAxis.box.parent() ;
+
+		this.viewType ==="pie" && xAxisBox.hide() || xAxisBox.show();
+
+		
 
 		this.xAxis.config.multiply = status;
 		this.yAxis.config.multiply = status;
@@ -215,7 +217,7 @@ class ViewSetModal {
 		const methodObj = {
 			table: "tableInit",
 			line: "lineInit",
-			bar: "lineInit",
+			bar: "barInit",
 			pie: "pieInit",
 			scatter: "scatterInit",
 			rader: "raderInit",
@@ -223,13 +225,50 @@ class ViewSetModal {
 		const str = this[methodObj[this.viewType]]();
 	}
 
-	tableInit() {
+	getChartCommonInit(){
 
+		const legend = `<div class="sel-item">
+						    <p class="s-title">图例位置:</p>
+						    <div>
+						        <span><input type="radio" class="s-radio legend-place" name="legend-place" checked="checked" value="1"><label>上</label></span>
+						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="2"><label>下</label></span>
+						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="3"><label>左</label></span>
+						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="4"><label>右</label></span>
+						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="5"><label>无</label></span>
+						    </div>
+				</div>`;
+
+
+		const axis = `<div class="sel-item">
+							<div class="sel-item">
+
+								<span class="s-title">X轴:</span>
+							   	<span class="s-switch" echo-text="不显示" style="width: 100px">
+									<input type="checkbox" id="Xaixs" checked="checked">
+									<label for="Xaixs" echo-text="显示"></label>
+								</span>
+							</div>
+							<div class="sel-item">
+								<span class="s-title">Y轴:</span>
+							    <span class="s-switch" echo-text="不显示" style="width: 100px">
+									<input type="checkbox" id="Yaixs" checked="checked">
+									<label for="aixs" echo-text="显示"></label>
+								</span>
+							</div>
+						</div>`;
+	
+		return {
+			legend,
+			axis,
+		}
+	}
+
+	tableInit() {
 		const htmlStr = `<div class="sel-item">
 				    <p class="s-title">表格样式:</p>
 				    <div>
-				        <span><input type="radio" class="s-radio" name="tab-style" checked="checked" value="0"><label>网格</label></span>
-				        <span><input type="radio"  class="s-radio" name="tab-style" value="1"><label>三线</label></span>
+				        <span><input type="radio" class="s-radio" name="tab-style" checked="checked" value="0"><label class="m-radio-icon u-tab-lab1"></label></span>
+				        <span><input type="radio"  class="s-radio " name="tab-style" value="1"><label class="m-radio-icon u-tab-lab2"></label></span>
 				    </div>
 				</div>
 				<div class="sel-item">
@@ -256,17 +295,19 @@ class ViewSetModal {
 		});
 
 	}
+	barInit() {
 
-	lineInit() {
+		const {legend,axis} = this.getChartCommonInit();
 
 		const htmlStr = `
+						${axis}
 						<div class="sel-item">
 							<div class="sel-item">
-							    <span class="s-title">横向图:</span>
-							    <label class="s-switch-2">
-										<input type="checkbox" class="landscape" name="landscape">
-										<span class="switch-ball"></span>
-						    	</label>
+							      <p class="s-title">展示样式:</p>
+								  <div>
+								        <span><input type="radio" class="s-radio u-radio-sel" name="bar-style" checked="checked" value="0"><label class="m-radio-icon u-bar-lab1"></label></span>
+								        <span><input type="radio"  class="s-radio u-radio-sel" name="bar-style" value="1"><label class="m-radio-icon u-bar-lab2"></label></span>
+								  </div>
 							</div>
 							<div class="sel-item">
 								<span class="s-title">堆叠:</span>
@@ -276,30 +317,82 @@ class ViewSetModal {
 						    	</label>
 							</div>
 						</div>
+						${legend}
+				`
+		this.viewStyleBox.html(htmlStr);
+	}	
+	lineInit() {
+
+		const {legend, axis} = this.getChartCommonInit();
+
+		const htmlStr = `
+						${axis}
 						<div class="sel-item">
-						    <p class="s-title">图例位置:</p>
-						    <div>
-						        <span><input type="radio" class="s-radio legend-place" name="legend-place" checked="checked" value="1"><label>上</label></span>
-						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="2"><label>下</label></span>
-						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="3"><label>左</label></span>
-						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="4"><label>右</label></span>
-						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="5"><label>无</label></span>
-						    </div>
+							<div class="sel-item">
+							      <p class="s-title">展示样式:</p>
+								  <div>
+								        <span><input type="radio" class="s-radio u-radio-sel" name="line-style" checked="checked" value="0"><label class="m-radio-icon u-line-lab1"></label></span>
+								        <span><input type="radio"  class="s-radio u-radio-sel" name="line-style" value="1"><label class="m-radio-icon u-line-lab2"></label></span>
+								  </div>
+							</div>
 						</div>
+						${legend}
 				`
 		this.viewStyleBox.html(htmlStr);
 	}
 
 	pieInit() {
-		const htmlStr = ` `;
+		const {legend} = this.getChartCommonInit();
+
+		const htmlStr = `
+						<div class="sel-item">
+							<div class="sel-item">
+							      <p class="s-title">展示样式:</p>
+								  <div>
+								        <span><input type="radio" class="s-radio u-radio-sel" name="pie-style" checked="checked" value="1"><label class="m-radio-icon u-pie-lab1"></label></span>
+								        <span><input type="radio"  class="s-radio u-radio-sel" name="pie-style" value="2"><label class="m-radio-icon u-pie-lab2"></label></span>
+								         <span><input type="radio" class="s-radio u-radio-sel" name="pie-style" checked="checked" value="3"><label class="m-radio-icon u-pie-lab3"></label></span>
+								        <span><input type="radio"  class="s-radio u-radio-sel" name="pie-style" value="4"><label class="m-radio-icon u-pie-lab4"></label></span>
+								  </div>
+							</div>
+						</div>
+						${legend}
+				`
 		this.viewStyleBox.html(htmlStr);
 	}
 	raderInit() {
-		const htmlStr = ` `;
+		const {legend} = this.getChartCommonInit();
+
+		const htmlStr = `
+						<div class="sel-item">
+							<div class="sel-item">
+							      <p class="s-title">展示样式:</p>
+								  <div>
+								        <span><input type="radio" class="s-radio u-radio-sel" name="rader-style" checked="checked" value="0"><label class="m-radio-icon u-rader-lab1"></label></span>
+								        <span><input type="radio"  class="s-radio u-radio-sel" name="rader-style" value="1"><label class="m-radio-icon u-rader-lab2"></label></span>
+								  </div>
+							</div>
+						</div>
+						${legend}
+				`;
 		this.viewStyleBox.html(htmlStr);
 	}
 	scatterInit() {
-		const htmlStr = ` `;
+		const {legend,axis} = this.getChartCommonInit();
+
+		const htmlStr = `
+						${axis}
+						<div class="sel-item">
+							<div class="sel-item">
+							      <p class="s-title">展示样式:</p>
+								  <div>
+								        <span><input type="radio" class="s-radio u-radio-sel" name="scatter-style" checked="checked" value="0"><label class="m-radio-icon u-scatter-lab1"></label></span>
+								        <span><input type="radio"  class="s-radio u-radio-sel" name="scatter-style" value="1"><label class="m-radio-icon u-scatter-lab2"></label></span>
+								  </div>
+							</div>
+						</div>
+						${legend}
+				`;
 		this.viewStyleBox.html(htmlStr);
 	}
 
@@ -408,7 +501,7 @@ class ViewSetModal {
 
 				}else if(viewType==="bar"){
 					obj.refName="-无-";
-					obj.lineType="3";
+					obj.lineType="2";
 				}
 
 				return obj
@@ -438,7 +531,7 @@ class ViewSetModal {
 							obj.lineType="1";
 						}else if(viewType==="bar"){
 							obj.refName="-无-";
-							obj.lineType="3";
+							obj.lineType="2";
 						}
 						return obj;
 					});
@@ -465,7 +558,7 @@ class ViewSetModal {
 							obj.lineType="1";
 						}else if(viewType==="bar"){
 							obj.refName="-无-";
-							obj.lineType="3";
+							obj.lineType="2";
 						}
 
 						kpi_infos.push(obj);
@@ -549,40 +642,61 @@ class ViewSetModal {
 		    legend= $(".legend-place:checked").val(),
 		    isPubDimX = this.zbComponent.publicDimArr.length==1;
 
+	    const style = $(".u-radio-sel:checked").val();
+
+	    const common = this.getCommonValue("chart",dimId);
+
+
 		switch(viewType){
-			case "pie":
+			case "pie":{
 				chartType = "5";
-				const roseType= "0",	
-					  rowDim = "4";
+				const roseType = style,	
+					  rowDim = common.contrastDim;
 				flagObj = {roseType,rowDim};
-
+			}
 				break;
-			case "scatter":
+			case "scatter":{
+				 const Xaxis = $("#Xaixs").prop("checked");
+	   			 const Yaxis = $("#Yaixs").prop("checked");
+	   			 const threeD= Number(Xaxis) + "," +  Number(Yaxis),
+	   			      landscape= style;
 				chartType = "7";
+				flagObj = {threeD,landscape};
+			}
 				break;
-			case "rader":
+			case "rader":{
 				chartType = "6";
-				const area= "1";
+				const area= style;
 				flagObj = {area};
-
+			}
 				break;
 			default:{
 				chartType = "4" ;
-				const landscape= $(".landscape")[0].checked && "1" || "0",
-					  stack= $(".stack")[0].checked && "1" || "0",
-					  threeD= "0",
+				/**
+				 * @landscape {0：垂直，1:横向}
+				 * @stack {1:堆积，0：不堆积}
+				 * @maxVal {[type]}
+				 * @minVal {[type]}
+				 * @threeD {[1,1]:第一个是X轴，第二个Y轴，1:显示，0：不显示}
+				 * @moreAxis {[type]}
+				 */
+				 const Xaxis = $("#Xaixs").prop("checked");
+	   			 const Yaxis = $("#Yaixs").prop("checked");
+				 const landscape= style,
+					  stack= viewType === "bar" ? Number($(".stack").prop("checked")) : "0",
+					  threeD= Number(Xaxis) + "," +  Number(Yaxis),
 					  maxVal= "@",
 					  minVal= "@",
 					  moreAxis= "0";
 				flagObj = {landscape,stack,threeD,maxVal,minVal,moreAxis}
-				break;
 			}
+			break;
 		};
 
 
 	 	const dimId = this.zbComponent.publicDimArr[0]!=="dim_2";
 
-		return Object.assign(this.getCommonValue("chart",dimId),flagObj,{
+		return Object.assign(common,flagObj,{
 			  chartType,
 			  isPubDimX,
 			  legend
@@ -627,12 +741,12 @@ class ViewSetModal {
 					if (node.data && node.data.length) {
 
 						const {$box,size} = this.activeViewObje;
-						const border_type = $(".border-style:checked").val();
-						const border_str = border_type  === "0" ?"" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${border_type}"></div>`;
+						const borderType = $(".border-style:checked").val();
+						const border_str = borderType  === "0" ?"" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${borderType}"></div>`;
 
 						const htmlStr = border_str + `<div class="view-content"></div>`;
 
-							this.viewDB.add(object,viewType,node,{$box,htmlStr});
+							this.viewDB.add(object,viewType,node,{$box,htmlStr,borderType});
 
 						/*api[methodType.save](object).then(res => {
 
