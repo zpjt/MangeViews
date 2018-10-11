@@ -1,3 +1,4 @@
+require("./index.js");
 const {baseUrl} = window.jsp_config;
 const control_1 = "layout/";
 const control_2 = "chart/";

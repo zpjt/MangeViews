@@ -1,4 +1,5 @@
 
+require("./index.js");
 
 const {baseUrl} = window.jsp_config;
 const control = "layout/";

@@ -1,7 +1,7 @@
 import "css/main.scss";
 import {RippleBtn} from "js/common/Unit.js";
 import "css/common/button.scss";
-
+require("api/index.js");
 const {role_id,baseUrl,base,user_id} = window.jsp_config;
 
 /*jq对象*/
@@ -80,7 +80,7 @@ class Menu{
 			<li class="par_li_${lev} par_li" >
 				<div class="menuItem par-item " data-url=${url} lev="${lev}" echo-id="${id}">
 					${indent}<i class="sicon ${sys_param}"></i>
-					<span class="icon-wrap">${name}<span class="slide-icon"><i class="fa fa-chevron-down  "></i></span></span>
+					<span class="icon-wrap"><span class="menu-name">${name}</span><span class="slide-icon"><i class="fa fa-chevron-down  "></i></span></span>
 				</div>
 				<ul class="par-menu">${child.join("")}</ul>
 			</li>
@@ -97,7 +97,7 @@ class Menu{
 		return (`
 			<li>
 				<div class="menuItem child-item " data-url=${url} echo-id="${id}">
-				${indent}<i class="${icon+sys_param} ">&nbsp;</i>${name}
+				${indent}<i class="${icon+sys_param} ">&nbsp;</i><span class="menu-name">${name}</span>
 				</div>
 			</li>
 		`);		
@@ -128,16 +128,19 @@ class Menu{
 		/*切换菜单*/
 		this.box.on("click",".menuItem",function(events){
 
+			const $this = $(this);
+
 			$(".active").removeClass("active");
 			$(".active-par").removeClass("active-par");
 
-			const  par_item =  $(this).closest(".par-menu").siblings(".menuItem");
+			const  par_item =  $this.closest(".par-menu").siblings(".menuItem");
 			par_item.addClass("active-par");
 			$(this).addClass("active");
 
-			Page.activeId = $(this).attr("echo-id");
+			window.menuID = $this.attr("echo-id");
+			window.menuName = $this.find(".menu-name").html();
 
-			const url=$(this).attr("data-url").split("/")[2];
+			const url=$this.attr("data-url").split("/")[2];
 			page.iframe[0].src="./"+url+".html";
 			
 			
@@ -276,7 +279,6 @@ class SoketNews{
 
 class Page{
 
-	static activeId = null ;
 
 	constructor(){
 		this.init();

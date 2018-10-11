@@ -5,17 +5,18 @@ class STable {
 
 	constructor($el,config,data){
 		const {border} = config;
+		const data_copy = JSON.parse(JSON.stringify(data));
 		this.border = border ;
 		this.container = $el;
-		this.init(data);
+		this.init(data_copy);
 
 	}
 	
 	init(res){
 
-		const {tabInfo:{chartName,row_wd,col_wd,total},data} = res;
+		const {tabInfo:{chartName,row_wd,col_wd,total,tab_style},data} = res;
 				this.title =chartName;
-				this.config = {row_wd, col_wd, total};
+				this.config = {row_wd, col_wd, total,tab_style};
 
 		const tabHead = this.renderTableHead(data);
 		const tabBody = this.renderTableBody(data);
@@ -24,19 +25,21 @@ class STable {
 		const border = this.border;
 
 		const titleStr = border === "0" ? `<p class="s-table-title">${chartName}</p>` : "" ;
-		//const titleStr =  `<p class="s-table-title">${this.border === "0" && chartName || ""}</p>` ;
 		const top_add = border === "0" ? 0 :　30 ;
 		const bottom_add = border === "0" ? 10 :　0 ;
 		const str =  `
-						<div  class="s-tableBox fix-tab" style="margin-top: ${top_add}px;">
+						<div  class="s-tableBox fix-tab ${tab_style !=="0" && "border-box"|| ""}" style="margin-top: ${top_add}px;">
 								${titleStr}
-								<table class="tab-list tab-head">
-									<thead>
-									    ${tabHead.join("")}   
-								    </thead>
-								</table>
+								<div class="tab-head">
+									<table class="tab-list ">
+										<thead>
+										    ${tabHead.join("")}   
+									    </thead>
+									</table>
+								</div>
+								
 								<div class="table-body-wrap " >
-									   <table  border="1" class="tab-list table-body">
+									   <table  border="${tab_style}" class="tab-list table-body" frame="void">
 											${tabBody.join("")}
 
 									   </table>
@@ -47,7 +50,7 @@ class STable {
 
 		const wrap = this.container.find(".table-body-wrap");
 		const height = totalH-row_wd.length*50 ;
-		wrap.css("height", totalH - this.container.find(".tab-head").height() - 10 - top_add -bottom_add);		
+		wrap.css("height", totalH - this.container.find(".tab-head").height() - 14 - top_add -bottom_add);		
 
 		const is_overflow = wrap.height() - wrap.children("table").height() > 0 ;
 
@@ -141,12 +144,21 @@ class STable {
 	}
 
 	renderTableBody(_data){
-		const { row_wd,col_wd,total} = this.config;
+		const { row_wd,col_wd,total,tab_style} = this.config;
 	 	const data =_data.slice(row_wd.length);
 		const rowspanArr = this.rowspanCount(data);
 		const totalArr = ["2","3"].includes(total) && data.pop().splice(col_wd.length) || null;
+
+		let colorCount = 0 ;
+		const tabStyle = tab_style === "0" ;
 		const tabBodyArr = data.map((row,item)=>{
-				return `<tr>${this.renderRow(row,item,rowspanArr).join("")}</tr>`;
+
+				 item % rowspanArr[0] === 0 && colorCount++ ;
+
+				const bgClass = tab_style ==="0" ? ( colorCount % 2 === 0  &&　`tr-bg1` || `tr-bg2` ) : "";
+
+				return `<tr class="${bgClass}">${this.renderRow(row,item,rowspanArr).join("")}</tr>`;
+		
 		});
 		
 		if(totalArr){

@@ -955,9 +955,15 @@ class Page  {
 			switch(type){
 
 				case "pre":
+
+				    const fatherWin = window.parent ;
 				
-					$("#content",window.parent.document).addClass("no-head");
+					$("#content",fatherWin.document).addClass("no-head");
 					window.location.href="./ManageViews.html?layout_id="+layout_id;
+					
+					fatherWin.menuID = layout_id;
+					fatherWin.menuName =layout_name;
+
 
 					break;
 				case "issue":

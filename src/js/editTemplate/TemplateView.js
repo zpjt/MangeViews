@@ -19,6 +19,7 @@ class TemplateView {
 	   this.resiziEl = $("#m-resize");
 	   this.gLayout =$("#g-layout");
 	   this.templateBox = $("#templateBox");
+	   this.templateContainer = $("#g-templateDom");
 
 	   this.startPointX=null;
 	   this.startPointY=null;
@@ -29,7 +30,22 @@ class TemplateView {
        this.handle();
 	}
 
+	getTemplate(){
 
+		
+		const str = this.templateBox.html();
+				
+		this.templateContainer.html(str);
+
+		this.templateContainer.find(".view-content").html(null);
+		this.templateContainer.find(".bgSvg").html(null);
+		const htmlStr = this.templateContainer.html();
+		return {
+			htmlStr,
+			box:this.templateBox
+		}
+
+	}
 	throttle(fn,interval){
 
 		let timer = null ;
@@ -664,9 +680,6 @@ class TemplateView {
 		})
 		.attr("echo-size",curMergeX + "," + curMergeY);
 
-
-		
-
 		resiziEl.hide();
 
 		this.reloadView({newEl:handleGridItem,oldEl:$activeView},{
@@ -679,6 +692,10 @@ class TemplateView {
 	reloadView(boxObj,config){
 
 		const {newEl,oldEl} = boxObj;
+
+		if(!oldEl.hasClass("view-fill")){
+			return ;
+		}
 
 		const {getViewData} = this.config;
 
@@ -772,7 +789,7 @@ class TemplateView {
 		});
 
 
-		$templateBox.on("click",".view-item",function(e){
+		$templateBox.on("dblclick",".view-item",function(e){
 
 			e.stopPropagation();
 			 const $this = $(this);
@@ -820,9 +837,9 @@ class TemplateView {
 			_self.getInitCellSize();
 		});
 		
-		$templateBox.on("click",".view-optBox ",function(e){
+		/*$templateBox.on("click",".view-content",function(e){
 				e.stopPropagation();
-		});
+		});*/
 
 		$templateBox.on("click",".btn-handle",function(){
 			$(this).toggleClass("active");

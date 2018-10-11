@@ -47,7 +47,7 @@ class ViewSetModal {
 
 		// 日历
 		this.calendar = new Calendar($(".dataTime"), $("#viewShowTime"), {
-			rotate: 4,
+			rotate:3,
 			style: 1,
 		});
 		console.log(this.calendar);

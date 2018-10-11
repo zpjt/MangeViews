@@ -451,7 +451,7 @@ class Calendar{
 	constructor($el,$inp,obj){
 
 		const defaultConfig = {
-			rotate:4,
+			rotate:3,
 			style:1,
 			time:false,
 		};

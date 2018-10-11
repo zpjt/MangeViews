@@ -2,9 +2,11 @@ require("./index.js");
 const {baseUrl} = window.jsp_config;
 const control_1 = "main/";
 const control_2 = "chart/";
+const control_3 = "layout/";
 
 const URL_WD= baseUrl+control_1;
 const URL_C= baseUrl+control_2;
+const URL_L= baseUrl+control_3;
 
 class API {
 
@@ -53,7 +55,7 @@ class API {
 			}));	
 
 	}
-	saveGraphInfo (obj){
+	saveGraphInfo(obj){
 
 		return Promise.resolve($.ajax({
 				url:URL_C+"saveGraphInfo ",
@@ -62,6 +64,17 @@ class API {
 				type:"post",
 			}));	
 
+	}
+	saveLayout(formData){
+
+		return Promise.resolve($.ajax({
+			url: URL_L + 'saveLayout',
+			type: 'post',
+			cache: false,
+			data: formData,
+			processData: false,
+			contentType: false,
+    	}));
 	}
 
 	

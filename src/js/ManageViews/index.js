@@ -14,9 +14,10 @@ class App{
 
 
 	constructor(){
-	//	this.layout_id = $(".active",parent.document).attr("echo-id");
-		this.layout_id = this.getLayoutId();
-		
+
+		const fatherWin = window.parent ;
+		this.layout_id = fatherWin.menuID;
+		$("#viewName").html(fatherWin.menuName);	
 		this.items=[];
 		this.init();
 		this.handle();
@@ -71,12 +72,12 @@ class App{
 				if(res.model){
 
 
-					const str = `<div class="view-template theme1" id="template"> <div class="view-item" echo-type="chart" echo-id="172" style="grid-row:1/3;grid-column:1/3"> <div class="bgSvg" echo-w="2" echo-y="2" echo-type="1"></div> <div class="view-content"> </div> </div> <div class="view-item" echo-type="chart" echo-id="174" style="grid-row:1/3;grid-column:3/4"> <div class="bgSvg" echo-w="1" echo-y="2" echo-type="1"></div> <div class="view-content"> </div> </div> <div class="view-item" echo-type="chart" echo-id="163" style="grid-column:1/4;grid-row:3/4;"> <div class="bgSvg" echo-w="3" echo-y="1" echo-type="1"></div> <div class="view-content"> </div> </div> </div>`
+					const str = `<div class="view-template theme1" id="viewTemplate"> <div class="view-item" echo-type="chart" echo-id="172" style="grid-row:1/3;grid-column:1/3"> <div class="bgSvg" echo-w="2" echo-y="2" echo-type="1"></div> <div class="view-content"> </div> </div> <div class="view-item" echo-type="chart" echo-id="174" style="grid-row:1/3;grid-column:3/4"> <div class="bgSvg" echo-w="1" echo-y="2" echo-type="1"></div> <div class="view-content"> </div> </div> <div class="view-item" echo-type="chart" echo-id="163" style="grid-column:1/4;grid-row:3/4;"> <div class="bgSvg" echo-w="3" echo-y="1" echo-type="1"></div> <div class="view-content"> </div> </div> </div>`
 
 
 
 					$container.html(res.model);
-					const url = $("#template").css("backgroundImage");
+					const url = $("#viewTemplate").css("backgroundImage");
 					$maxWindow.css("backgroundImage",url);
 				
 					$.map($(".view-item"),(val,index)=>{

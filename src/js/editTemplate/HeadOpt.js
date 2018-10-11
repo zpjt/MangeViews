@@ -1,3 +1,4 @@
+import {api} from "api/editTemplate.js";
 /**
  * 头部组件
  */
@@ -13,9 +14,58 @@ class HeadOpt {
 	init() {
 		
 	}
+
+	async saveAllView(formData){
+
+		const { viewDB:{viewDB} , getTemplate} = this.config ; 
+
+		const methodObj = {
+			table:"saveTableInfo",
+			chart:"saveGraphInfo",
+		};
+		
+		const arr = [...viewDB.values()];
+		let promises  =arr.map(val=>{
+
+			const { viewType,object,viewId} = val ;
+
+			return !viewId ? api[methodObj[viewType]](object) : ;
+		}); 
+
+		const res = await Promise.all(promises);
+
+		const status = res.every(val=>val.state);
+
+		if(status){
+			
+			const formData = new FormData();
+
+			const layout_id = window.parent.menuID;
+			const {htmlStr,box} = getTemplate();
+
+			formData.set("layout_id",layout_id);
+			formData.set("model",model);
+
+			await api.saveLayout(formData).then(res=>{
+
+					console.log(res);
+
+					box.html(null);
+			});
+		
+		}else{
+
+			await false ;
+		}
+
+	}
+
+
+
+
 	handle() {
 		const _self = this ;
-		const { modal } = this.config ;
+		const { modal ,getTemplate} = this.config ;
 	
 		$("#headOpt").on("click", ".head-btn", function() {
 			const type = $(this).attr("sign");
@@ -33,6 +83,12 @@ class HeadOpt {
 					break;
 				case "export":
 					break;
+				case "save":{
+						
+					 const result = _self.saveAllView();
+
+					break;
+				}
 				default :
 					break;
 			}

@@ -40,7 +40,7 @@ class DataDB {
 		}, node, "2");
 
 		const data = {
-			id,object,viewType,node,borderType
+			id,object,viewType,node,borderType,viewId:null
 		}
 		this.viewDB.set($box[0],data);
 		$box.addClass("view-fill");
@@ -86,9 +86,7 @@ class Page{
 		this.viewComponet = new ViewComponet();
 		
 
-	    new HeadOpt({
-	    	modal,
-	    }); 
+
 	    this.templateView = new TemplateView($("#templateBox"),{
 	   		upModalStatus:(type,size,$view)=>{
 	   			this.viewSetModal.upModalStatus(type,size,$view);
@@ -103,11 +101,16 @@ class Page{
 	   			this.viewDB.add(object,viewType,node,viewObj);
 	   		}
 	    });
-
+	 		new HeadOpt({
+		    	modal,
+		    	viewDB,
+		    	getTemplate:()=>{
+		    		return this.templateView.getTemplate();
+		    	}
+		    }); 
 	    this.handle();
 	}
 
-	
 
 	handle(){
 
