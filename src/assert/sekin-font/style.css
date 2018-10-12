@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'SEkin';
-  src:  url('fonts/SEkin.eot?su8mjh');
-  src:  url('fonts/SEkin.eot?su8mjh#iefix') format('embedded-opentype'),
-    url('fonts/SEkin.ttf?su8mjh') format('truetype'),
-    url('fonts/SEkin.woff?su8mjh') format('woff'),
-    url('fonts/SEkin.svg?su8mjh#SEkin') format('svg');
+  src:  url('fonts/SEkin.eot?quzal1');
+  src:  url('fonts/SEkin.eot?quzal1#iefix') format('embedded-opentype'),
+    url('fonts/SEkin.ttf?quzal1') format('truetype'),
+    url('fonts/SEkin.woff?quzal1') format('woff'),
+    url('fonts/SEkin.svg?quzal1#SEkin') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -38,6 +38,24 @@
 }
 .sicon-save:before {
   content: "\e95a";
+}
+.sicon-kpi:before {
+  content: "\e95b";
+}
+.sicon-wd-kpi:before {
+  content: "\e95c";
+}
+.sicon-detail:before {
+  content: "\e95f";
+}
+.sicon-org:before {
+  content: "\e960";
+}
+.sicon-warn:before {
+  content: "\e961";
+}
+.sicon-error:before {
+  content: "\e962";
 }
 .sicon-styles:before {
   content: "\e931";

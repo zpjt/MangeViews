@@ -862,7 +862,14 @@ class Page  {
 		const index = +$this.attr("echo-data");
 		const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
 		
-		$("#slide",window.parent.document).animate({"width":0},500,function(){
+		const {layout_name,layout_id} = data ;
+
+		const fatherWin = window.parent;
+			  fatherWin.menuID = layout_id;
+			  fatherWin.menuName =layout_name;
+
+		
+		$("#slide",fatherWin.document).animate({"width":0},500,function(){
 			$("#content",window.parent.document).addClass("no-head");
 			window.location.href="./editTemplate.html";
 		});

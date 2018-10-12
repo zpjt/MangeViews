@@ -48,7 +48,7 @@ $headH:50px;
 			 	display: grid;
 				 grid-template-columns: 1fr 1fr 1fr;
 				 grid-template-rows: 1fr 1fr 1fr;
-				 grid-gap: 8px;
+				 grid-gap: 20px 12px;
 			 }
 			 @at-root{
 			 	.view-item{
@@ -109,6 +109,9 @@ $headH:50px;
 					 	top:40px;
 					 }
 					
+				}
+				.view-item.view-hide{
+					display:none;
 				}
 				.shade{
 					opacity:0.5;

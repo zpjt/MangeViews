@@ -388,6 +388,7 @@ class AddModal{
 						"textField":"dim_name",
 						"idField":"dim_value",
 						 width:280,
+						 "dropIcon":"sicon sicon-kpi",
 				    });
 
 					if(this.optId && dimX &&  dimX !== "null"){
@@ -422,6 +423,7 @@ class AddModal{
 											"defaultVal": "",
 											 width:420,
 											 textarea:true,
+											 dropIcon:"fa fa-commenting",
 											 dropFormatter:function(node){
 													return node.model_name;
 											 }
@@ -454,6 +456,7 @@ class AddModal{
 						 data:res.sub,
 						"textField":"kpi_name",
 						"idField":"kpi_id",
+						"childIcon":"sicon sicon-kpi",
 						"childrenField":"sub",
 						"judgeRelation":(val)=>{//自定义判断是目录还是文件的函数
 								return val.kpi_type === "0";

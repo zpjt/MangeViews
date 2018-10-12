@@ -366,7 +366,7 @@ class SInp{
 	}
 
 	handle(){
-		$(".s-inp-box .s-inp" ).on("blur",function(){
+		$(".s-inp-box .s-inp.s-valid" ).on("blur",function(){
 
 			const val = this.value.trim();
 			!val && $(this).addClass("no-fill") || $(this).removeClass("no-fill");
@@ -407,14 +407,14 @@ class SCombobox {
 		this.box = $el ;
 		this.selValue = this.config.defaultVal;
 		this.init();
-
+ 		this.handle();
 	}
 
 	init(){
 		const {width} = this.config;
 		this.box.css({"width":width});
 		this.box.html(this.initRender());
-	    this.handle();
+	    this.selValue.length　&& this.updateInpBox(this.box.find(".drop-ul"));
 	}
 
 	loadData(data,$el=this.box){
@@ -523,13 +523,15 @@ class SCombobox {
 
     renderInpBox(){
 
-    	const {textarea , multiply ,prompt,slideIcon} = this.config;
+    	const {textarea , multiply ,prompt,slideIcon,selValue} = this.config;
+
+    	const value = Array.isArray(selValue) ? selValue.join(","): selValue;
 
 		const htmlType = (textarea || multiply) && `<textarea  class="s-textarea combo-text" placeholder="${prompt}" readOnly="readOnly"></textarea>` || `<input type="text" class="s-inp combo-text" placeholder="${prompt}" readOnly="readOnly"/>`;
 
     	return `
 					${htmlType}
-					<input type="hidden" class="s-inp combo-value"  value="${this.selValue}"/>
+					<input type="hidden" class="s-inp combo-value"  value="${value}"/>
 					<span class="slide-icon ${slideIcon}">
 					</span>
 				`

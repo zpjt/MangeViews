@@ -24,17 +24,26 @@ class HeadOpt {
 			chart:"saveGraphInfo",
 		};
 		
-		const arr = [...viewDB.values()];
-		let promises  =arr.map(val=>{
+		const arr = [...viewDB.keys()];
+		let promises  =arr.map(key=>{
+
+			const val = viewDB.get(key);
 
 			const { viewType,object,viewId} = val ;
 
-			return !viewId ? api[methodObj[viewType]](object) : ;
+			return !viewId ? api[methodObj[viewType]](object).then(res=>{
+					const {state ,id } = res ;
+					state && $(key).attr("echo-id",id) || alert(object.chartName+"保存失败！");
+					 val.viewId = id;
+					return state ;
+			}) : true;
 		}); 
+	
 
 		const res = await Promise.all(promises);
 
-		const status = res.every(val=>val.state);
+
+		const status = res.every(val=>val);
 
 		if(status){
 			
@@ -44,7 +53,7 @@ class HeadOpt {
 			const {htmlStr,box} = getTemplate();
 
 			formData.set("layout_id",layout_id);
-			formData.set("model",model);
+			formData.set("model",htmlStr);
 
 			await api.saveLayout(formData).then(res=>{
 

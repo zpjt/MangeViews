@@ -114,7 +114,7 @@ class Login{
             const animate = new  Promise(function(resolve){
                     setTimeout(function(){
                        resolve("test1");
-                    }, 2000);
+                    }, 1200);
             });
 
             const login = _self.login(obj).then(data=>{

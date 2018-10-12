@@ -72,18 +72,17 @@ class App{
 				if(res.model){
 
 
-					const str = `<div class="view-template theme1" id="viewTemplate"> <div class="view-item" echo-type="chart" echo-id="172" style="grid-row:1/3;grid-column:1/3"> <div class="bgSvg" echo-w="2" echo-y="2" echo-type="1"></div> <div class="view-content"> </div> </div> <div class="view-item" echo-type="chart" echo-id="174" style="grid-row:1/3;grid-column:3/4"> <div class="bgSvg" echo-w="1" echo-y="2" echo-type="1"></div> <div class="view-content"> </div> </div> <div class="view-item" echo-type="chart" echo-id="163" style="grid-column:1/4;grid-row:3/4;"> <div class="bgSvg" echo-w="3" echo-y="1" echo-type="1"></div> <div class="view-content"> </div> </div> </div>`
-
-
 
 					$container.html(res.model);
 					const url = $("#viewTemplate").css("backgroundImage");
 					$maxWindow.css("backgroundImage",url);
-				
-					$.map($(".view-item"),(val,index)=>{
+					const views = $("#viewTemplate").find(".view-item.view-fill");
+					$.map(views,(val,index)=>{
 						(function(item,$val){
-							const type = $val.attr("echo-type"),
-								  id =  $val.attr("echo-id");
+							const viewType = $val.attr("echo-type"),
+					  				id =  $val.attr("echo-id");
+
+			  				const type =  ["line","pie","scatter","bar","rader"].includes(viewType) && "chart" || viewType ; 
 							self.createView({item,box:$val,type,id});
 						})(index,$(val));
 						

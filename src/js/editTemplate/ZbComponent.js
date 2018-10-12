@@ -40,6 +40,7 @@ class ZbComponent {
 			data: kpiTree,
 			idField: "kpi_id",
 			textField: "kpi_name",
+			"childIcon":"sicon sicon-kpi",
 			childrenField: "sub",
 			judgeRelation: function(val) {
 				return val.kpi_type === "0";

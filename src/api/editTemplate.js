@@ -77,6 +77,10 @@ class API {
     	}));
 	}
 
+	showLayoutModel(layout_id){
+		return Promise.resolve($.post(URL_L+"showLayoutModel",{layout_id}));
+	}
+
 	
 }  
 

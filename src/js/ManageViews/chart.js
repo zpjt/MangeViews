@@ -77,107 +77,6 @@ class Chart {
 
 	}
 
-	barConfig(res) {
-
-		return {
-			legend: {
-				orient: 'horizontal',
-				left: 10,
-				top: '12%',
-				itemWidth: 12,
-				itemHeight: 12,
-				data: ['test'],
-				textStyle: { //图例文字的样式
-					fontSize: 12,
-					color: "white"
-				}
-			},
-			tooltip: {
-				show: true,
-				trigger: 'item',
-			},
-			toolbox: {
-				show: true,
-				feature: {
-					mark: {
-						show: true
-					},
-
-				}
-			},
-
-			xAxis: {
-				type: 'category',
-				data: [{
-					value: 'Mon',
-					textStyle: {
-						color: "white"
-
-					}
-
-				}, {
-					value: 'Mon1',
-					textStyle: {
-						color: "white"
-
-					}
-
-				}, {
-					value: 'Mon2',
-					textStyle: {
-						color: "white"
-
-					}
-
-				}, {
-					value: 'Mon3',
-					textStyle: {
-						color: "white"
-
-					}
-
-				}, {
-					value: 'Mon4',
-					textStyle: {
-						color: "white"
-
-					}
-
-				}, ],
-				show: true,
-				axisLine: {
-					show: false,
-				},
-				axisTick: {
-					show: false,
-				}
-			},
-			yAxis: {
-				type: 'value',
-				show: false,
-			},
-			series: [{
-					name: 'test',
-					type: 'bar',
-					barWidth: 20, //柱图宽度
-					data: [2800, 1700, 1200, 1000, 900],
-					itemStyle: {
-						normal: {
-							color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-								offset: 0,
-								color: '#00fcae'
-							}, {
-								offset: 1,
-								color: '#006388'
-							}]),
-							opacity: 1,
-						}
-					},
-				},
-
-			]
-		};
-	}
 
 	pieConfig(res) {
 
@@ -274,7 +173,7 @@ class Chart {
 
 
 		const radius = roseType  < 3 &&  ["10%","60%"] || ['30%', '60%'] ;
-		const roseTypeStr = roseType % 2 === 0  ? "area" : false ;
+		const roseTypeStr = roseType % 2 === 0  ? true : false ;
 		
 		const  rich = {
 		    white: {
@@ -406,7 +305,7 @@ class Chart {
 
 		const border = this.border;
 
-		const top = border === "3" ? 28 : 20;
+		const top = border === "3" ? "12%" : "8%";
 		const left_add = is_landscape && 2  || 0;
 		const top_add = border === "3" ? 4 :  3;
 		const grid_top_add = border === "3" ? 8  : 6;
@@ -422,7 +321,6 @@ class Chart {
 					};
 
 					const grid = {
-						//top: top + 40,
 						top: grid_top_add + 20 + "%",
 						left: left_add + 14 +"%",
 						right: "6%",

@@ -1,5 +1,7 @@
-import {Border } from "js/ManageViews/svgBorder.js";
-import {STable} from "js/ManageViews/sTable.js";
+import {View,Border,STable} from "js/ManageViews/view.js";
+import {api} from "api/editTemplate.js";
+import {api as _api} from "api/ManageViews.js";
+
 /**
  * 模板组件
  */
@@ -26,7 +28,7 @@ class TemplateView {
 	   this.cellSize = null ;
 
 	   this.changeStatus = false ;
-	   this.init(64);
+	   this.init();
        this.handle();
 	}
 
@@ -42,7 +44,7 @@ class TemplateView {
 		const htmlStr = this.templateContainer.html();
 		return {
 			htmlStr,
-			box:this.templateBox
+			box:this.templateContainer
 		}
 
 	}
@@ -97,18 +99,102 @@ class TemplateView {
 
 		return this.cellSize ;
 	}
+	
+	
 
+	createView(config){
+		const {id,type,item,box} = config;
+
+		const {addViewData} = this.config;
+
+		const method={
+			table:{
+				getDataUrl:"getTableData",
+				configName:"tabInfo",
+			},
+			chart:{
+				getDataUrl:"getGraphData",
+				configName:"graphInfo",
+			},
+		}
+		const _typeObj = method[type];
+
+		_api[_typeObj.getDataUrl](id).then(res=>{
+
+				if(res.data && res.data.length){
+					const node = res.data ;
+					const obj = res[_typeObj.configName];
+
+					const borderEl = box.find(".bgSvg");
+
+					const viewObj = {
+						$box:box,
+						htmlStr:false,
+						borderType: borderEl.length && borderEl.attr("echo-type") || "0",
+						viewId:id
+					};
+
+					addViewData(obj,type,res,viewObj);
+
+				}else{
+					alert("没数据！");
+				}
+		});
+
+	}
+
+
+	renderTemplateViews(){
+
+		const _self = this ;
+
+		const views = this.templateBox.find(".view-item.view-fill");
+
+		$.map(views,(val,index)=>{
+			(function(item,$val){
+				const viewType = $val.attr("echo-type"),
+					  id =  $val.attr("echo-id");
+
+			  	const type =  ["line","pie","scatter","bar","rader"].includes(viewType) && "chart" || viewType ; 
+				_self.createView({item,box:$val,type,id});
+			})(index,$(val));
+			
+		});
+				
+	}
 
 	init(e){
-		
-		const positionArr =[].concat(...TemplateView.positionArr);
 
-		const strArr = positionArr.map(val=>`<div class="view-item ${val}" echo-size="1,1" echo-point="${val}" style="grid-area:${val}">${val}</div>`);
+		const layout_id = window.parent.menuID;
 
-		this.box.html(`<div class="view-template theme2"  id="viewTemplate" style='grid-template-areas:
+
+		api.showLayoutModel(layout_id).then(res=>{
+
+			let templateStr = "";
+
+			if(res.model){
+
+				templateStr = res.model;
+				this.box.html(templateStr);
+				this.renderTemplateViews();
+
+			}else{
+
+				const positionArr =[].concat(...TemplateView.positionArr);
+				const strArr = positionArr.map(val=>`<div class="view-item ${val}" echo-size="1,1" echo-point="${val}" style="grid-area:${val}"></div>`);
+				
+				templateStr = `<div class="view-template theme2"  id="viewTemplate" style='grid-template-areas:
 		    "t-left t-middle t-right"
 			"m-left m-middle m-right"
-			"b-left b-middle b-right ";'>${strArr.join("")}</div>`);
+			"b-left b-middle b-right ";'>${strArr.join("")}</div>`;
+
+				this.box.html(templateStr);
+			}
+
+				this.viewDrop();
+
+		});
+		
 	}
 
 	showResizeBox($el){
@@ -317,67 +403,6 @@ class TemplateView {
 		});
 	};
 
-	hideCells(lastObj,curObj,par){
-
-		const {lastAreaX, lastAreaY} = lastObj ;
-		const {cur_Xarea, cur_Yarea} = curObj ;
-		
-		cur_Yarea.map(y=>{
-			
-			if(lastAreaY.includes(y)){
-
-				const lastLeg = lastAreaX.length ;
-				const curLeg = cur_Xarea.length ;
-
-				const add_count = curLeg - lastLeg ;
-
-				const otherX =	add_count <= 0 ? [] : lastAreaX[0] === cur_Xarea[0] ? cur_Xarea.slice(lastLeg) : cur_Xarea.slice(0,add_count);
-				
-				otherX.map(x=>{
-					const viewClass = y + "-" + x;
-
-					if(viewClass===par){
-
-					//	return ;
-
-					}
-
-					$("." + viewClass)
-					.addClass("view-hide")
-					.attr({
-						"echo-size":"1,1",
-						"echo-par":par,
-					})
-					.css({
-							"grid-column-end": "span 1",
-							"grid-row-end": "span 1",
-					});
-				});
-				
-			}else{
-
-				cur_Xarea.map(x=>{
-					const viewClass = y + "-" + x;
-
-					if(viewClass===par){
-
-						//return ;
-
-					}
-					$("." + viewClass)
-					.addClass("view-hide")
-					.attr("echo-size","1,1")
-					.css({
-							"grid-column-end": "span 1",
-							"grid-row-end": "span 1",
-					});
-				});
-			}
-			
-		});
-
-		return true ;
-	}
 
 	hideCell(lastObj,curObj,parName,compareEl){
 
@@ -545,38 +570,44 @@ class TemplateView {
 		return true ;
 	}
 
-	toggleCell(Xaxis,Yaxis,status,area){
+	viewDrop(){
+		const $template = $(".view-item");
+		const viewsArr = Array.from($template);
+		const {upModalStatus} =  this.config;
 
-		const cellar = []
-
-		for(let i = 0 , xLeg = Xaxis.length; i< xLeg; i++){
-
-			for(let j = 0, yLeg = Yaxis.length; j< xLeg; j++){
-
+		viewsArr.map((val,index)=>{
+			val.ondragover = function(ev) {
 				
+				ev.stopPropagation();
+				ev.preventDefault();
 
-				const x  = Xaxis[i];
-				const y  = Yaxis[j];
-				const viewClass = y + "-" + x;
-				const cell = $("." + viewClass);
-				
-				if(status === "addClass" && this.judgeCellOver(cell,area)){
-					return false;
+				return true;
+			};
+			val.ondrop = function(ev) {
+
+				ev.stopPropagation();
+				ev.preventDefault();
+
+				const $this = $(this);
+				/**
+				 * [type 只有左边的组件被设置过type,被拖拽放下的时候会被获取到类型，如果如果拖拽时，获取不到类型，说明拖拽的不是左侧的组件]
+				 * @type {[table,line，....]}
+				 */
+				const type = ev.dataTransfer.getData("type");
+				if(!type || $this.hasClass("view-fill")){
+					return ;
 				}
 
-				cell[status]("view-hide")
-				.attr("echo-size","1,1")
-				.css({
-						"grid-column-end": "span 1",
-						"grid-row-end": "span 1",
-					});
-			}
-		}
+				$this.attr({"echo-type":type});
+				$this.addClass("view-active").siblings().removeClass("view-active");
+
+				const size = $this.attr("echo-size").split(",");
+				upModalStatus(type,size,$this);
+			};
+		});
+
 	}
-
 	mergeCell(rotate){
-
-	
 
 		const $activeView = $(".view-active");
 		const resiziEl = this.resiziEl ;
@@ -751,42 +782,10 @@ class TemplateView {
 
 		const _self = this;
 		const $templateBox = _self.templateBox;
-		const { upModalStatus ,getViewData ,delViewData} = _self.config;
+		const { getViewData ,delViewData,setModalSel} = _self.config;
 
 		const $template = $(".view-item");
 		const viewsArr = Array.from($template);
-
-
-		viewsArr.map((val,index)=>{
-			val.ondragover = function(ev) {
-				
-				ev.stopPropagation();
-				ev.preventDefault();
-
-				return true;
-			};
-			val.ondrop = function(ev) {
-
-				ev.stopPropagation();
-				ev.preventDefault();
-
-				const $this = $(this);
-				/**
-				 * [type 只有左边的组件被设置过type,被拖拽放下的时候会被获取到类型，如果如果拖拽时，获取不到类型，说明拖拽的不是左侧的组件]
-				 * @type {[table,line，....]}
-				 */
-				const type = ev.dataTransfer.getData("type");
-				if(!type || $this.hasClass("view-fill")){
-					return ;
-				}
-
-				$this.attr({"echo-type":type});
-				$this.addClass("view-active").siblings().removeClass("view-active");
-
-				const size = $this.attr("echo-size").split(",");
-				upModalStatus(type,size,$this);
-			};
-		});
 
 
 		$templateBox.on("dblclick",".view-item",function(e){
@@ -799,8 +798,6 @@ class TemplateView {
 
 			 _self.showResizeBox($this);
 		});
-
-
 
 		this.resiziEl.on("mousedown",".u-resize-icon",function(e){
 			const $this= $(this);
@@ -837,9 +834,6 @@ class TemplateView {
 			_self.getInitCellSize();
 		});
 		
-		/*$templateBox.on("click",".view-content",function(e){
-				e.stopPropagation();
-		});*/
 
 		$templateBox.on("click",".btn-handle",function(){
 			$(this).toggleClass("active");
@@ -853,7 +847,6 @@ class TemplateView {
 			const par = $this.closest(".view-item");
 			const view = getViewData(par[0]);
 
-			console.log(view);
 			
 			switch(type){
 
@@ -863,10 +856,17 @@ class TemplateView {
 					break;
 				case "set":{
 
-					const {object,viewType} = view ;
+					const {object,borderType} = view ;
 
-					console.log(object);
-					console.log(viewType);
+					const viewType = par.attr("echo-type");
+					const size = par.attr("echo-size").split(",");
+
+					const selObj = {
+						borderType,
+						object,
+					};
+
+					setModalSel(viewType,size,par,selObj);
 
 				}
 				break;
@@ -885,7 +885,6 @@ class TemplateView {
 					break;
 			}
 		});
-
 
 	}
 }

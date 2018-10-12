@@ -7,7 +7,7 @@ import {SCombobox, SModal, Calendar, Tree, SComboTree ,RippleBtn} from "js/commo
  */
 new RippleBtn();
 class ViewSetModal {
-
+	static status = "create";
 	constructor(config) {
 
 		
@@ -18,6 +18,8 @@ class ViewSetModal {
 		this.setMd = $("#setComponentMd");
 		this.modalType = $("#modalType");
 		this.viewStyleBox = $("#viewStyleBox");
+		this.$viewSure = $("#viewSure");
+		this.$componentName=$("#componentName");
 		this.viewType ="";
 		this.wd_arr = null;
 		this.activeViewObje = null ;
@@ -108,6 +110,7 @@ class ViewSetModal {
 			treeConfig: {
 				"clickAndCheck": true,
 				data: orgTree,
+				"childIcon":"sicon sicon-org",
 				idField: "dim_value",
 				textField: "dim_name",
 				childrenField: "sub",
@@ -120,6 +123,7 @@ class ViewSetModal {
 		this.dimWd = new SCombobox($("#dimWd"), {
 			width: 300,
 			"prompt": "请选择主题维度...",
+			"dropIcon":"sicon sicon-kpi",
 			"multiply": false,
 			"idField": "dim_value",
 			textField: "dim_name",
@@ -175,11 +179,14 @@ class ViewSetModal {
 
 	upModalStatus(type,size,$view){
 
+
+
 		this.activeViewObje = {
 			$box:$view,
 			size
 		};
 
+		this.$componentName.val("");
 		const icon = $(`.component-item[echo-type=${type}]`).html();
 		this.modalType.html(icon);
 
@@ -188,8 +195,47 @@ class ViewSetModal {
 	    this.upComboxStatus();
 		this.modal.show(this.setMd);
 		this.zbComponent.sureBtnHandle(this);
+		ViewSetModal.status = "create";
 			
 	}
+
+	setModalSel(type,size,$view,selObj){
+
+		$view.attr({"echo-type":type});
+		$view.addClass("view-active").siblings().removeClass("view-active");
+
+		ViewSetModal.status = "edit";
+
+		this.activeViewObje = {
+			$box:$view,
+			size
+		};
+		const icon = $(`.component-item[echo-type=${type}]`).html();
+		this.modalType.html(icon);
+		this.viewType=type;
+
+		console.log(selObj);
+		const {object,object:{legend,chartName},borderType} = selObj;
+
+		/**
+		 * legend-place：图例位置
+		 * border-style：边框样式
+		 */
+		$(".legend-place").eq(legend - 1).prop("checked",true);
+		$(".border-style").eq(borderType - 1).prop("checked",true);
+		this.$componentName.val(chartName);
+
+
+
+
+	    this.viewStyleBoxTnit(object);
+	    this.upComboxStatus(object);
+		this.modal.show(this.setMd);
+
+		this.zbComponent.sureBtnHandle(this);
+			
+	}
+
 
 	upComboxStatus(){
 
@@ -207,12 +253,12 @@ class ViewSetModal {
 		this.xAxis.clearValue();
 		this.yAxis.clearValue();
 		this.dimWd.clearValue();
-		$("#componentName").val(null);
+		//$("#componentName").val(null);
 	}
 
 	
 
-	viewStyleBoxTnit() {
+	viewStyleBoxTnit(object={}) {
 
 		const methodObj = {
 			table: "tableInit",
@@ -222,21 +268,17 @@ class ViewSetModal {
 			scatter: "scatterInit",
 			rader: "raderInit",
 		}
-		const str = this[methodObj[this.viewType]]();
+		const str = this[methodObj[this.viewType]](object);
 	}
 
-	getChartCommonInit(){
+	getChartCommonInit(threeD){
 
-		const legend = `<div class="sel-item">
-						    <p class="s-title">图例位置:</p>
-						    <div>
-						        <span><input type="radio" class="s-radio legend-place" name="legend-place" checked="checked" value="1"><label>上</label></span>
-						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="2"><label>下</label></span>
-						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="3"><label>左</label></span>
-						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="4"><label>右</label></span>
-						        <span><input type="radio"  class="s-radio legend-place" name="legend-place" value="5"><label>无</label></span>
-						    </div>
-				</div>`;
+		const AxisArr = threeD.split(",");
+
+		const checkedArr = ["",'checked="checked"'];
+
+		const x = checkedArr[+AxisArr[0]];
+		const y = checkedArr[+AxisArr[1]];
 
 
 		const axis = `<div class="sel-item">
@@ -244,47 +286,54 @@ class ViewSetModal {
 
 								<span class="s-title">X轴:</span>
 							   	<span class="s-switch" echo-text="不显示" style="width: 100px">
-									<input type="checkbox" id="Xaixs" checked="checked">
+									<input type="checkbox" id="Xaixs" ${x}>
 									<label for="Xaixs" echo-text="显示"></label>
 								</span>
 							</div>
 							<div class="sel-item">
 								<span class="s-title">Y轴:</span>
 							    <span class="s-switch" echo-text="不显示" style="width: 100px">
-									<input type="checkbox" id="Yaixs" checked="checked">
+									<input type="checkbox" id="Yaixs" ${y}>
 									<label for="aixs" echo-text="显示"></label>
 								</span>
 							</div>
 						</div>`;
 	
 		return {
-			legend,
 			axis,
 		}
 	}
 
-	tableInit() {
+	tableInit(object) {
+
+		const {tab_style = "0" ,isAdded = "0" ,total = "0"} = object ;
+
+
+		const checkArr = ["",""];
+		 checkArr[+tab_style] = 'checked="checked"';
+
 		const htmlStr = `<div class="sel-item">
 				    <p class="s-title">表格样式:</p>
 				    <div>
-				        <span><input type="radio" class="s-radio" name="tab-style" checked="checked" value="0"><label class="m-radio-icon u-tab-lab1"></label></span>
-				        <span><input type="radio"  class="s-radio " name="tab-style" value="1"><label class="m-radio-icon u-tab-lab2"></label></span>
+				        <span><input type="radio" class="s-radio" name="tab-style" ${checkArr[0]} value="0"><label class="m-radio-icon u-tab-lab1"></label></span>
+				        <span><input type="radio" ${checkArr[1]} class="s-radio " name="tab-style" value="1"><label class="m-radio-icon u-tab-lab2"></label></span>
 				    </div>
 				</div>
 				<div class="sel-item">
 				    <p class="s-title">合计:</p>
-					<div class="s-comboBox" id="totalCombo">
-					
-					</div> 
+					<div class="s-comboBox" id="totalCombo"></div>
 				</div>
 				`
 		this.viewStyleBox.html(htmlStr);
+
+		const defaultVal = total === "0" ? [] : total === "3" ? ["1","2"] : [total] ;
 
 		new SCombobox($("#totalCombo"), {
 			width: 240,
 			"prompt": "可多选（非必选）",
 			"multiply": true,
 			validCombo: false,
+			defaultVal:defaultVal,
 			data: [{
 				"text": "列字段",
 				"id": "1"
@@ -295,9 +344,15 @@ class ViewSetModal {
 		});
 
 	}
-	barInit() {
+	barInit(object) {
 
-		const {legend,axis} = this.getChartCommonInit();
+		const {threeD="0,0",stack="0",landscape="0"} = object ;
+
+		const {axis} = this.getChartCommonInit(threeD);
+
+		const landscapeArr = ["",""];
+			landscapeArr[+landscape] = 'checked="checked"';
+
 
 		const htmlStr = `
 						${axis}
@@ -305,25 +360,29 @@ class ViewSetModal {
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
-								        <span><input type="radio" class="s-radio u-radio-sel" name="bar-style" checked="checked" value="0"><label class="m-radio-icon u-bar-lab1"></label></span>
-								        <span><input type="radio"  class="s-radio u-radio-sel" name="bar-style" value="1"><label class="m-radio-icon u-bar-lab2"></label></span>
+								        <span><input type="radio" ${landscapeArr[0]} class="s-radio u-radio-sel" name="bar-style" checked="checked" value="0"><label class="m-radio-icon u-bar-lab1"></label></span>
+								        <span><input type="radio" ${landscapeArr[1]} class="s-radio u-radio-sel" name="bar-style" value="1"><label class="m-radio-icon u-bar-lab2"></label></span>
 								  </div>
 							</div>
 							<div class="sel-item">
 								<span class="s-title">堆叠:</span>
 							    <label class="s-switch-2">
-										<input type="checkbox" class="stack" name="stack">
+										<input type="checkbox" class="stack" name="stack" ${stack==="1" ? 'checked="checked"': ""} >
 										<span class="switch-ball"></span>
 						    	</label>
 							</div>
 						</div>
-						${legend}
 				`
 		this.viewStyleBox.html(htmlStr);
 	}	
-	lineInit() {
+	lineInit(object) {
 
-		const {legend, axis} = this.getChartCommonInit();
+		const {threeD="0,0",landscape="0"} = object ;
+
+		const {axis} = this.getChartCommonInit(threeD);
+
+		const landscapeArr = ["",""];
+			landscapeArr[+landscape] = 'checked="checked"';
 
 		const htmlStr = `
 						${axis}
@@ -331,54 +390,63 @@ class ViewSetModal {
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
-								        <span><input type="radio" class="s-radio u-radio-sel" name="line-style" checked="checked" value="0"><label class="m-radio-icon u-line-lab1"></label></span>
-								        <span><input type="radio"  class="s-radio u-radio-sel" name="line-style" value="1"><label class="m-radio-icon u-line-lab2"></label></span>
+								        <span><input type="radio" ${landscapeArr[0]} class="s-radio u-radio-sel" name="line-style"  value="0"><label class="m-radio-icon u-line-lab1"></label></span>
+								        <span><input type="radio" ${landscapeArr[1]}  class="s-radio u-radio-sel" name="line-style" value="1"><label class="m-radio-icon u-line-lab2"></label></span>
 								  </div>
 							</div>
 						</div>
-						${legend}
 				`
 		this.viewStyleBox.html(htmlStr);
 	}
 
-	pieInit() {
-		const {legend} = this.getChartCommonInit();
+	pieInit(object) {
+
+		
+		const {roseType = "0"} = object ;
+
+		const roseTypeArr = ["","","",""];
+			  roseTypeArr[roseType-1] = 'checked="checked"';
 
 		const htmlStr = `
 						<div class="sel-item">
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
-								        <span><input type="radio" class="s-radio u-radio-sel" name="pie-style" checked="checked" value="1"><label class="m-radio-icon u-pie-lab1"></label></span>
-								        <span><input type="radio"  class="s-radio u-radio-sel" name="pie-style" value="2"><label class="m-radio-icon u-pie-lab2"></label></span>
-								         <span><input type="radio" class="s-radio u-radio-sel" name="pie-style" checked="checked" value="3"><label class="m-radio-icon u-pie-lab3"></label></span>
-								        <span><input type="radio"  class="s-radio u-radio-sel" name="pie-style" value="4"><label class="m-radio-icon u-pie-lab4"></label></span>
+								        <span><input type="radio" ${roseTypeArr[0]} class="s-radio u-radio-sel" name="pie-style"  value="1"><label class="m-radio-icon u-pie-lab1"></label></span>
+								        <span><input type="radio" ${roseTypeArr[1]}  class="s-radio u-radio-sel" name="pie-style" value="2"><label class="m-radio-icon u-pie-lab2"></label></span>
+								         <span><input type="radio" ${roseTypeArr[2]} class="s-radio u-radio-sel" name="pie-style"  value="3"><label class="m-radio-icon u-pie-lab3"></label></span>
+								        <span><input type="radio"  ${roseTypeArr[3]} class="s-radio u-radio-sel" name="pie-style" value="4"><label class="m-radio-icon u-pie-lab4"></label></span>
 								  </div>
 							</div>
 						</div>
-						${legend}
 				`
 		this.viewStyleBox.html(htmlStr);
 	}
-	raderInit() {
-		const {legend} = this.getChartCommonInit();
+	raderInit(object) {
+		const {area = "0"} = object ;
+		const areaArr = ["",""];
+			  areaArr[+area] = 'checked="checked"';
 
 		const htmlStr = `
 						<div class="sel-item">
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
-								        <span><input type="radio" class="s-radio u-radio-sel" name="rader-style" checked="checked" value="0"><label class="m-radio-icon u-rader-lab1"></label></span>
-								        <span><input type="radio"  class="s-radio u-radio-sel" name="rader-style" value="1"><label class="m-radio-icon u-rader-lab2"></label></span>
+								        <span><input type="radio" class="s-radio u-radio-sel" name="rader-style" ${areaArr[0]} value="0"><label class="m-radio-icon u-rader-lab1"></label></span>
+								        <span><input type="radio"  class="s-radio u-radio-sel" ${areaArr[1]} name="rader-style" value="1"><label class="m-radio-icon u-rader-lab2"></label></span>
 								  </div>
 							</div>
 						</div>
-						${legend}
 				`;
 		this.viewStyleBox.html(htmlStr);
 	}
-	scatterInit() {
-		const {legend,axis} = this.getChartCommonInit();
+	scatterInit(object) {
+		const {threeD="0,0",landscape="0"} = object ;
+
+		const landscapeArr = ["",""];
+			landscapeArr[+landscape] = 'checked="checked"';
+
+		const {axis} = this.getChartCommonInit(threeD);
 
 		const htmlStr = `
 						${axis}
@@ -386,12 +454,11 @@ class ViewSetModal {
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
-								        <span><input type="radio" class="s-radio u-radio-sel" name="scatter-style" checked="checked" value="0"><label class="m-radio-icon u-scatter-lab1"></label></span>
-								        <span><input type="radio"  class="s-radio u-radio-sel" name="scatter-style" value="1"><label class="m-radio-icon u-scatter-lab2"></label></span>
+								        <span><input type="radio" class="s-radio u-radio-sel" ${landscapeArr[0]} name="scatter-style"  value="0"><label class="m-radio-icon u-scatter-lab1"></label></span>
+								        <span><input type="radio" ${landscapeArr[1]} class="s-radio u-radio-sel" name="scatter-style" value="1"><label class="m-radio-icon u-scatter-lab2"></label></span>
 								  </div>
 							</div>
 						</div>
-						${legend}
 				`;
 		this.viewStyleBox.html(htmlStr);
 	}
@@ -431,7 +498,7 @@ class ViewSetModal {
 		const row_wd = type==="table" && this.xAxis.getValue().split(",") || this.xAxis.getValue();
 		const col_wd = type==="table" && this.yAxis.getValue().split(",") || this.yAxis.getValue();
 
-		const chartName = $("#componentName").val().trim();
+		const chartName = this.$componentName.val().trim();
 		const orgs = this.orgWd.getValue("all").map(val => {
 			const {dim_value: id, dim_value, dim_name: text } = val; 
 
@@ -746,7 +813,11 @@ class ViewSetModal {
 
 						const htmlStr = border_str + `<div class="view-content"></div>`;
 
-							this.viewDB.add(object,viewType,node,{$box,htmlStr,borderType});
+						const viewId =  $box.attr("echo-id");
+
+						const status = ViewSetModal.status;
+
+							this.viewDB.add(object,viewType,node,{$box,htmlStr,borderType,viewId,status},);
 
 						/*api[methodType.save](object).then(res => {
 
@@ -795,15 +866,15 @@ class ViewSetModal {
 		});
 
 		// 模态框确定按钮操作
-		$("#viewSure").click(function() {
+		self.$viewSure.click(function() {
 
 			const noFill = $setMd.find(".no-fill:visible");
 			if(noFill.length){
-				
 				alert("请填完必填项！");
 				return ;
-
 			}
+
+			const status = $(this).attr("status");
 			self.createView();
 		});
 

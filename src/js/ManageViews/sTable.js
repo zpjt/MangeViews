@@ -61,6 +61,12 @@ class STable {
   		 });
 	}
 
+	getRandom(max = 500) {
+
+		return Math.floor(Math.random() * (max - 100 + 1) + 100);
+
+	}
+
 	renderTableHead(_data){
 
 		const {row_wd,col_wd,total} = this.config;
@@ -136,7 +142,9 @@ class STable {
 			
 			}else{
 
-				total.push(`<td>${val}</td>`)	;	
+				const _val = this.getRandom();
+
+				total.push(`<td>${_val}</td>`)	;	
 			}
 			return total ;
 
@@ -169,7 +177,7 @@ class STable {
 
 			});
 
-			tabBodyArr.push(`<tr><td colspan="${col_wd.length}">合计</td>${totalStr.join("")}</tr>`);	
+			tabBodyArr.push(`<tr class="${tab_style ==="0" ? "foot-bg" : ""}"><td colspan="${col_wd.length}">合计</td>${totalStr.join("")}</tr>`);	
 		
 		}
 		
