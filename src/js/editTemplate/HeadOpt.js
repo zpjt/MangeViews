@@ -1,4 +1,5 @@
 import {api} from "api/editTemplate.js";
+import {Border} from "js/ManageViews/view.js";
 /**
  * 头部组件
  */
@@ -74,7 +75,9 @@ class HeadOpt {
 
 	handle() {
 		const _self = this ;
-		const { modal ,getTemplate} = this.config ;
+		const { modal ,getTemplate,getViewData} = this.config ;
+
+		let count =  0 ;
 	
 		$("#headOpt").on("click", ".head-btn", function() {
 			const type = $(this).attr("sign");
@@ -82,8 +85,10 @@ class HeadOpt {
 				case "filter":
 					break;
 				case "style":
-					modal.show(_self.globalBox, "active");
 
+
+				    count%2	=== 0 ? modal.show(_self.globalBox, "active") : modal.close(_self.globalBox, "active");
+					count ++ ;	
 
 					break;
 				case "pre":
@@ -127,6 +132,42 @@ class HeadOpt {
 					modal.close(_self.globalBox, "active");
 					break;
 			}
+		});
+
+		$("#themeSelBox").on("click",".theme-item",function(){
+
+			const $this = $(this);
+			const theme = $this.attr("echo-theme");	
+			$("#viewTemplate").attr("echo-theme",theme);
+			$("#themeSelBox").find(".active").removeClass("active");
+			$this.addClass("active");
+
+		});
+
+		$("#borderSelBox").on("click",".border-item",function(){
+			const $this = $(this);
+			const borderStyle = $this.attr("echo-border").match(/\d+/g)[0];
+
+			const bgSvgArr = $(".bgSvg");
+
+			$.map(bgSvgArr,function(val){
+
+				const $border = $(val);
+
+				$border.attr("echo-type",borderStyle);
+
+				const viewDom = $border.parent(".view-item")[0];
+
+				const view = getViewData(viewDom);
+
+					  view.borderType = borderStyle;
+
+				const {id,title,object:{chartName}} = view ;
+
+				new Border($border,{id,title:chartName});
+
+			});
+
 		});
 	}
 

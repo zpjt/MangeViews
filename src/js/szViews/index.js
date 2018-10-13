@@ -868,6 +868,8 @@ class Page  {
 			  fatherWin.menuID = layout_id;
 			  fatherWin.menuName =layout_name;
 
+			  console.log(fatherWin.menuID);
+
 		
 		$("#slide",fatherWin.document).animate({"width":0},500,function(){
 			$("#content",window.parent.document).addClass("no-head");

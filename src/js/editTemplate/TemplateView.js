@@ -124,20 +124,22 @@ class TemplateView {
 				if(res.data && res.data.length){
 					const node = res.data ;
 					const obj = res[_typeObj.configName];
-
 					const borderEl = box.find(".bgSvg");
 
 					const viewObj = {
 						$box:box,
 						htmlStr:false,
 						borderType: borderEl.length && borderEl.attr("echo-type") || "0",
-						viewId:id
+						viewId:id,
+						status:"create",
 					};
 
 					addViewData(obj,type,res,viewObj);
 
 				}else{
 					alert("没数据！");
+					box.removeClass("view-fill");
+					box.attr("echo-id","");
 				}
 		});
 
@@ -167,6 +169,8 @@ class TemplateView {
 
 		const layout_id = window.parent.menuID;
 
+		console.log({layout_id});
+
 
 		api.showLayoutModel(layout_id).then(res=>{
 
@@ -181,7 +185,7 @@ class TemplateView {
 			}else{
 
 				const positionArr =[].concat(...TemplateView.positionArr);
-				const strArr = positionArr.map(val=>`<div class="view-item ${val}" echo-size="1,1" echo-point="${val}" style="grid-area:${val}"></div>`);
+				const strArr = positionArr.map(val=>`<div class="view-item ${val}" draggable="true" echo-size="1,1" echo-point="${val}" style="grid-area:${val}"></div>`);
 				
 				templateStr = `<div class="view-template theme2"  id="viewTemplate" style='grid-template-areas:
 		    "t-left t-middle t-right"
@@ -573,7 +577,7 @@ class TemplateView {
 	viewDrop(){
 		const $template = $(".view-item");
 		const viewsArr = Array.from($template);
-		const {upModalStatus} =  this.config;
+		const {upModalStatus,getViewData,delViewData,addViewData} =  this.config;
 
 		viewsArr.map((val,index)=>{
 			val.ondragover = function(ev) {
@@ -594,6 +598,94 @@ class TemplateView {
 				 * @type {[table,line，....]}
 				 */
 				const type = ev.dataTransfer.getData("type");
+				console.log(type);
+
+				if(type.includes("@")){
+
+						const name = type.split("@")[0];
+						const $dragEl = $("."+name);
+
+						if($this.attr("echo-point")===name){
+							return;
+						}
+						const view = getViewData($dragEl[0]);
+						const view_1 = getViewData(this);
+
+						const has_fill = $this.hasClass("view-fill");
+
+						const _viewType = $dragEl.attr("echo-type");
+						const _viewType1 = $this.attr("echo-type");
+
+
+						const size = $this.attr("echo-size").split(",");
+
+						const w = size[0];
+						const y = size[1];
+						
+						const {object,node,viewType,borderType,viewId} = view;
+
+
+						const border = borderType!=="0" && `<div class="bgSvg" echo-w="${w}" echo-y="${y}" echo-type="${borderType}"></div>` || "";
+
+						const htmlStr = border+`<div class="view-content"></div>`;
+
+						$this.attr({"echo-type":_viewType});
+
+						const viewObj = {
+								$box:$this,
+								htmlStr:htmlStr,
+								borderType,
+								viewId,
+								status:"edit"
+						}
+
+						addViewData(object,viewType,node,viewObj);
+
+						if(has_fill){
+
+
+							const size = $dragEl.attr("echo-size").split(",");
+							const w = size[0];
+							const y = size[1];
+						
+							const {object,node,viewType,borderType,viewId} = view_1;
+
+
+							const border = borderType!=="0" && `<div class="bgSvg" echo-w="${w}" echo-y="${y}" echo-type="${borderType}"></div>` || "";
+
+							const htmlStr = border+`<div class="view-content"></div>`;
+
+							$dragEl.attr({"echo-type":_viewType1});
+
+							const viewObj = {
+									$box:$dragEl,
+									htmlStr:htmlStr,
+									borderType,
+									viewId,
+									status:"edit"
+							}
+
+							addViewData(object,viewType,node,viewObj);
+
+						}else{
+
+							delViewData($dragEl[0]);
+							$dragEl.html("").removeClass("view-fill");
+						}
+						
+						
+
+
+						
+
+					
+
+
+						
+					return ;
+				}
+
+
 				if(!type || $this.hasClass("view-fill")){
 					return ;
 				}
@@ -604,6 +696,36 @@ class TemplateView {
 				const size = $this.attr("echo-size").split(",");
 				upModalStatus(type,size,$this);
 			};
+
+
+
+
+			val.onselectstart = function(ev) {
+
+				return false;
+			};
+			val.ondragstart = function(ev) {
+
+				const has_fill = ev.target.classList.contains("view-fill");
+				
+				if(!has_fill){
+					return ;
+				}
+				const type = ev.target.getAttribute("echo-point");
+				const sekin = type +"@";
+
+				ev.dataTransfer.effectAllowed = "move";
+				ev.dataTransfer.setData("type", sekin);
+				ev.dataTransfer.setDragImage(ev.target, 0, 0);
+				return true;
+			};
+			val.ondragend = function(ev) {
+				/*拖拽结束*/
+				ev.dataTransfer.clearData("type");
+				return false
+			};
+
+
 		});
 
 	}
@@ -749,6 +871,7 @@ class TemplateView {
 				$box:newEl,
 				htmlStr,
 				borderType,
+				status:"create",
 			};
 
 			addViewData(object,viewType,node,viewObj);

@@ -475,11 +475,15 @@ class Calendar{
 
 	}
 
-	changeStyle(style){
+	changeStyle(style,value){
 		this.style = style; 
 		this.selTime = this.initSelTime();
 		this.showSelBox.html(this.renderTimeStr().join(""));
 		this.initViewsContent();
+		
+		if(value){
+			this.setTime(value);
+		}
 	}
 
 	

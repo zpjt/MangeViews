@@ -139,6 +139,7 @@ class Menu{
 
 			window.menuID = $this.attr("echo-id");
 			window.menuName = $this.find(".menu-name").html();
+			console.log({menuID});
 
 			const url=$this.attr("data-url").split("/")[2];
 			page.iframe[0].src="./"+url+".html";

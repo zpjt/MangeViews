@@ -1,7 +1,7 @@
 import "css/ManageViews.scss";
 import "css/editTemplate.scss";
 
-import {SModal, SInp } from "js/common/Unit.js";
+import {SModal, SInp,Unit} from "js/common/Unit.js";
 import {View } from "js/ManageViews/view.js";
 import {TemplateView} from "./TemplateView.js";
 import {HeadOpt} from "./HeadOpt.js";
@@ -89,6 +89,8 @@ class Page{
 		const modal = this.modal ;
 		const viewDB = this.viewDB ;
 
+		$("#viewTitle").html(`<span>${window.parent.menuName}</span>`);
+
 
 		this.viewSetModal = new ViewSetModal({
 			modal,
@@ -121,7 +123,10 @@ class Page{
 		    	viewDB,
 		    	getTemplate:()=>{
 		    		return this.templateView.getTemplate();
-		    	}
+		    	},
+		    	getViewData:(dom)=>{
+					return this.viewDB.get(dom);
+	   			},
 		    }); 
 	    this.handle();
 	}
@@ -130,11 +135,9 @@ class Page{
 	handle(){
 
 		const _self = this ;
-
 		const {resiziEl} = _self.templateView ;
 		$("#app").on("click",function(){
 			resiziEl.hide();
-	//		$(".view-active").removeClass("view-active");
 		});
 
 	}

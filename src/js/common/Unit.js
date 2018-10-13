@@ -523,7 +523,8 @@ class SCombobox {
 
     renderInpBox(){
 
-    	const {textarea , multiply ,prompt,slideIcon,selValue} = this.config;
+    	const {textarea , multiply ,prompt,slideIcon} = this.config;
+    	const selValue = this.selValue;
 
     	const value = Array.isArray(selValue) ? selValue.join(","): selValue;
 
@@ -768,11 +769,13 @@ class Tree{
 		
 	}
 
-	changeType(checkbox){
+	changeType(checkbox,value){
 		this.config.checkbox = checkbox;
 		this.box.unbind();
 		this.init();
 		this.handle();
+
+
 	}
 
 	seachTree(key){
@@ -1072,10 +1075,14 @@ class Tree{
 	}
 	setValue(ids,$el=this.box){
 
-		$el.find(".tree-inp").prop("checked",false).removeClass("has-chec");
-		ids.map(val=>{
-			$el.find(`.child-checkinp[value=${val}]`).click();
-		});
+		if(this.config.checkbox){
+			$el.find(".tree-inp").prop("checked",false).removeClass("has-chec");
+			ids.map(val=>{
+				$el.find(`.child-checkinp[value=${val}]`).click();
+			});
+		}else{
+			this.setSingleValue(ids);
+		}
 	}
 
 	setSingleValue(id,$el=this.box){
@@ -1187,7 +1194,7 @@ class SComboTree {
 	setValue(values,$el = this.box){
 		
 	  this.tree.setValue(values);
-	  this.updateInpBox($el,values);
+	//  this.updateInpBox($el.find(".combo-drop"),values);
 
 	}
 
@@ -1266,11 +1273,15 @@ class SComboTree {
 		this.tree = new Tree(treeBox,treeConfig);
 	}
 
-	changeType(checkbox,$el=this.box){
+	changeType(checkbox,value=null,$el=this.box){
 
 		this.tree.changeType(checkbox);
 		$el.find(".combo-inp").html(this.renderInpBox(checkbox));
 		this.config.validCombo && $el.children(".combo-inp").addClass("no-fill");
+
+		if(value){
+			this.setValue(value);
+		}
 	
 	}
 

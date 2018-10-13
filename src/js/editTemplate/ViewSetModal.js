@@ -20,8 +20,11 @@ class ViewSetModal {
 		this.viewStyleBox = $("#viewStyleBox");
 		this.$viewSure = $("#viewSure");
 		this.$componentName=$("#componentName");
+		this.$legendBox=$("#g-legendBox");
+
 		this.viewType ="";
 		this.wd_arr = null;
+		this.commonSel = null ;
 		this.activeViewObje = null ;
 		this.getTreeData();
 		this.handle();
@@ -150,14 +153,13 @@ class ViewSetModal {
 	changeComboSel(id,status){
 
 		const wd_id = this.viewType === "table" ? "4" : "3" ;
-
+		
 		switch (id) {
 				case "1": // 日历
 					const style = status && 2 || 1;
 					this.calendar.changeStyle(style);
 					break;
 				case "2": //科室
-
 					this.orgWd.changeType(status);
 					break;
 				case wd_id: // 维度值
@@ -178,8 +180,6 @@ class ViewSetModal {
 	}
 
 	upModalStatus(type,size,$view){
-
-
 
 		this.activeViewObje = {
 			$box:$view,
@@ -214,7 +214,6 @@ class ViewSetModal {
 		this.modalType.html(icon);
 		this.viewType=type;
 
-		console.log(selObj);
 		const {object,object:{legend,chartName},borderType} = selObj;
 
 		/**
@@ -224,15 +223,12 @@ class ViewSetModal {
 		$(".legend-place").eq(legend - 1).prop("checked",true);
 		$(".border-style").eq(borderType - 1).prop("checked",true);
 		this.$componentName.val(chartName);
-
-
-
-
 	    this.viewStyleBoxTnit(object);
 	    this.upComboxStatus(object);
 		this.modal.show(this.setMd);
 
-		this.zbComponent.sureBtnHandle(this);
+
+		this.zbComponent.sureBtnHandle(this,object,type);
 			
 	}
 
@@ -244,16 +240,14 @@ class ViewSetModal {
 		const xAxisBox = this.xAxis.box.parent() ;
 
 		this.viewType ==="pie" && xAxisBox.hide() || xAxisBox.show();
-
-		
-
 		this.xAxis.config.multiply = status;
 		this.yAxis.config.multiply = status;
 		this.dimWd.config.multiply = false;
 		this.xAxis.clearValue();
 		this.yAxis.clearValue();
 		this.dimWd.clearValue();
-		//$("#componentName").val(null);
+		this.orgWd.changeType(false);
+		this.calendar.changeStyle(1);
 	}
 
 	
@@ -272,6 +266,8 @@ class ViewSetModal {
 	}
 
 	getChartCommonInit(threeD){
+
+		this.$legendBox.show();
 
 		const AxisArr = threeD.split(",");
 
@@ -305,6 +301,8 @@ class ViewSetModal {
 	}
 
 	tableInit(object) {
+
+		this.$legendBox.hide();
 
 		const {tab_style = "0" ,isAdded = "0" ,total = "0"} = object ;
 
@@ -401,7 +399,7 @@ class ViewSetModal {
 
 	pieInit(object) {
 
-		
+		this.$legendBox.show();
 		const {roseType = "0"} = object ;
 
 		const roseTypeArr = ["","","",""];
@@ -423,6 +421,8 @@ class ViewSetModal {
 		this.viewStyleBox.html(htmlStr);
 	}
 	raderInit(object) {
+
+		this.$legendBox.show();
 		const {area = "0"} = object ;
 		const areaArr = ["",""];
 			  areaArr[+area] = 'checked="checked"';
@@ -711,6 +711,9 @@ class ViewSetModal {
 
 	    const style = $(".u-radio-sel:checked").val();
 
+
+    	const dimId = this.zbComponent.publicDimArr[0]!=="dim_2";
+
 	    const common = this.getCommonValue("chart",dimId);
 
 
@@ -761,7 +764,7 @@ class ViewSetModal {
 		};
 
 
-	 	const dimId = this.zbComponent.publicDimArr[0]!=="dim_2";
+	 
 
 		return Object.assign(common,flagObj,{
 			  chartType,
@@ -812,30 +815,10 @@ class ViewSetModal {
 						const border_str = borderType  === "0" ?"" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${borderType}"></div>`;
 
 						const htmlStr = border_str + `<div class="view-content"></div>`;
-
 						const viewId =  $box.attr("echo-id");
-
 						const status = ViewSetModal.status;
 
 							this.viewDB.add(object,viewType,node,{$box,htmlStr,borderType,viewId,status},);
-
-						/*api[methodType.save](object).then(res => {
-
-							const $box = $(".view-active");
-							const id = res.id,
-								type = viewType,
-								status = "2",
-								viewTitle = object.chartName,
-								index = 1;
-
-							page.table = new View($box, {
-								id,
-								type,
-								index,
-								viewTitle
-							}, node, status);
-
-						});*/
 
 					} else {
 						
