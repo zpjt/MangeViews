@@ -105,7 +105,7 @@ class TemplateView {
 	createView(config){
 		const {id,type,item,box} = config;
 
-		const {addViewData} = this.config;
+		const {addViewData,unit} = this.config;
 
 		const method={
 			table:{
@@ -137,7 +137,7 @@ class TemplateView {
 					addViewData(obj,type,res,viewObj);
 
 				}else{
-					alert("没数据！");
+					unit.tipToast("没数据！",3);
 					box.removeClass("view-fill");
 					box.attr("echo-id","");
 				}
@@ -187,7 +187,7 @@ class TemplateView {
 				const positionArr =[].concat(...TemplateView.positionArr);
 				const strArr = positionArr.map(val=>`<div class="view-item ${val}" draggable="true" echo-size="1,1" echo-point="${val}" style="grid-area:${val}"></div>`);
 				
-				templateStr = `<div class="view-template theme2"  id="viewTemplate" style='grid-template-areas:
+				templateStr = `<div class="view-template "  echo-theme="theme4" id="viewTemplate" style='grid-template-areas:
 		    "t-left t-middle t-right"
 			"m-left m-middle m-right"
 			"b-left b-middle b-right ";'>${strArr.join("")}</div>`;
@@ -317,7 +317,7 @@ class TemplateView {
 		const result = this.mergeCell({roateX,roateY});
 
 		if(!result){
-			alert("合并失败");
+			this.config.unit.tipToast("合并失败,请不要包含组件，以及与其他组件重叠！",0);
 			this.resiziEl.hide();
 		}
 	}

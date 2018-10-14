@@ -4,6 +4,20 @@ $headH:50px;
 		width: 100%;
 		height: 100%;
 	}
+	.backManage{
+		position: absolute;
+		left:30px;
+		top:30px;
+		color:#83c1f0;
+		font-size:40px;
+		transition:transform .3s ease-out ,opacity .3s ease-in;
+		cursor: pointer;
+		opacity:.6;
+		&:hover{
+			transform: scale(1.3) ;
+			opacity:1;
+		}
+	}
 }
 .manage-views{
 	height:100%;
@@ -91,7 +105,10 @@ $headH:50px;
 						}
 					}
 					.chart{
-						width:95%;
+						//width:95%;
+						width:100%;
+						padding:0 10px;
+						box-sizing:border-box;
 						height:90%;
 						margin:auto;
 					    transform: translateY(5%);

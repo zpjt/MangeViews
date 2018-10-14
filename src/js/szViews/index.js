@@ -378,7 +378,7 @@ class AddModal{
 		.then(res=>{
 
 			if(res === "重名"){
-				UnitOption.tipToast("重名，换一个名称！");
+				UnitOption.tipToast("重名，换一个名称！",2);
 				return ;
 			}
 
@@ -389,9 +389,9 @@ class AddModal{
 				 page.styleBoxrender(menuIndexArr,style);
 				 page.modal.close($addMView);
 
-				UnitOption.tipToast("新增成功！");
+				UnitOption.tipToast("新增成功！",1);
 			}else{
-				UnitOption.tipToast("新增失败！");
+				UnitOption.tipToast("新增失败！",0);
 			}
 
 		}).catch(error=>{
@@ -437,7 +437,7 @@ class AddModal{
 					 }
 				});
 			}else{
-				UnitOption.tipToast("获取用户失败！");
+				UnitOption.tipToast("获取用户失败！",0);
 			}
 
     	});
@@ -480,16 +480,16 @@ class AddModal{
 										}) ;
 										page.styleBoxrender(menuIndexArr,style);
 								 		page.modal.close($addMView);
-										UnitOption.tipToast("视图复制成功！","1");
+										UnitOption.tipToast("视图复制成功！",1);
 
 									}else{
-										UnitOption.tipToast("视图复制失败！","0");
+										UnitOption.tipToast("视图复制失败！",0);
 									}
 
 							})
 						}else{
 
-							UnitOption.tipToast("该视图名称已经存在！","2");
+							UnitOption.tipToast("该视图名称已经存在！",2);
 						}
 						
 					});
@@ -503,9 +503,9 @@ class AddModal{
 									}) ;
 									 page.styleBoxrender(menuIndexArr,style);
 									 page.modal.close($addMView);
-									 UnitOption.tipToast("重命名成功！");
+									 UnitOption.tipToast("重命名成功！",1);
 							}else{
-								UnitOption.tipToast("重名，换个名称！");
+								UnitOption.tipToast("重名，换个名称！",2);
 							}
 
 						}).catch(res=>{
@@ -560,13 +560,13 @@ class AddModal{
 
 
 			if(!user){
-				UnitOption.tipToast("请选择可见用户！","2");
+				UnitOption.tipToast("请选择可见用户！",2);
 				return ;
 			}
 			
 			api.ReleaseLayout({id,user,starttime,endtime,release}).then(res=>{
 				if(res){
-					UnitOption.tipToast("发布成功！","1");
+					UnitOption.tipToast("设置成功！",1);
 				
 					const menuIndexArr = $tabCard.data("menuArr").map(val=>{
 							  return  val.index ;
@@ -574,7 +574,7 @@ class AddModal{
 					page.styleBoxrender(menuIndexArr);
 					page.modal.close($issueMView);
 				}else{
-					UnitOption.tipToast("发布失败！","0");
+					UnitOption.tipToast("设置失败！",0);
 				}
 			});
 		});
@@ -679,7 +679,7 @@ class IconBox{
 							`
 				$el.html(str);
 			}else{
-				UnitOption.tipToast("图标获取失败！","0");
+				UnitOption.tipToast("图标获取失败！",0);
 		
 			}
 
@@ -717,9 +717,9 @@ class IconBox{
 							const style =$(".style-sel").index() ? "catalogue" :"tab";
 
 							page.styleBoxrender(menuIndexArr,style);
-							UnitOption.tipToast("图标更新成功！","1");
+							UnitOption.tipToast("图标更新成功！",1);
 						}else{
-							UnitOption.tipToast("图标更新失败！","0");
+							UnitOption.tipToast("图标更新失败！",0);
 						} 
 					
 						
@@ -834,7 +834,7 @@ class Page  {
 			
 			}else {
 
-				UnitOption.tipToast("视图获取失败！","0");
+				UnitOption.tipToast("视图获取失败！",0);
 
 			}
 				
@@ -968,7 +968,7 @@ class Page  {
 				    const fatherWin = window.parent ;
 				
 					$("#content",fatherWin.document).addClass("no-head");
-					window.location.href="./ManageViews.html?layout_id="+layout_id;
+					window.location.href="./ManageViews.html?pre="+layout_id;
 					
 					fatherWin.menuID = layout_id;
 					fatherWin.menuName =layout_name;

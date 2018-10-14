@@ -17,7 +17,7 @@ class ZbComponent {
 
 	constructor(config) {
 
-		const {kpiTree, dimTree, modal ,getViewModal} = config;
+		const {kpiTree, dimTree, modal ,getViewModal,unit} = config;
 
 		this.kpiTree = kpiTree;
 		this.dimTree = dimTree;
@@ -208,7 +208,7 @@ class ZbComponent {
 
 			} else {
 
-				alert("没有数据");
+				this.unit.tipToast("获取数据出错！",0);
 
 			}
 

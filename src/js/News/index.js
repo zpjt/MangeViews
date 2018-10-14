@@ -113,10 +113,10 @@ class Table extends EasyUITab{
     	api.upAlarmSendStatus(ids).then(res=>{
 
 				if(res){
-					page.unit.tipToast("标记成功！","1");
+					page.unit.tipToast("标记成功！",1);
 					page.getData();
 				}else{
-					page.unit.tipToast("标记失败！",'0');
+					page.unit.tipToast("标记失败！",0);
 				}
 		})	
     }
@@ -243,7 +243,7 @@ class Page{
 		api.getAllKpiAlarm().then(res=>{
 
 			if(!res){
-				page.unit.tipToast("获取预警指标失败！");
+				page.unit.tipToast("获取预警指标失败！",0);
 			}else{
 				this.tabData = res;
 				this.table.loadTab(res);
@@ -279,7 +279,7 @@ class Page{
 		});
 
 		$("#delBtn").click(function(){
-			const ids =$.map($tableBox.find(".checkSingle"),val=>{
+			const ids =$.map($tableBox.find(".checkSingle:checked"),val=>{
 
 				return {id:val.value};
 			});
@@ -291,10 +291,10 @@ class Page{
 
 			api.deleteAlarmHestory(ids).then(res=>{
 				if(res){
-					page.unit.tipToast("删去成功！");
+					page.unit.tipToast("删去成功！",1);
 					page.getData();
 				}else{
-					page.unit.tipToast('删去失败！')
+					page.unit.tipToast('删去失败！',0);
 				}
 			})
 

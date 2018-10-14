@@ -84,10 +84,12 @@ class Page{
 		// 模态框
 		this.modal = new SModal();
 		this.inp = new SInp();
+		this.unit = new Unit();
 		this.viewDB = new DataDB();
 
 		const modal = this.modal ;
 		const viewDB = this.viewDB ;
+		const unit = this.unit ;
 
 		$("#viewTitle").html(`<span>${window.parent.menuName}</span>`);
 
@@ -95,6 +97,7 @@ class Page{
 		this.viewSetModal = new ViewSetModal({
 			modal,
 		    viewDB,
+		    unit,
 		});
 
 		this.viewComponet = new ViewComponet();
@@ -117,10 +120,12 @@ class Page{
 	   		setModalSel:(type,size,$view,object)=>{
 				this.viewSetModal.setModalSel(type,size,$view,object);
 	   		},
+	   		unit
 	    });
 	 		new HeadOpt({
 		    	modal,
 		    	viewDB,
+		    	unit,
 		    	getTemplate:()=>{
 		    		return this.templateView.getTemplate();
 		    	},

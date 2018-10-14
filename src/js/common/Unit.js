@@ -51,15 +51,18 @@ class Unit {
 		return result ;
 
 	}
-	tipToast(txt,status=true){
+	tipToast(txt,status=1){
 
-		const icon = ``;
+		const iconArr = ["sicon-error","sicon-detail","sicon-warn"];
+		const iconArrTxt = ["错误提示","成功提示","警告提示"];
+
 
 		const itemStr = `<div class="tip-item tip1">
 							<p class="tip-close">
+								<span><i class="sicon ${iconArr[+status]}"></i>&nbsp;${iconArrTxt[+status]}</span>
 								<span class="j-close"><i class="fa fa-times"></i></span>
 							</p>
-							<p class="tip-txt"><i class="fa fa-warning"></i><span>${txt}</span></p>
+							<p class="tip-txt"><span>${txt}</span></p>
 							<div class="tip-progress"></div>
 						</div>`;
 	  this.$tipBox.append(itemStr);
@@ -68,7 +71,7 @@ class Unit {
 
 	  setTimeout(function(){
 		$tip.remove();
-	  },2000);
+	  },6000);
 	}
 
 	

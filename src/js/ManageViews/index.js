@@ -25,12 +25,16 @@ class App{
 
 
 	init(){
+		this.getPre();
+
 		this.renderModal();
+
+		
 	}
 
-	getLayoutId(){
+	getPre(){
 		
-		return window.location.search.split("=")[1];
+		 !window.location.search.includes("pre") && $("#back").remove();
 
 
 	}
@@ -71,11 +75,11 @@ class App{
 				
 				if(res.model){
 
-
-
 					$container.html(res.model);
 					const url = $("#viewTemplate").css("backgroundImage");
 					$maxWindow.css("backgroundImage",url);
+
+					$(".view-item").removeAttr("draggable");
 					const views = $("#viewTemplate").find(".view-item.view-fill");
 					$.map(views,(val,index)=>{
 						(function(item,$val){
@@ -88,7 +92,9 @@ class App{
 						
 					});
 				}else{
+
 					alert("kong");
+				
 				}
 		});
 	}
@@ -98,20 +104,26 @@ class App{
 		const {borderType,option,index,viewTitle,viewType,id} = config;
 		const poitionClass = borderType == "2" ? "border3-opt" : "";	
 
+		//<span class="fa fa-filter view-btn" sign="filter" title="筛选"></span>
+		//<span class="fa fa-refresh view-btn" sign="refresh" title="刷新"></span>
+		
+
+		const borderStr = borderType === "0" ? "" : ` <div class="bgSvg" echo-w="3" echo-y="3" echo-type="${borderType}"></div>` ;
+
 		const templateStr=`
 							<div class="view-item" echo-id="max" style="width:100%;height:100%;">
-						        <div class="bgSvg" echo-w="3" echo-y="3" echo-type="${borderType}"></div>
+						       ${borderStr}
 						        <div class="view-content" >
 						        	<div class="view-optBox ${poitionClass}" >
 						        		<div class="btn-handle">
 											<span class="fa fa-bars" ></span>
 										</div>
 						        		<div class="view-btns" echo-id="${id}" echo-index="${index}">
-											<span class="fa fa-refresh view-btn" sign="refresh" title="刷新"></span>
+											
 											<span class="fa fa-compress view-btn" sign="compress" title="最小化"></span>
 											<span class="fa fa-file-excel-o view-btn" sign="excel" title="导出excel"></span>
 											<span class="fa fa-file-image-o view-btn" sign="image" title="导出图片"></span>
-											<span class="fa fa-filter view-btn" sign="filter" title="筛选"></span>
+											
 										</div>
 						        	</div>
 						            <div class="chart"></div>
@@ -130,7 +142,7 @@ class App{
 			let myChart= echarts.init(chartDom[0]); 
 			    myChart.setOption(option);
 		}
-		if(borderType){
+		if(borderType !== "0"){
 			 new  Border($maxWindow.find(".bgSvg"),{id:"max",title:viewTitle});
 		}	
 	}
@@ -272,7 +284,19 @@ class App{
 
 	}
 	handle(){
+			$("#back").click(function(){
+				
+				const $slide = $("#slide", window.parent.document);
+				const $head = $("#content", window.parent.document);
+				const width = $slide.hasClass("collapsed") && 45 || 250;
+				$slide.animate({
+					"width": width
+				}, 500, function() {
+					window.history.back();
+					$head.removeClass("no-head");
+				});
 
+			});
 			$app.on("click",".btn-handle",function(){
 				$(this).toggleClass("active");
 			});

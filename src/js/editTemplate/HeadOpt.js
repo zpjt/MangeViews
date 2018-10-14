@@ -18,7 +18,7 @@ class HeadOpt {
 
 	async saveAllView(formData){
 
-		const { viewDB:{viewDB} , getTemplate} = this.config ; 
+		const { viewDB:{viewDB} , getTemplate,unit} = this.config ; 
 
 		const methodObj = {
 			table:"saveTableInfo",
@@ -34,7 +34,7 @@ class HeadOpt {
 
 			return !viewId ? api[methodObj[viewType]](object).then(res=>{
 					const {state ,id } = res ;
-					state && $(key).attr("echo-id",id) || alert(object.chartName+"保存失败！");
+					state && $(key).attr("echo-id",id) || unit.tipToast(object.chartName+"保存失败,请稍后重新再保存！",0);
 					 val.viewId = id;
 					return state ;
 			}) : true;
@@ -58,7 +58,7 @@ class HeadOpt {
 
 			await api.saveLayout(formData).then(res=>{
 
-					console.log(res);
+					res ? unit.tipToast("视图保存成功！",1) : unit.tipToast("保存失败,请稍后重新再保存！",0); ;
 
 					box.html(null);
 			});

@@ -207,9 +207,9 @@ class MessageTab extends EasyUITab{
 				api[method](rowData).then(res=>{
 					if(res){
 						method === "addAlarmModel" && page.addModal.getAllAlarmModel();
-						page.unit.tipToast("短信添加成功！");
+						page.unit.tipToast("短信添加成功！",1);
 					}else{
-						page.unit.tipToast("短信添加失败！");
+						page.unit.tipToast("短信添加失败！",0);
 					}
 				});	
 		    },
@@ -403,7 +403,7 @@ class AddModal{
 				$addMBtn.removeAttr("disabled");
 
 			}else{
-				page.unit.tipToast("指标分类失败！");
+				page.unit.tipToast("指标分类失败！",0);
 			}
 		})
 	}
@@ -439,7 +439,7 @@ class AddModal{
 				}
 
 			}else{
-				page.unit.tipToast("短信模板获取失败！");
+				page.unit.tipToast("短信模板获取失败！",0);
 			}
 		});
 	}
@@ -470,7 +470,7 @@ class AddModal{
 				});
 				
 			}else{
-				page.unit.tipToast("指标获取失败！");
+				page.unit.tipToast("指标获取失败！",0);
 			}
 		});
 
@@ -490,7 +490,7 @@ class AddModal{
 				});
 				
 			}else{
-				page.unit.tipToast("科室获取失败！");
+				page.unit.tipToast("科室获取失败！",0);
 			}
 		});
 
@@ -500,7 +500,7 @@ class AddModal{
 				
 				
 			}else{
-				page.unit.tipToast("主题维度获取失败！");
+				page.unit.tipToast("主题维度获取失败！",0);
 			}
 		});
 
@@ -521,7 +521,7 @@ class AddModal{
 				
 			}else{
 				
-					page.unit.tipToast("用户树获取失败！");
+					page.unit.tipToast("用户树获取失败！",0);
 
 			}
 		});
@@ -608,7 +608,7 @@ class AddModal{
 		$addMBtn.click(function(){
 			if($addModal.find('.no-fill').length){
 
-				page.unit.tipToast("请填写完整！");
+				page.unit.tipToast("请填写完整！",2);
 				return ;
 					
 			}
@@ -620,10 +620,10 @@ class AddModal{
 
 				const status = obj.id && "修改" || "添加";
 				
-					page.unit.tipToast(status+"预警指标成功！");
+					page.unit.tipToast(status+"预警指标成功！",1);
 		  	}else{
 				
-					page.unit.tipToast(status+"预警指标失败！");
+					page.unit.tipToast(status+"预警指标失败！",0);
 		  	}
 		  })
 		});
@@ -679,10 +679,10 @@ class AddModal{
 					if(!ids.length){ return };
 					api.deleteAlarmModel(ids).then(res=>{
 											if(res){
-												page.unit.tipToast("删去成功！");
+												page.unit.tipToast("删去成功！",1);
 												_self.getAllAlarmModel();
 											}else{
-												page.unit.tipToast("删去失败！");
+												page.unit.tipToast("删去失败！",0);
 											}
 										});
 				}
@@ -743,7 +743,7 @@ class Page{
 		api.getAllKpiAlarm().then(res=>{
 
 			if(!res){
-				page.unit.tipToast("获取预警指标失败！");
+				page.unit.tipToast("获取预警指标失败！",0);
 			}else{
 				this.table.loadTab(res);
 			}
@@ -772,10 +772,10 @@ class Page{
 
 			api.deleteAlarm(ids).then(res=>{
 				if(res){
-					page.unit.tipToast("删除预警指标成功！");
+					page.unit.tipToast("删除预警指标成功！",1);
 					_self.getData();
 				}else{
-					page.unit.tipToast("删除预警指标失败！");
+					page.unit.tipToast("删除预警指标失败！",0);
 				}
 			});
 

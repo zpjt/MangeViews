@@ -144,7 +144,6 @@ class Menu{
 			const url=$this.attr("data-url").split("/")[2];
 			page.iframe[0].src="./"+url+".html";
 			
-			
 			/*const url=$(this).attr("data-url");
 			 page.iframe[0].src=url;*/
 

@@ -11,6 +11,7 @@
 </head>
 
 <body>
+
     <div id="app">
         <header>
             <div id="headOpt" class="header">
@@ -20,7 +21,7 @@
                     <span echo-text="全局样式" sign="style" class="head-btn"><i class="fa fa-th-large"></span></i>
                 </div>
                 <div class="opt-box">
-                    <span echo-text="预览" sign="pre" class="head-btn"><i class="sicon sicon-pre"></i></span>
+                  <!--   <span echo-text="预览" sign="pre" class="head-btn"><i class="sicon sicon-pre"></i></span> -->
                     <span echo-text="保存" sign="save" class="head-btn"><i class="sicon sicon-save"></i></span>
                    <!--  <span echo-text="另存为" sign="save-as" class="head-btn"><i class="sicon sicon-save-as"></i></span>
                    <span echo-text="导出" sign="export" class="head-btn" id="testObject"><i class="sicon sicon-export"></i></span> -->
@@ -198,7 +199,7 @@
                                     <p class="cate-title">指标选择</p>
                                     <div id="zbTree"></div>
                                     <div id="zbOpt" class="zb-opt">
-                                        <button class="s-btn ">确定</button>
+                                        <button class="s-btn s-bevell">确定</button>
                                         <button class="s-btn  ">取消</button>
                                     </div>
                                 </div>
@@ -286,7 +287,7 @@
                 </div>
             </div>
             <div class="m-foot">
-                <button class="s-btn sure-btn s-moema" id="viewSure">预 览</button>
+                <button class="s-btn sure-btn" id="viewSure">预 览</button>
                 <span>&nbsp;&nbsp;&nbsp;</span>
                 <button class="s-btn s-dashBtn m-close">关 闭</button>
             </div>
@@ -304,7 +305,10 @@
         </defs>
     </svg>
     <div id="g-templateDom" style="display: none"></div>
+    <div class="g-tip-toast" id="tipToast"></div>
     <div class="s-md-overlay"></div>
+
+    
     <script src="assert/js/jquery.min.js"></script>
     <script src="assert/js/echarts.min.js"></script>
     <script type="text/javascript">

@@ -17,9 +17,10 @@ import {Unit, SModal, SComboTree ,SInp ,Search} from "js/common/Unit.js";
 
 class Table extends EasyUITab{
 
-	constructor(){
+	constructor(unit){
        super();
        this.setPageHeight($tableBox,140);
+       this.unit = unit ;
        this.handle();
     }
 
@@ -127,7 +128,9 @@ class Table extends EasyUITab{
 
 class RestModal{
 
-	constructor(){
+	constructor(unit,modal){
+		 this.unit = unit ;
+		 this.modal = modal ;
 		this.init();
 		this.handle();
 	}
@@ -166,7 +169,8 @@ class RestModal{
 				});
 				
 			}else{
-				alert("出错！")
+
+				this.unit.tipToast("获取目录出错！",0);
 			}
 		})
 		
@@ -175,6 +179,8 @@ class RestModal{
 	handle(){
 
 		const _self = this ;
+		const unit = this.unit;
+		const modal = this.modla;
 		
 		$("#addMBtn").click(function(){
 			
@@ -182,8 +188,7 @@ class RestModal{
 				  name = $("#name").val();
 
 			if(!name || !par_id){
-				
-				alert("清填写完整！");
+				unit.tipToast("请填写完整！",2);
 				return ;
 			}
 		    api.checkName({par_id,name}).then(res=>{
@@ -193,14 +198,18 @@ class RestModal{
 				api.RecycleLayout({id,par_id}).then(res=>{
 					
 					if(res){
+						unit.tipToast("还原成功！",1);
 						page.getData();
+
+						modal.hide($restModal);
+
 					}else{
-						alert("还原失败！");
+						unit.tipToast("还原失败！",0);
 					}
 				});
 
 		   	  }else{
-		   	  	alert("重名！")
+		   	  	unit.tipToast("此目录下已经存在该名称！",2);
 		   	  }
 		   })
 
@@ -215,17 +224,19 @@ class Page{
 	state = "layout" ;
 
 	constructor(){
-		
+		this.unit = new Unit();
 		this.handle();
 		this.init();
 
 	}
 
 	init(){
-		this.table = new Table();
-		this.unit = new Unit();
+
+		const unit = this.unit;
+		this.table = new Table(unit);
+		
 		this.modal = new SModal();
-		this.restModal = new RestModal();
+		this.restModal = new RestModal(unit);
 		this.inp = new SInp();
 		this.search = new Search($("#u-search"));
 		this.getData();
@@ -237,7 +248,7 @@ class Page{
 		api[method]().then(res=>{
 
 			if(!res){
-				alert("出错！")
+				this.unit.tipToast("出错！",0);
 			}else{
 				this.table.loadTab(res,this.state);
 			}
@@ -251,9 +262,10 @@ class Page{
 
 		api[method](obj).then(res=>{
 			if(!res){
-				alert("删除失败！");
+				this.unit.tipToast("删除失败！",0);
 			}else{
-				alert("删除成功！");
+				this.unit.tipToast("删除成功！",1);
+				this.getData();
 			}
 		});
 	}
@@ -277,9 +289,13 @@ class Page{
 		//批量删去
 		$("#delBtn").click(function(){
 
-			const ids =$.map($tableBox.find(".checkSingle"),function(val){
+			const ids =$.map($tableBox.find(".checkSingle:checked"),function(val){
 					return +val.value;
 			}) ;
+
+			if(!ids.length){
+				return ;
+			}
 
 			_self.del({ids});
 

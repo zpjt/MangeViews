@@ -10,6 +10,9 @@
 	box-sizing:border-box;
 	
 }
+#j-login{
+	cursor: pointer;
+}
 .g-content{
 	position: relative;
 	width:40%;
@@ -180,6 +183,9 @@
 	    	font-size:12px;
 	    	line-height:22px;
 	    	color: #57585c;
+	    	a{
+	    		color: #57585c;
+	    	}
 	    }
     }
 }

@@ -12,9 +12,10 @@ class ViewSetModal {
 
 		
 
-		const { modal ,viewDB } = config ;
+		const { modal ,viewDB ,unit} = config ;
 		this.modal = modal ;
 		this.viewDB = viewDB;
+		this.unit = unit;
 		this.setMd = $("#setComponentMd");
 		this.modalType = $("#modalType");
 		this.viewStyleBox = $("#viewStyleBox");
@@ -37,12 +38,14 @@ class ViewSetModal {
 		const kpiTree = this.kpiTree,
 			  modal = self.modal,
 			  viewModal = self,
+			  unit = this.unit,
 			  dimTree = this.dimTree;
 
 		this.zbComponent = new ZbComponent({
 			kpiTree,
 			dimTree,
 			modal,
+			unit,
 			getViewModal:()=>{
 				
 				return self ;
@@ -821,11 +824,8 @@ class ViewSetModal {
 							this.viewDB.add(object,viewType,node,{$box,htmlStr,borderType,viewId,status},);
 
 					} else {
-						
-						alert("数据出错！");
-
+						this.unit.tipToast("数据获取出错！",0);
 					}
-
 
 				});
 
@@ -835,6 +835,7 @@ class ViewSetModal {
 	handle() {
 		const self = this;
 		const $setMd = this.setMd;
+		const unit = self.unit;
 		// tab切换
 		$setMd.on("click", ".m-tab", function(e) {
 			e.stopPropagation();
@@ -842,7 +843,7 @@ class ViewSetModal {
 
 			if (index==2) {
 				const sels = self.zbComponent.zbTree.getValue("id");
-				sels.length && $setMd.addClass("other") || alert("选择指标！");
+				sels.length && $setMd.addClass("other") || unit.tipToast("请先选择指标！",2);
 			} else {
 				$setMd.removeClass("other");
 			}
@@ -853,7 +854,7 @@ class ViewSetModal {
 
 			const noFill = $setMd.find(".no-fill:visible");
 			if(noFill.length){
-				alert("请填完必填项！");
+				unit.tipToast("请填完必填项！",2);
 				return ;
 			}
 

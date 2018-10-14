@@ -430,7 +430,7 @@ $border:#E9E9E9;
 		padding:10px 12px;
 		line-height:14px;
 		cursor: pointer;
-		border:1px solid black;
+		border:1px solid $themeColor;
 		box-sizing:border-box;
 	}
     .tab-progress{
@@ -459,7 +459,7 @@ $border:#E9E9E9;
 }
 .other{
 	 .m-tab:nth-child(1){
-  		border:1px solid black;
+  		border:1px solid $themeColor;
 	  	color:black;
   		background:none;
 	}

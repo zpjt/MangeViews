@@ -202,7 +202,7 @@ class Page{
 		api.getAllKpiAlarm().then(res=>{
 
 			if(!res){
-				page.unit.tipToast("获取预警指标失败！");
+				page.unit.tipToast("获取预警指标失败！",0);
 			}else{
 				this.tabData = res;
 				this.table.loadTab(res);
@@ -223,7 +223,12 @@ class Page{
  
 
 	handle(){
-		
+		$("#delBtn").click(function(){
+			
+			
+
+
+		});
 
 	}
 }

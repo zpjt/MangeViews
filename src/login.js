@@ -114,7 +114,7 @@ class Login{
             const animate = new  Promise(function(resolve){
                     setTimeout(function(){
                        resolve("test1");
-                    }, 1200);
+                    }, 1000);
             });
 
             const login = _self.login(obj).then(data=>{
@@ -144,8 +144,10 @@ class Login{
 
 
                      page.remind.reminCheck.prop("checked") ? page.remind.setRemind({originPwd,user_name:obj.user_name}) : page.remind.removeRemind();
-                    // window.location.href=baseUrl+data.url;  
-                      window.location.href = data.url;  
+                  
+                   // window.location.href=baseUrl+data.url;  
+                     
+                     window.location.href = data.url;  
                 }
             });
            

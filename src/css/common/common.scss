@@ -234,22 +234,44 @@ $border:#E9E9E9;
 	z-index:12;
 	.tip-item{
 		position: relative;
-		border-radius:6px;
-		padding:8px 12px;
-		background:#e7f8f8e8;
-		margin:12px 0;
-		overflow:hidden;
+	    border-radius: 6px;
+	 
+	    background: #e7f8f8e8;
+	    margin: 12px 0;
+	    overflow: hidden;
+	    width: 270px;
+	    height: 110px;
+	   
 	}
 	.tip-txt{
-		width:220px;
-		height:40px;
-		padding-bottom:8px;
+	   padding: 8px;
+	   text-indent:1rem;
+	   line-height:1.4rem;
 	}
 	.j-close{
 		cursor: pointer;
+
 	}
 	.tip-close{
-		text-align:right;
+		display:flex;
+		justify-content: space-between;
+		padding:8px;
+		border-bottom:1px solid $themeColor;
+		.sicon{
+			font:{
+				size:20px;
+				weight:bolder;
+			}
+		}
+		.sicon-error{
+			color:red;
+		}
+		.sicon-detail{
+			color:$themeColor;
+		}
+		.sicon-warn{
+			color:#FF4E00;
+		}
 	}
 	.tip-progress{
 		position: absolute;
@@ -257,8 +279,8 @@ $border:#E9E9E9;
 		right:0;
 		width: 100%;
 		height:4px;
-		background:black;
-		animation:progress 2s ease-in;
+		background:$themeColor;
+		animation:progress 6s linear;
 	}
 }
 

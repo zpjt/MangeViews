@@ -66,7 +66,9 @@ class Chart {
 					color: "white",
 					fontSize: 14,
 				}
-			}
+			};
+
+			option.backgroundColor = '#4490c175';
 		};
 		let myChart = echarts.init(this.Box);
 		myChart.setOption(option);
@@ -316,7 +318,7 @@ class Chart {
 
 					const legend = {
 						top: top,
-						left: "4%",
+						left: 20,
 						orient: 'horizontal',
 					};
 
@@ -341,7 +343,7 @@ class Chart {
 
 					const legend = {
 						bottom: 16,
-						left: "4%",
+						left: 20,
 						orient: 'horizontal',
 					};
 

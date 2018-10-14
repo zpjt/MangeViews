@@ -1,8 +1,8 @@
 require("js/common/ajaxhook.min.js");
 
-//const {baseUrl} = window.jsp_config; 
+const {baseUrl} = window.jsp_config; 
 
-const baseUrl = "./"; 
+//const baseUrl = "./"; 
 
 hookAjax({
 	    //拦截回调
