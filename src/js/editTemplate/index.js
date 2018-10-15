@@ -30,10 +30,7 @@ class DataDB {
 
 		let _viewID = viewId;
 
-		if(status!=="create"){
-			_viewID = null;
-			$box.attr("echo-id","");
-		}
+			$box.attr("echo-id",_viewID);
 
 
 		htmlStr && $box.html(htmlStr);

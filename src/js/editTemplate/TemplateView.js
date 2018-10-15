@@ -131,8 +131,9 @@ class TemplateView {
 						htmlStr:false,
 						borderType: borderEl.length && borderEl.attr("echo-type") || "0",
 						viewId:id,
-						status:"create",
+						status:"edit",
 					};
+
 
 					addViewData(obj,type,res,viewObj);
 
@@ -630,6 +631,7 @@ class TemplateView {
 						const htmlStr = border+`<div class="view-content"></div>`;
 
 						$this.attr({"echo-type":_viewType});
+				//		$this.attr({"echo-id":viewId});
 
 						const viewObj = {
 								$box:$this,
@@ -656,6 +658,7 @@ class TemplateView {
 							const htmlStr = border+`<div class="view-content"></div>`;
 
 							$dragEl.attr({"echo-type":_viewType1});
+					//		$dragEl.attr({"echo-id":viewId});
 
 							const viewObj = {
 									$box:$dragEl,
@@ -668,19 +671,11 @@ class TemplateView {
 							addViewData(object,viewType,node,viewObj);
 
 						}else{
-
+							$dragEl.attr({"echo-id":""});
 							delViewData($dragEl[0]);
 							$dragEl.html("").removeClass("view-fill");
 						}
 						
-						
-
-
-						
-
-					
-
-
 						
 					return ;
 				}
@@ -724,10 +719,7 @@ class TemplateView {
 				ev.dataTransfer.clearData("type");
 				return false
 			};
-
-
 		});
-
 	}
 	mergeCell(rotate){
 
@@ -780,6 +772,9 @@ class TemplateView {
 			cur_index_x = Xaxis.indexOf(cur_pointX);
 			cur_index_y = Yaxis.indexOf(cur_pointY);
 
+
+
+
 		}else{
 			handleGridItem = $activeView ;
 			cur_index_x = lastIndexX;
@@ -811,10 +806,6 @@ class TemplateView {
 		if( !is_over_1 ){ return false } ;
 
 		// 还原之前的；
-		// 
-		
-
-		
 		this.showCell(
 			{
 				lastAreaX,
@@ -860,6 +851,12 @@ class TemplateView {
 		if(newEl !== oldEl){
 			const {delViewData,addViewData} = this.config;
 			oldEl.html(null).removeClass("view-fill");
+
+			const viewId = oldEl.attr("echo-id");
+		    oldEl.attr("echo-id","");
+
+			const _viewType = oldEl.attr("echo-type");
+		
 			delViewData(oldEl[0]);
 
 			const {object,node,borderType} = data ;
@@ -871,10 +868,14 @@ class TemplateView {
 				$box:newEl,
 				htmlStr,
 				borderType,
+				viewId:viewId,
 				status:"create",
 			};
 
 			addViewData(object,viewType,node,viewObj);
+
+			newEl.attr("echo-type",_viewType);
+
 
 
 		}else{

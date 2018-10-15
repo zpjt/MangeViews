@@ -24,7 +24,7 @@ class STable {
 
 		const border = this.border;
 
-		const titleStr = border === "0" ? `<p class="s-table-title">${chartName}</p>` : "" ;
+		const titleStr = border === "0" ? `<p class="s-table-title">${ chartName || ""}</p>` : "" ;
 		const top_add = border === "0" ? 0 :　30 ;
 		const bottom_add = border === "0" ? 10 :　0 ;
 		const str =  `

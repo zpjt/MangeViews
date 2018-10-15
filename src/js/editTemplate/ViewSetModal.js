@@ -494,21 +494,26 @@ class ViewSetModal {
 				dimValField:"dimVal",
 				pubDimIdField:"pubDimId",
 				pubDimNameField:"pubDimName",
-				pubDimValsField:"pubDimVals",
+				pubDimValsField:"pubDimValue",
 			}
 		}
 
 		const row_wd = type==="table" && this.xAxis.getValue().split(",") || this.xAxis.getValue();
 		const col_wd = type==="table" && this.yAxis.getValue().split(",") || this.yAxis.getValue();
-
+		const viewType = this.viewType;
 		const chartName = this.$componentName.val().trim();
 		const orgs = this.orgWd.getValue("all").map(val => {
+			
 			const {dim_value: id, dim_value, dim_name: text } = val; 
 
-			return {
-				id,
-				text
-			}
+				const  obj = {id, text};
+
+				if( viewType==="line" || viewType==="bar"){
+					obj.lineType= viewType==="line" ? "1" : "2";
+				}
+
+				return obj;
+
 		});
 
 		/**
@@ -545,7 +550,7 @@ class ViewSetModal {
 		let kpis = [],
 			kpi_infos = [];
 		const $dimItems = $(".dim-item");
-		const viewType = this.viewType;
+		
 
 		const objType = fieldObj[type]
 
@@ -660,7 +665,15 @@ class ViewSetModal {
 
 		console.log(this.dimWd.getValue(this.dimWd.box,"all"),"ssss");
 		common[fieldObj[type].pubDimValsField] = this.dimWd.getValue(this.dimWd.box,"all").map(val=>{
-			return {id:val.dim_value,text:val.dim_name}
+		
+			if( viewType==="line" || viewType==="bar"){
+					obj.lineType= viewType==="line" ? "1" : "2";
+			}
+
+			const obj = {id:val.dim_value,text:val.dim_name};
+			
+
+			return obj ;
 		});
      
        }else{
@@ -818,7 +831,8 @@ class ViewSetModal {
 						const border_str = borderType  === "0" ?"" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${borderType}"></div>`;
 
 						const htmlStr = border_str + `<div class="view-content"></div>`;
-						const viewId =  $box.attr("echo-id");
+				//		const viewId =  $box.attr("echo-id");
+						const viewId = "";
 						const status = ViewSetModal.status;
 
 							this.viewDB.add(object,viewType,node,{$box,htmlStr,borderType,viewId,status},);
