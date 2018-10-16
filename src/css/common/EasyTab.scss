@@ -1,4 +1,5 @@
 $slectColor:#aee6ff;
+$themeColor:#00a0e9;
 .datagrid-row
 {
     height: 40px;
@@ -54,6 +55,7 @@ $slectColor:#aee6ff;
 
     width: 100%;
     height: 100%;
+    color:$themeColor
 }
 .easy-tabBox .panel-body
 {

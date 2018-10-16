@@ -12,10 +12,14 @@ class ViewSetModal {
 
 		
 
-		const { modal ,viewDB ,unit} = config ;
+		const { modal ,viewDB ,unit ,templateMap} = config ;
 		this.modal = modal ;
 		this.viewDB = viewDB;
 		this.unit = unit;
+		this.templateMap = templateMap;
+
+
+
 		this.setMd = $("#setComponentMd");
 		this.modalType = $("#modalType");
 		this.viewStyleBox = $("#viewStyleBox");
@@ -791,7 +795,7 @@ class ViewSetModal {
 
 	getSetData() {
 
-		const viewType = ["line","pie","scatter","bar","rader"].includes(this.viewType) && "chart" || this.viewType ;
+		const type = ["line","pie","scatter","bar","rader"].includes(this.viewType) && "chart" || this.viewType ;
 
 		const methodObj = {
 			table:{
@@ -805,14 +809,14 @@ class ViewSetModal {
 				"save":"saveGraphInfo",
 			},
 		}
-	    const methodType = methodObj[viewType];
+	    const methodType = methodObj[type];
 
 		const object = this[methodType.set]();
 
 		return {
 			methodType,
 			object,
-			viewType
+			viewType:this.viewType,
 		}
 
 		
@@ -820,7 +824,7 @@ class ViewSetModal {
 
 	createView(){
 
-		const {methodType , object,viewType} = this.getSetData();
+		const {methodType,object,viewType} = this.getSetData();
 		
 		api[methodType.url](object).then(node => {
 
@@ -831,11 +835,12 @@ class ViewSetModal {
 						const border_str = borderType  === "0" ?"" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${borderType}"></div>`;
 
 						const htmlStr = border_str + `<div class="view-content"></div>`;
-				//		const viewId =  $box.attr("echo-id");
 						const viewId = "";
 						const status = ViewSetModal.status;
 
 							this.viewDB.add(object,viewType,node,{$box,htmlStr,borderType,viewId,status},);
+
+							this.templateMap.add(node,$box,{type:viewType,borderType});
 
 					} else {
 						this.unit.tipToast("数据获取出错！",0);
@@ -871,8 +876,6 @@ class ViewSetModal {
 				unit.tipToast("请填完必填项！",2);
 				return ;
 			}
-
-			const status = $(this).attr("status");
 			self.createView();
 		});
 

@@ -7,7 +7,7 @@ import {TemplateView} from "./TemplateView.js";
 import {HeadOpt} from "./HeadOpt.js";
 import {ViewSetModal} from "./ViewSetModal.js";
 import {ViewComponet} from "./ViewComponet.js";
-
+import {TemplateMap} from "./templateMap.js";
 
 
 /**
@@ -83,10 +83,12 @@ class Page{
 		this.inp = new SInp();
 		this.unit = new Unit();
 		this.viewDB = new DataDB();
+		this.templateMap = new TemplateMap();
 
 		const modal = this.modal ;
 		const viewDB = this.viewDB ;
 		const unit = this.unit ;
+		const templateMap = this.templateMap;
 
 		$("#viewTitle").html(`<span>${window.parent.menuName}</span>`);
 
@@ -95,6 +97,7 @@ class Page{
 			modal,
 		    viewDB,
 		    unit,
+		    templateMap,
 		});
 
 		this.viewComponet = new ViewComponet();
@@ -117,7 +120,8 @@ class Page{
 	   		setModalSel:(type,size,$view,object)=>{
 				this.viewSetModal.setModalSel(type,size,$view,object);
 	   		},
-	   		unit
+	   		unit,
+	   		templateMap,
 	    });
 	 		new HeadOpt({
 		    	modal,

@@ -139,13 +139,12 @@ class Menu{
 
 			window.menuID = $this.attr("echo-id");
 			window.menuName = $this.find(".menu-name").html();
-			console.log({menuID});
 
-			/*const url=$this.attr("data-url").split("/")[2];
-			page.iframe[0].src="./"+url+".html";*/
+			const url=$this.attr("data-url").split("/")[2];
+			page.iframe[0].src="./"+url+".html";
 			
-			const url=$(this).attr("data-url");
-			 page.iframe[0].src=url;
+			/*const url=$(this).attr("data-url");
+			 page.iframe[0].src=url;*/
 
 		});
 	}
@@ -349,8 +348,8 @@ class Page{
 					break;
 				case "power": //退出登录
 				
-					window.location.href=baseUrl+"login/logOut";
-				//	 window.location.href="login.html";
+				//	window.location.href=baseUrl+"login/logOut";
+					 window.location.href="login.html";
 					break;
 			}
 		});

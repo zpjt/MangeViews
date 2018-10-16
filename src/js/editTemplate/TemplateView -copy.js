@@ -1,27 +1,27 @@
 import {View,Border,STable} from "js/ManageViews/view.js";
 import {api} from "api/editTemplate.js";
 import {api as _api} from "api/ManageViews.js";
+
 /**
  * 模板组件
  */
-class TemplateView  {
+class TemplateView {
 
 	static positionArr = [
-			"t-left","t-middle","t-right",
-			"m-left","m-middle","m-right",
-			"b-left","b-middle","b-right",
+			["t-left","t-middle","t-right"],
+			["m-left","m-middle","m-right"],
+			["b-left","b-middle","b-right"]
 		];
 
 
 	constructor($el,config) {
 	   
-	   this.config = config;
+	   this.config = config ;
 	   this.box = $el;
 	   this.resiziEl = $("#m-resize");
 	   this.gLayout =$("#g-layout");
 	   this.templateBox = $("#templateBox");
 	   this.templateContainer = $("#g-templateDom");
-
 
 	   this.startPointX=null;
 	   this.startPointY=null;
@@ -170,14 +170,14 @@ class TemplateView  {
 
 		const layout_id = window.parent.menuID;
 
-		const templateMap = this.config.templateMap;
+		console.log({layout_id});
 
 
 		api.showLayoutModel(layout_id).then(res=>{
 
 			let templateStr = "";
 
-			if(!res.model){
+			if(res.model){
 
 				templateStr = res.model;
 				this.box.html(templateStr);
@@ -186,36 +186,21 @@ class TemplateView  {
 
 			}else{
 
-				const positionArr =TemplateView.positionArr;
+				const positionArr =[].concat(...TemplateView.positionArr);
 				const strArr = positionArr.map(val=>`<div class="view-item ${val}" draggable="true" echo-size="1,1" echo-point="${val}" style="grid-area:${val}"></div>`);
 				
 				templateStr = `<div class="view-template "  echo-theme="theme4" id="viewTemplate" style='grid-template-areas:
-				    "t-left t-middle t-right"
-					"m-left m-middle m-right"
-					"b-left b-middle b-right ";'>${strArr.join("")}</div>`;
+		    "t-left t-middle t-right"
+			"m-left m-middle m-right"
+			"b-left b-middle b-right ";'>${strArr.join("")}</div>`;
 
 				this.box.html(templateStr);
-
-				const viewDomArr = Array.from(this.box.find(".view-item"));
-
-				const templateData = TemplateView.positionArr.map(val=>{
-						return {
-							size:["1","1"],
-							point:val,
-							viewID:"",
-							borderType:"0",
-							type:"",
-							par:"",
-						}
-				});
-				templateMap.init(viewDomArr,templateData);
 				this.viewDrop();
 			}
 
 		});
 		
 	}
-
 
 	showResizeBox($el){
 
@@ -590,86 +575,6 @@ class TemplateView  {
 		return true ;
 	}
 
-	replaceView($this){
-
-		const {addViewData} = this.config;
-
-		const name = type.split("@")[0];
-		const $dragEl = $("."+name);
-
-		if($this.attr("echo-point")===name){
-			return;
-		}
-		const view = getViewData($dragEl[0]);
-		const view_1 = getViewData(this);
-
-		const has_fill = $this.hasClass("view-fill");
-
-		const _viewType = $dragEl.attr("echo-type");
-		const _viewType1 = $this.attr("echo-type");
-
-
-		const size = $this.attr("echo-size").split(",");
-
-		const w = size[0];
-		const y = size[1];
-		
-		const {object,node,viewType,borderType,viewId} = view;
-
-
-		const border = borderType!=="0" && `<div class="bgSvg" echo-w="${w}" echo-y="${y}" echo-type="${borderType}"></div>` || "";
-
-		const htmlStr = border+`<div class="view-content"></div>`;
-
-		$this.attr({"echo-type":_viewType});
-//		$this.attr({"echo-id":viewId});
-
-		const viewObj = {
-				$box:$this,
-				htmlStr:htmlStr,
-				borderType,
-				viewId,
-				status:"edit"
-		}
-
-		addViewData(object,viewType,node,viewObj);
-
-		if(has_fill){
-
-
-			const size = $dragEl.attr("echo-size").split(",");
-			const w = size[0];
-			const y = size[1];
-		
-			const {object,node,viewType,borderType,viewId} = view_1;
-
-
-			const border = borderType!=="0" && `<div class="bgSvg" echo-w="${w}" echo-y="${y}" echo-type="${borderType}"></div>` || "";
-
-			const htmlStr = border+`<div class="view-content"></div>`;
-
-			$dragEl.attr({"echo-type":_viewType1});
-
-			const viewObj = {
-					$box:$dragEl,
-					htmlStr:htmlStr,
-					borderType,
-					viewId,
-					status:"edit"
-			}
-
-			addViewData(object,viewType,node,viewObj);
-
-		}else{
-			$dragEl.attr({"echo-id":""});
-			delViewData($dragEl[0]);
-			$dragEl.html("").removeClass("view-fill");
-		}
-		
-
-
-	}
-
 	viewDrop(){
 		const $template = $(".view-item");
 		const viewsArr = Array.from($template);
@@ -695,12 +600,11 @@ class TemplateView  {
 				 * @type {[table,line，....]}
 				 */
 				const type = ev.dataTransfer.getData("type");
+				console.log(type,"44434");
 
 				if(type.includes("@")){
 
-					this.replaceView($this);
-
-						/*const name = type.split("@")[0];
+						const name = type.split("@")[0];
 						const $dragEl = $("."+name);
 
 						if($this.attr("echo-point")===name){
@@ -755,6 +659,7 @@ class TemplateView  {
 							const htmlStr = border+`<div class="view-content"></div>`;
 
 							$dragEl.attr({"echo-type":_viewType1});
+					//		$dragEl.attr({"echo-id":viewId});
 
 							const viewObj = {
 									$box:$dragEl,
@@ -770,7 +675,7 @@ class TemplateView  {
 							$dragEl.attr({"echo-id":""});
 							delViewData($dragEl[0]);
 							$dragEl.html("").removeClass("view-fill");
-						}*/
+						}
 						
 						
 					return ;
@@ -817,8 +722,7 @@ class TemplateView  {
 			};
 		});
 	}
-
-	mergeCell_copy(rotate){
+	mergeCell(rotate){
 
 		const $activeView = $(".view-active");
 		const resiziEl = this.resiziEl ;
@@ -887,133 +791,6 @@ class TemplateView  {
 		const lastAreaY = Yaxis.slice(lastIndexY , + lastMergeY + lastIndexY);
 
 
-		const par = newOriginY + "-" + newOriginX ;
-		const is_over_1 = this.hideCell({
-				lastAreaX,
-				lastAreaY
-			},
-			{
-				cur_Xarea,
-				cur_Yarea
-		},par,{
-			old:$activeView,
-			news:handleGridItem,
-		});
-
-		if( !is_over_1 ){ return false } ;
-
-		// 还原之前的；
-		this.showCell(
-			{
-				lastAreaX,
-				lastAreaY
-			},
-			{
-				cur_Xarea,
-				cur_Yarea
-		});
-
-		/*设置*/
-		handleGridItem
-		.css({
-				"grid-column-end": "span " + curMergeX,
-				"grid-row-end": "span " + curMergeY,
-		})
-		.attr("echo-size",curMergeX + "," + curMergeY);
-
-		resiziEl.hide();
-
-		this.reloadView({newEl:handleGridItem,oldEl:$activeView},{
-			curMergeX,curMergeY
-		});
-
-		return true ;
-	}
-	mergeCell(rotate){
-
-		const $activeView = $(".view-active");
-		const resiziEl = this.resiziEl ;
-
-		const [directionY ,directionX]= resiziEl.attr("echo-direction").split("-");
-		const {roateX:curMergeX,roateY:curMergeY} = rotate;
-
-		const {templateMap} = this.config;
-
-		const view = templateMap.viewsMap.get($activeView[0]);
-		
-		const {attributeObj:{size,point}} = view;
-
-		const [lastMergeX,lastMergeY] = size;
-
-		const Xaxis = ["left","middle","right"];
-		const Yaxis = ["t","m","b"];
-
-		const [originY,originX] = point.split("-") ;
-		const lastIndexX = Xaxis.indexOf(originX);
-		const lastIndexY = Yaxis.indexOf(originY);
-
-
-		//重新合并
-		let handleGridItem = null ;
-		let cur_index_x = null;
-		let cur_index_y = null;
-		let newOriginY = null ;
-		let newOriginX = null ;
-
-		if(directionY === "t" || directionX === "left"){
-
-			
-
-			const axisobject={
-					left:-1,
-					middle:0,
-					right:0,
-					t:-1,
-					m:0,
-					b:0,
-			};
-
-			 const newOriginY_index =	Yaxis.indexOf(originY) +  (curMergeY - lastMergeY) * axisobject[directionY];
-			 const newOriginX_index =	Xaxis.indexOf(originX)  +  (curMergeX - lastMergeX) * axisobject[directionX];
-
-			newOriginY = Yaxis[newOriginY_index];
-			newOriginX = Xaxis[newOriginX_index];
-
-			handleGridItem = $(`.${newOriginY + "-" + newOriginX}`);
-
-			const newPoint = [...templateMap.viewsMap.keys()].filter(key=>{
-
-					const val =	templateMap.viewsMap.get(key);
-
-				return val.attributeObj.point === (newOriginY + "-" + newOriginX) ;
-
-			});
-
-			console.log(newPoint);
-
-
-			const [cur_pointY,cur_pointX] = handleGridItem.attr("echo-point").split("-");
-			cur_index_x = Xaxis.indexOf(cur_pointX);
-			cur_index_y = Yaxis.indexOf(cur_pointY);
-
-
-
-
-		}else{
-			handleGridItem = $activeView ;
-			cur_index_x = lastIndexX;
-		    cur_index_y = lastIndexY;
-		    newOriginY = originY ;
-		    newOriginX = originX ;
-		}
-
-		const cur_Xarea = Xaxis.slice(cur_index_x,  curMergeX + cur_index_x);
-		const cur_Yarea = Yaxis.slice(cur_index_y ,  curMergeY + cur_index_y);
-
-		const lastAreaX = Xaxis.slice(lastIndexX, + lastMergeX + lastIndexX);
-		const lastAreaY = Yaxis.slice(lastIndexY , + lastMergeY + lastIndexY);
-
-		/*修改新的map*/
 		const par = newOriginY + "-" + newOriginX ;
 		const is_over_1 = this.hideCell({
 				lastAreaX,

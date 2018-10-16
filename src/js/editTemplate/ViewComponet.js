@@ -22,7 +22,7 @@ class ViewComponet {
 
 				const type = ev.target.getAttribute("echo-type");
 
-				console.log(type);
+				console.log(type,"startDrop");
 
 				ev.dataTransfer.effectAllowed = "move";
 				ev.dataTransfer.setData("type", type);
