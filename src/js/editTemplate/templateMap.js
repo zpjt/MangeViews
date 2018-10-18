@@ -47,6 +47,27 @@ class TemplateMap{
 
 		console.log(this.viewsMap,"init");
 	}
+	findViewByPoint(name){
+
+		let value = null ;
+
+		const dom =  [...this.viewsMap.keys()].find(key=>{
+
+				const val =	this.viewsMap.get(key);
+
+				const status = val.attributeObj.point[2] === name;
+
+					  value =  status && val || null ;
+
+				return status;
+		});
+
+		return {
+			value,dom
+		}
+
+
+	}
 
 	add(node,$dom,attr){
 

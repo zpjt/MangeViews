@@ -145,9 +145,9 @@ class Login{
 
                      page.remind.reminCheck.prop("checked") ? page.remind.setRemind({originPwd,user_name:obj.user_name}) : page.remind.removeRemind();
                   
-                  //  window.location.href=baseUrl+data.url;  
+                   // window.location.href=baseUrl+data.url;  
                      
-                     window.location.href = data.url;  
+                    window.location.href = data.url;  
                 }
             });
            
@@ -256,7 +256,7 @@ class AnimateView{
                     return val === 130 ;
                 });
 
-                const color = ["screen-bg1","screen-bg2","screen-bg3","screen-bg4"];
+                 const color = ["screen-bg1","screen-bg2","screen-bg3","screen-bg4"];
 
                  if(end >-1){
 

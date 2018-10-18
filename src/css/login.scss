@@ -10,6 +10,9 @@
 	box-sizing:border-box;
 	
 }
+.test{
+	background:url("../img/beida.png")
+}
 #j-login{
 	cursor: pointer;
 }
@@ -20,12 +23,16 @@
     flex-direction:column;
     justify-content: center;
     align-items:center;
-
+   
     @at-root{
     	$w:64%;
     	 .g-login{
     	 	width:$w;
 			$color:#45445B;
+			.g-logo{
+				position: absolute;
+				top:100px;
+			}
 			header{
 				text-align:center;
 				.m-title{
@@ -195,10 +202,12 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
-   // align-items: center;
-   .roate-container{
-   	transform:scale(1.14);
-   }
+
+   .g-logo{
+    	position: absolute;
+    	top:0;
+    	left:-50px;
+    }
 }
 .m-circle{
 	position: absolute;
@@ -357,9 +366,11 @@ $screemMap:(
 		z-index: 9;
 	}
 	.icon-roate-1,.icon-roate-2,.icon-roate-3,.icon-roate-4{
-		width: 56px;
-		height: 56px;
+		width: 84px;
+		height: 84px;
 		background-repeat: no-repeat;
+		background-position:center;
+		background-size: contain;
 	}
 
 	.icon-sq-1{
