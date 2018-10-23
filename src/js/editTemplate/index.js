@@ -95,7 +95,6 @@ class Page{
 
 		this.viewSetModal = new ViewSetModal({
 			modal,
-		    viewDB,
 		    unit,
 		    templateMap,
 		});
@@ -105,8 +104,8 @@ class Page{
 
 
 	    this.templateView = new TemplateView($("#templateBox"),{
-	   		upModalStatus:(type,size,$view)=>{
-	   			this.viewSetModal.upModalStatus(type,size,$view);
+	   		upModalStatus:(type,$view)=>{
+	   			this.viewSetModal.upModalStatus(type,$view);
 	   		},	
 	   		getViewData:(dom)=>{
 				return this.viewDB.get(dom);
@@ -117,8 +116,8 @@ class Page{
 	   		addViewData:(object,viewType,node,viewObj)=>{
 	   			this.viewDB.add(object,viewType,node,viewObj);
 	   		},
-	   		setModalSel:(type,size,$view,object)=>{
-				this.viewSetModal.setModalSel(type,size,$view,object);
+	   		setModalSel:($view)=>{
+				this.viewSetModal.setModalSel($view);
 	   		},
 	   		unit,
 	   		templateMap,

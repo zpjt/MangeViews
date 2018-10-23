@@ -302,13 +302,18 @@ class Chart {
 		return Math.floor(Math.random() * (max - 80 + 1) + 80);
 
 	}
-
+	/**
+	 * [图例和grid位置配置]
+	 * @param  {[String]}  legend       [1:上，2：下，3：左:，4：右，5：无]
+	 * @param  {String} is_landscape [0：垂直，1：横向]
+	 * @return {[type]}               [legend，is_landscape]
+	 */
 	getLegendPosition(legend,is_landscape = false) {
 
 		const border = this.border;
 
 		const top = border === "3" ? "12%" : "8%";
-		const left_add = is_landscape && 2  || 0;
+		const left_add = is_landscape && 4  || 0;
 		const top_add = border === "3" ? 4 :  3;
 		const grid_top_add = border === "3" ? 8  : 6;
 
@@ -318,13 +323,13 @@ class Chart {
 
 					const legend = {
 						top: top,
-						left: 20,
+						left: 10,
 						orient: 'horizontal',
 					};
 
 					const grid = {
 						top: grid_top_add + 20 + "%",
-						left: left_add + 14 +"%",
+						left: left_add + 8 +"%",
 						right: "6%",
 						bottom: "12%",
 					};
@@ -343,13 +348,13 @@ class Chart {
 
 					const legend = {
 						bottom: 16,
-						left: 20,
+						left: 10,
 						orient: 'horizontal',
 					};
 
 					const grid = {
 						top: grid_top_add + 12 + "%",
-						left: left_add + 14 +"%",
+						left: left_add + 8 +"%",
 						right: "6%",
 						bottom: "32%",
 					};
@@ -399,7 +404,7 @@ class Chart {
 					const grid = {
 						top: grid_top_add + 14 + "%",
 						right: "24%",
-						left: left_add + 12 +"%",
+						left: left_add + 8 +"%",
 						bottom: "14%",
 					};
 
@@ -419,7 +424,7 @@ class Chart {
 					};
 
 					const grid = {
-						left: left_add + 14 +"%",
+						left: left_add + 8 +"%",
 						right: "6%",
 						top: grid_top_add + 12 + "%",
 						bottom: "14%",
@@ -472,7 +477,7 @@ class Chart {
 
 		let legendArr = [];
 
-		const color = ['#1a9bfc', '#99da69', '#e32f46', '#7049f0', '#fa704d', '#01babc'];
+		const color = ['#1a9bfc', '#99da69', '#7049f0', '#fa704d', '#01babc'];
 		
 		const series = res.map((val, index) => {
 

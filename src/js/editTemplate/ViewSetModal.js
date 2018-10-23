@@ -12,9 +12,8 @@ class ViewSetModal {
 
 		
 
-		const { modal ,viewDB ,unit ,templateMap} = config ;
+		const { modal ,unit ,templateMap} = config ;
 		this.modal = modal ;
-		this.viewDB = viewDB;
 		this.unit = unit;
 		this.templateMap = templateMap;
 
@@ -186,13 +185,12 @@ class ViewSetModal {
 		}
 	}
 
-	upModalStatus(type,size,$view){
+	upModalStatus(type,$view){
 
 		this.activeViewObje = {
 			$box:$view,
-			size
 		};
-
+		// 当前模态框所创建的组件的类型
 		this.$componentName.val("");
 		const icon = $(`.component-item[echo-type=${type}]`).html();
 		this.modalType.html(icon);
@@ -206,23 +204,39 @@ class ViewSetModal {
 			
 	}
 
-	setModalSel(type,size,$view,selObj){
+	setModalSel($view){
 
-		$view.attr({"echo-type":type});
+		const viewMap = this.templateMap.viewsMap.get($view[0]);
+		 const {attributeObj:{type,borderType},viewData} = viewMap;
+
 		$view.addClass("view-active").siblings().removeClass("view-active");
-
 		ViewSetModal.status = "edit";
-
 		this.activeViewObje = {
 			$box:$view,
-			size
 		};
 		const icon = $(`.component-item[echo-type=${type}]`).html();
 		this.modalType.html(icon);
-		this.viewType=type;
 
-		const {object,object:{legend,chartName},borderType} = selObj;
+		
 
+		this.viewType = type;
+
+		const config = {
+			"table":{
+				data:"tabInfo",
+				style:"tab_style"
+			},
+			"chart":{
+				style:"tab_style",
+				data:"graphInfo",
+			}
+		};
+
+       const method = config[type]
+
+        const object = viewData[method.data] ;
+		const {chartName} = object;
+		const legend = object[method.style];
 		/**
 		 * legend-place：图例位置
 		 * border-style：边框样式
@@ -231,10 +245,8 @@ class ViewSetModal {
 		$(".border-style").eq(borderType - 1).prop("checked",true);
 		this.$componentName.val(chartName);
 	    this.viewStyleBoxTnit(object);
-	    this.upComboxStatus(object);
+	    this.upComboxStatus();
 		this.modal.show(this.setMd);
-
-
 		this.zbComponent.sureBtnHandle(this,object,type);
 			
 	}
@@ -830,17 +842,13 @@ class ViewSetModal {
 
 					if (node.data && node.data.length) {
 
-						const {$box,size} = this.activeViewObje;
+						const {$box} = this.activeViewObje;
 						const borderType = $(".border-style:checked").val();
-						const border_str = borderType  === "0" ?"" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${borderType}"></div>`;
-
-						const htmlStr = border_str + `<div class="view-content"></div>`;
-						const viewId = "";
 						const status = ViewSetModal.status;
+						const  viewTitle = object.chartName ;
 
-							this.viewDB.add(object,viewType,node,{$box,htmlStr,borderType,viewId,status},);
-
-							this.templateMap.add(node,$box,{type:viewType,borderType});
+						this.templateMap.add(node,$box,{type:viewType,borderType,viewTitle},status);	
+			  
 
 					} else {
 						this.unit.tipToast("数据获取出错！",0);

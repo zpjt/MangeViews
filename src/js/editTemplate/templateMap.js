@@ -1,8 +1,14 @@
+import {View } from "js/ManageViews/view.js";
+import {api } from "api/editTemplate.js";
 class TemplateMap{
+
+	static MapID = 0 ;
 
 	constructor(){
 
 		this.viewsMap = new Map();
+
+		window.viewsMap = this.viewsMap ;
 
 	}
 
@@ -18,7 +24,6 @@ class TemplateMap{
 	 */
 	init(viewsDomArr,templateDatas){
 
-		console.log(viewsDomArr);
 
 		viewsDomArr.forEach((val,item)=>{
 
@@ -44,8 +49,6 @@ class TemplateMap{
 
 			
 		});	
-
-		console.log(this.viewsMap,"init");
 	}
 	findViewByPoint(name){
 
@@ -69,28 +72,87 @@ class TemplateMap{
 
 	}
 
-	add(node,$dom,attr){
+	add(node,$dom,attr,status){
 
-		const {borderType,type} = attr ;
-
+		const {borderType,type,viewTitle} = attr ;
 		const view = this.viewsMap.get($dom[0]);
+		const {attributeObj:{size,createId,viewID}} = view;
 
-		const {attributeObj:{size}} = view;
+		let mapId = createId;
 
-			  view.data = node ;
-			  view.attributeObj.borderType = borderType;
-			  view.attributeObj.type = type;
+		view.viewData = node ;
+		view.attributeObj.borderType = borderType;
+		view.attributeObj.type = type;
+
+		if(status === "replace"){
+
+			const {createId,viewID} = attr;
+			view.attributeObj.createId = createId;
+			view.attributeObj.viewID = viewID;
+
+		}
+
+		if(status === "create"){
+		  	mapId  = ++TemplateMap.MapID;
+			view.attributeObj.createId = mapId;
+
+		}else if(status === "edit" && viewID){
+			
+			api.deleteChart(viewID).then(res=>{
+
+				console.log(res,"删去");
+			});
+	
+		}
+
+	    console.log(view);
 
 	 	const border_str = borderType  === "0" ? "" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${borderType}"></div>`;
 
 		const htmlStr = border_str + `<div class="view-content"></div>`;
-		console.log(htmlStr);
-	//	$dom.html(htmlStr);
+		$dom.html(htmlStr);
+
+		$dom.addClass("view-fill");
+
+		const _type = ["line","pie","scatter","bar","rader"].includes(type) ? "chart" : type ;
+
+		
+		new View($dom, {
+			id:mapId,
+			type:_type,
+			index:mapId,
+			viewTitle
+		}, node, "2");
 
 	}
 
-	remove(){
+	remove($dom){
 
+		$dom.removeClass("view-fill")
+		.html(null);
+
+		const viewMap = this.viewsMap.get($dom[0]);
+
+		const {attributeObj:{size,point,viewID}} = viewMap;
+
+		viewID && api.deleteChart(viewID).then(res=>{
+
+				console.log(res,"删去");
+		});
+
+		viewMap.attributeObj = null ;
+		viewMap.attributeObj = {
+							size:size,
+							point:point,
+							viewID:"",
+							createId:"",
+							borderType:"0",
+							type:"",
+							par:""};
+
+
+		viewMap.viewData = null ;
+		console.log(viewMap);
 
 	}
 
