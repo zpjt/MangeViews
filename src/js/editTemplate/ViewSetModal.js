@@ -217,8 +217,6 @@ class ViewSetModal {
 		const icon = $(`.component-item[echo-type=${type}]`).html();
 		this.modalType.html(icon);
 
-		
-
 		this.viewType = type;
 
 		const config = {
@@ -232,9 +230,11 @@ class ViewSetModal {
 			}
 		};
 
-       const method = config[type]
+		const _type = ["line","pie","scatter","bar","rader"].includes(type) && "chart" || "table";
 
-        const object = viewData[method.data] ;
+       const method = config[_type]
+
+        const object = viewData[method.data];
 		const {chartName} = object;
 		const legend = object[method.style];
 		/**

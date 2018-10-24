@@ -98,8 +98,8 @@ class ChangeView{
 
 		const old_x_index =  oldPoint[0] ;
 		const old_y_index =  oldPoint[1] ;
-		const old_x =  old_x_index + oldPoint[0] ;
-		const old_y =  old_y_index +  oldPoint[1] ;
+		const old_x =  old_x_index + oldSize[0] ;
+		const old_y =  old_y_index +  oldSize[1] ;
 
 		
 
@@ -172,7 +172,7 @@ class ChangeView{
 		});
 	};
 
-	mapHideXaxis(data,y,parName,canMergeArr,parArr){
+	mapHideXaxis(data,y,parName,canMergeArr,parArr,newAreaObj){
 
 		const {templateMap} = this.config;
 
@@ -204,12 +204,12 @@ class ChangeView{
 					return false ;
 				}
 
-				is_over =  this.judgeCellOver({size:parSize,point:parPoint},{size,point});
+				is_over =  this.judgeCellOver({size:parSize,point:parPoint},newAreaObj);
 
 			}else if(is_scale > 2){
 							
 				 parArr.push(viewClass);
-				 is_over =  this.judgeCellOver({size,point},{size,point});
+				 is_over =  this.judgeCellOver({size,point},newAreaObj);
 
 			}
 
@@ -269,7 +269,9 @@ class ChangeView{
 				flagData = curAreaX ;
 			}
 
-			is_over = this.mapHideXaxis(flagData,y,parName,canMergeArr,parArr);
+			const newAreaObj = {point:newPoint,size:rotate}
+
+			is_over = this.mapHideXaxis(flagData,y,parName,canMergeArr,parArr,newAreaObj);
 
 			if(!is_over){
 				return false;
@@ -405,11 +407,6 @@ class ChangeView{
 			flagViewData.attributeObj.par = "";
 		
 
-		
-		
-		
-		
-
 		resiziEl.hide();
 
 		//重新加载组件
@@ -417,7 +414,7 @@ class ChangeView{
 
 		return true ;
 	}
-	reloadView(boxObj,config){
+	reloadView(boxObj,rotate){
 
 		const {newEl,oldEl} = boxObj;
 
@@ -425,64 +422,61 @@ class ChangeView{
 			return ;
 		}
 
-		const {getViewData} = this.config;
+		const {templateMap} = this.config;
 
-		const data = getViewData(oldEl[0]);
+		const viewMap = templateMap.viewsMap.get(oldEl[0]);
 
-		const {viewType} = data ;
-		const [curMergeX,curMergeY] = config;
+		const {attributeObj:{type,size,borderType,viewID,createId},viewData} = viewMap ;
+
 
 		if(newEl !== oldEl){
-			const {delViewData,addViewData} = this.config;
-			oldEl.html(null).removeClass("view-fill");
+			
+			const newViewMap =  templateMap.viewsMap.get(newEl[0]);
 
-			const viewId = oldEl.attr("echo-id");
-		    oldEl.attr("echo-id","");
+			const {attributeObj} = newViewMap;
 
-			const _viewType = oldEl.attr("echo-type");
-		
-			delViewData(oldEl[0]);
-
-			const {object,node,borderType} = data ;
-
-			const border_str = borderType  === "0" ?"" : `<div class="bgSvg" echo-w="${curMergeX}" echo-y="${curMergeY}" echo-type="${borderType}"></div>`;
-
-			const htmlStr = border_str + `<div class="view-content"></div>`;	
-			const viewObj = {
-				$box:newEl,
-				htmlStr,
-				borderType,
-				viewId:viewId,
-				status:"create",
-			};
-
-			addViewData(object,viewType,node,viewObj);
-
-			newEl.attr("echo-type",_viewType);
+			attributeObj.viewID = viewID ;
+			attributeObj.createId = createId ;
+			attributeObj.type = type ;
 
 
+			const _type = type === "table" && "tabInfo" || "graphInfo";
+
+			const viewTitle = viewData[_type].chartName ;
+
+			const attr = {borderType,type,viewTitle,viewID,createId}
+
+			templateMap.add(viewData,newEl,attr,"replace");
+			newViewMap.attributeObj.size = rotate ;
+			this.delViewData(oldEl);
 
 		}else{
+			
+			let chartName ;
 
-			switch(viewType){
+			const _type = type !== "table" && "chart" || "table";
+
+			switch(_type){
 				case "table":{
-						const {node,borderType} = data ;
-				 new STable(newEl.find(".chart"),{border:borderType},node);	
+				     new STable(newEl.find(".chart"),{border:borderType},viewData);	
+				     chartName = viewData.tabInfo.chartName;
 				}
 				break;
 				case"chart":{
 					echarts.getInstanceByDom(newEl.find(".chart")[0]).resize();	
+					chartName = viewData.graphInfo.chartName;
 				}
 				break;
 			}
 			
-			const borderBox = newEl.find(".bgSvg");
-			if(borderBox.length){
-				
-				borderBox.attr({"echo-y":curMergeY,"echo-w":curMergeX});
-				const {id ,object:{chartName}} = data ;
-				new Border(borderBox,{id,title:chartName});
+			if(borderType!=="0"){
+				const borderBox = newEl.find(".bgSvg");
+
+				borderBox.attr({"echo-y":size[1],"echo-w":size[0]});
+
+				new Border(borderBox,{id:viewID,title:chartName});
 			}
+			viewMap.attributeObj.size = rotate ;
 		}
 	}
  }

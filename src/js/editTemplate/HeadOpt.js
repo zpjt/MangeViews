@@ -18,44 +18,63 @@ class HeadOpt {
 
 	async saveAllView(formData){
 
-		const { viewDB:{viewDB} , getTemplate,unit} = this.config ; 
+		const {getTemplate,templateMap:{viewsMap},unit} = this.config ; 
 
 		const methodObj = {
 			table:"saveTableInfo",
 			chart:"saveGraphInfo",
 		};
-		
-		const arr = [...viewDB.keys()];
-		let promises  =arr.map(key=>{
 
-			const val = viewDB.get(key);
+		console.log(viewsMap);
 
-			const { viewType,object,viewId} = val ;
+		const arr = [...viewsMap.keys()];
 
-			return !viewId ? api[methodObj[viewType]](object).then(res=>{
-					const {state ,id } = res ;
-					state && $(key).attr("echo-id",id) || unit.tipToast(object.chartName+"保存失败,请稍后重新再保存！",0);
-					 val.viewId = id;
-					return state ;
-			}) : true;
-		}); 
-	
+		const promises  =arr.reduce((total,key)=>{
+
+			const val = viewsMap.get(key);
+
+			const {attributeObj:{type,viewID,createId},viewData} = val ;
+
+			if(!viewID && createId){
+				
+					const _type = type === "table" && "table" || "chart";
+					const object = type === "table" && viewData.tabInfo || viewData.graphInfo;
+				
+					const req = api[methodObj[_type]](object).then(res=>{
+										const {state ,id } = res ;
+										if(state){
+											val.attributeObj.viewID = id ;
+										}else{
+											init.tipToast(object.chartName+"保存失败,请稍后重新再保存！",0);
+										}
+										return state ;
+								});
+
+					total.push(req);
+			}
+
+
+			return total;
+
+
+
+
+
+		},[]); 
 
 		const res = await Promise.all(promises);
 
-
+		if(!promises.length){
+			return ;
+		}
 		const status = res.every(val=>val);
-
 		if(status){
 			
 			const formData = new FormData();
-
 			const layout_id = window.parent.menuID;
 			const {htmlStr,box} = getTemplate();
-
 			formData.set("layout_id",layout_id);
 			formData.set("model",htmlStr);
-
 			await api.saveLayout(formData).then(res=>{
 
 					res ? unit.tipToast("视图保存成功！",1) : unit.tipToast("保存失败,请稍后重新再保存！",0); ;
@@ -67,11 +86,7 @@ class HeadOpt {
 
 			await false ;
 		}
-
 	}
-
-
-
 
 	handle() {
 		const _self = this ;

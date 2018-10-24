@@ -107,32 +107,26 @@ class Page{
 	   		upModalStatus:(type,$view)=>{
 	   			this.viewSetModal.upModalStatus(type,$view);
 	   		},	
-	   		getViewData:(dom)=>{
-				return this.viewDB.get(dom);
-	   		},
-	   		delViewData:(dom)=>{
-	   			this.viewDB.remove(dom);
-	   		},
-	   		addViewData:(object,viewType,node,viewObj)=>{
-	   			this.viewDB.add(object,viewType,node,viewObj);
-	   		},
 	   		setModalSel:($view)=>{
 				this.viewSetModal.setModalSel($view);
 	   		},
 	   		unit,
 	   		templateMap,
 	    });
-	 		new HeadOpt({
-		    	modal,
-		    	viewDB,
-		    	unit,
-		    	getTemplate:()=>{
-		    		return this.templateView.getTemplate();
-		    	},
-		    	getViewData:(dom)=>{
-					return this.viewDB.get(dom);
-	   			},
-		    }); 
+
+ 		new HeadOpt({
+	    	modal,
+	    	viewDB,
+	    	templateMap,
+	    	unit,
+	    	getTemplate:()=>{
+	    		return this.templateView.getTemplate();
+	    	},
+	    	getViewData:(dom)=>{
+				return this.viewDB.get(dom);
+   			},
+	    }); 
+
 	    this.handle();
 	}
 

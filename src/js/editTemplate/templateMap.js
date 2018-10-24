@@ -10,6 +10,8 @@ class TemplateMap{
 
 		window.viewsMap = this.viewsMap ;
 
+		console.log(window.viewsMap);
+
 	}
 
 	/**

@@ -97,7 +97,6 @@ class Chart {
 		});
 
 
-		//color:["#1296FB","#8FD6FA","#0088CC","#06B76A","#CBC450","#FD8D1D"],
 
 
 		const startColor = ['#c487ee', '#deb140', '#49dff0', '#034079', '#6f81da', '#00ffb4'];
@@ -313,7 +312,7 @@ class Chart {
 		const border = this.border;
 
 		const top = border === "3" ? "12%" : "8%";
-		const left_add = is_landscape && 4  || 0;
+		const left_add = is_landscape && 8  || 0;
 		const top_add = border === "3" ? 4 :  3;
 		const grid_top_add = border === "3" ? 8  : 6;
 
@@ -329,9 +328,11 @@ class Chart {
 
 					const grid = {
 						top: grid_top_add + 20 + "%",
-						left: left_add + 8 +"%",
+						left: left_add + 10 +"%",
 						right: "6%",
 						bottom: "12%",
+						containLabel: false,
+            			//width:"70%",
 					};
 
 					const center = [ "50%" , top_add + 55 + "%"];
@@ -354,9 +355,10 @@ class Chart {
 
 					const grid = {
 						top: grid_top_add + 12 + "%",
-						left: left_add + 8 +"%",
+						left: left_add + 10 +"%",
 						right: "6%",
 						bottom: "32%",
+						containLabel: false,
 					};
 
 					const center = ["50%" , top_add + 45 +"%"];
@@ -381,6 +383,7 @@ class Chart {
 						top: grid_top_add + 12 + "%",
 						right: "6%",
 						bottom: "14%",
+						containLabel: false,
 					};
 
 					const center = ["55%" , top_add + 50 +"%"];
@@ -404,8 +407,9 @@ class Chart {
 					const grid = {
 						top: grid_top_add + 14 + "%",
 						right: "24%",
-						left: left_add + 8 +"%",
+						left: left_add + 10 +"%",
 						bottom: "14%",
+						containLabel: false,
 					};
 
 					const center = ["45%" , top_add + 50 +"%"];
@@ -424,10 +428,11 @@ class Chart {
 					};
 
 					const grid = {
-						left: left_add + 8 +"%",
+						left: left_add + 10 +"%",
 						right: "6%",
 						top: grid_top_add + 12 + "%",
 						bottom: "14%",
+						containLabel: false,
 					};
 
 					const center = ["45%" , top_add + 50 +"%"];
