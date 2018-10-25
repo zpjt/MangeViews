@@ -3,9 +3,6 @@ import {api} from "api/ManageViews.js";
 import {View,Border,STable} from "./view.js";
 
 /*Jq对象*/
-const $container= $("#viewsContent"),
-      $app= $("#app"),
-      $maxWindow = $("#maxWindow");
 
 const {baseUrl} = window.jsp_config;
 
@@ -17,7 +14,11 @@ class App{
 
 		const fatherWin = window.parent ;
 		this.layout_id = fatherWin.menuID;
-		$("#viewName").html(fatherWin.menuName);	
+		this.layoutName = fatherWin.menuName;
+		this.app = $("#app");
+		this.maxWindow = $("#maxWindow");
+
+
 		this.items=[];
 		this.init();
 		this.handle();
@@ -26,10 +27,48 @@ class App{
 
 	init(){
 		this.getPre();
-
 		this.renderModal();
+		this.initHead();
+	}
 
+	initHead(){
+
+		const owidth = $("#viewsHead").width();
+
+
+		const str = `<svg xmlns="http://www.w3.org/2000/svg"  xmlns:xlink="http://www.w3.org/1999/xlink" viewbox="0 0 1500 50" preserveAspectRatio="xMidYMid slice">
+								<defs >
+									<linearGradient id="linear" gradientUnits="objectBoundingBox">
+			    	                  <stop offset="0" stop-color="#005792"  stop-opacity="1"/>
+			    	                  <stop offset="1" stop-color="#064782" stop-opacity="0"/>
+			    	              	</linearGradient>
+			    	              	<linearGradient id="down" xlink:href="#linear" 
+										x1="0" y1="100%" x2="0" y2="0">
+			    	              	  <stop offset="0" stop-color="#064782"  stop-opacity="1"/>
+			    	                  <stop offset="1" stop-color="#1c819e" stop-opacity="0"/>
+			    	              	</linearGradient>
+								    <g id="right" >
+								   		<desc>左</desc>
+								    	<polygon points="0 0 , 400 0,375 25,0 25"  stroke="" stroke-width="" fill="url(#linear)" />
+								    	<line x1="405" y1="0" x2="380" y2="25" stroke-linecap="round" stroke="#64ACCA" stroke-width="1"/>
+								    	<line x1="415" y1="0" x2="385" y2="30" stroke-linecap="round" stroke="#64ACCA" stroke-width="3"/>
+								    </g>
+								   	<g id="center">
+								    		<polygon points="575 0,625 50,875 50,925 0"  fill="url(#down)"/>
+								    		<text x="750" y="35" fill="white" id="viewName" text-anchor="middle" font-size="22" letter-spacing="0.2em" lengthAdjust="spacing" >
+								    		${this.layoutName}
+								    		</text>				
+								    </g>
+								</defs>
+								<g >
+									<use xlink:href="#right"   />
+									<use xlink:href="#right"  transform="scale(-1,1) translate(-1500)" />
+									<use xlink:href="#center"  />
+									<polyline points="0 0 ,575 0,625 50,875 50,925 0,1500 0" fill="none" stroke="#64ACCA" stroke-width="2.5"/> 
+								</g>
+						</svg>`;
 		
+		$("#viewsHead").html(str);
 	}
 
 	getPre(){
@@ -58,7 +97,7 @@ class App{
 					const viewTitle =res[method[type].configName].chartName;
 					this.items[item] = new View(box,{id,type,index:item,viewTitle},res);
 				}else{
-					alert("没数据！")
+					console.log("该视图已经不存在！");
 				}
 			
 
@@ -71,29 +110,32 @@ class App{
 		const self = this;
 		api.showLayoutModel(this.layout_id).then(res=>{
 
-
 				
 				if(res.model){
-
-					$container.html(res.model);
+					const model = res.model.replace(/draggable="true"/,"");
+					$("#viewsContent").html(model);
+					
 					const url = $("#viewTemplate").css("backgroundImage");
-					$maxWindow.css("backgroundImage",url);
+					this.maxWindow.css("backgroundImage",url);
 
-					$(".view-item").removeAttr("draggable");
+
 					const views = $("#viewTemplate").find(".view-item.view-fill");
-					$.map(views,(val,index)=>{
-						(function(item,$val){
-							const viewType = $val.attr("echo-type"),
-					  				id =  $val.attr("echo-id");
 
-			  				const type =  ["line","pie","scatter","bar","rader"].includes(viewType) && "chart" || viewType ; 
-							self.createView({item,box:$val,type,id});
-						})(index,$(val));
-						
+					const modelData = JSON.parse(res.modelData);
+
+					modelData.filter(val=>val.viewID).map((val,index)=>{
+
+						(function(item,_val){
+							const {point,size,viewID:id,type:_type} = _val;
+							const $dom = $("#"+point[2]);
+
+			  				const type =  ["line","pie","scatter","bar","rader"].includes(_type) && "chart" || viewType ; 
+							self.createView({item,box:$dom,type,id});
+						})(index,val,);
 					});
 				}else{
 
-					alert("kong");
+					console.log("该视图已经不存在！");
 				
 				}
 		});
@@ -103,6 +145,8 @@ class App{
 
 		const {borderType,option,index,viewTitle,viewType,id} = config;
 		const poitionClass = borderType == "2" ? "border3-opt" : "";	
+
+		const $maxWindow = this.maxWindow ;
 
 		//<span class="fa fa-filter view-btn" sign="filter" title="筛选"></span>
 		//<span class="fa fa-refresh view-btn" sign="refresh" title="刷新"></span>
@@ -239,6 +283,8 @@ class App{
 
 		const {viewTitle:title} = view ;
 
+		const $maxWindow = this.maxWindow ;
+
 		const is_max = !$maxWindow.is(":hidden");
 
 		 if(view.border){
@@ -284,6 +330,9 @@ class App{
 
 	}
 	handle(){
+
+		const $maxWindow = this.maxWindow ;
+
 			$("#back").click(function(){
 				
 				const $slide = $("#slide", window.parent.document);
@@ -297,10 +346,10 @@ class App{
 				});
 
 			});
-			$app.on("click",".btn-handle",function(){
+			this.app.on("click",".btn-handle",function(){
 				$(this).toggleClass("active");
 			});
-			$app.on("click",".view-btn",function(){
+			this.app.on("click",".view-btn",function(){
 				
 				const type = $(this).attr("sign");
 				const par = $(this).parent();

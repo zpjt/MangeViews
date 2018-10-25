@@ -8,71 +8,7 @@ import {HeadOpt} from "./HeadOpt.js";
 import {ViewSetModal} from "./ViewSetModal.js";
 import {ViewComponet} from "./ViewComponet.js";
 import {TemplateMap} from "./templateMap.js";
-
-
-/**
- * 保存组件的数据，最后便于统一保存
- */
-class DataDB {
-
-	static index = 0 ;
-
-
-
-	constructor(){
-		this.viewDB = new Map();
-	}
-	add(object,viewType,node,viewObj){
-
-		const {$box,htmlStr,borderType,viewId,status="create"} = viewObj ;
-
-		const id = ++ DataDB.index;
-
-		let _viewID = viewId;
-
-			$box.attr("echo-id",_viewID);
-
-
-		htmlStr && $box.html(htmlStr);
-
-		const  type = viewType,
-			   viewTitle = object.chartName,
-			   index = id;
-
-		 new View($box, {
-			id,
-			type,
-			index,
-			viewTitle
-		}, node, "2");
-
-		const data = {
-			id,object,viewType,node,borderType,
-			viewId: _viewID ,
-		}
-
-		console.log(data);
-
-		this.viewDB.set($box[0],data);
-		$box.addClass("view-fill");
-
-	}
-	get(dom){
-		return  this.viewDB.get(dom);
-	}
-	remove(dom){
-		this.viewDB.delete(dom);
-	}
-
-	set(dom,obj){
-
-		new 
-		this.viewDB.set(dom,obj);	
-
-		console.log(this.viewDB);
-	}
-
-}
+import {Summernote} from "./Summernote.js";
 
 
 class Page{
@@ -82,11 +18,9 @@ class Page{
 		this.modal = new SModal();
 		this.inp = new SInp();
 		this.unit = new Unit();
-		this.viewDB = new DataDB();
 		this.templateMap = new TemplateMap();
 
 		const modal = this.modal ;
-		const viewDB = this.viewDB ;
 		const unit = this.unit ;
 		const templateMap = this.templateMap;
 
@@ -116,17 +50,14 @@ class Page{
 
  		new HeadOpt({
 	    	modal,
-	    	viewDB,
 	    	templateMap,
 	    	unit,
 	    	getTemplate:()=>{
 	    		return this.templateView.getTemplate();
 	    	},
-	    	getViewData:(dom)=>{
-				return this.viewDB.get(dom);
-   			},
 	    }); 
-
+		//编辑器
+		new Summernote();
 	    this.handle();
 	}
 

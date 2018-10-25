@@ -10,7 +10,6 @@ class TemplateMap{
 
 		window.viewsMap = this.viewsMap ;
 
-		console.log(window.viewsMap);
 
 	}
 
@@ -29,16 +28,9 @@ class TemplateMap{
 
 		viewsDomArr.forEach((val,item)=>{
 
-			const attributeObj = templateDatas[item];
+							
+			const attributeObj = { createId:"",...templateDatas[item]};
 
-			const {
-					size,
-					point,
-					viewID,
-					borderType,
-					type,
-					par,
-			} = attributeObj;
 
 			const viewData = null;
 
@@ -74,6 +66,33 @@ class TemplateMap{
 
 	}
 
+	ceateView($dom,borderType,mapId,viewTitle,node,size,type){
+
+			const border_str = borderType  === "0" ? "" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${borderType}"></div>`;
+
+			const htmlStr = border_str + `<div class="view-content"></div>`;
+			$dom.html(htmlStr);
+
+			const _type = ["line","pie","scatter","bar","rader"].includes(type) ? "chart" : type ;
+			
+			new View($dom, {
+				id:mapId,
+				type:_type,
+				index:mapId,
+				viewTitle
+			}, node, "2");
+	}
+	
+	initAdd($dom,borderType,viewTitle,node,size,type){
+
+		const mapId  = ++TemplateMap.MapID;
+
+		this.viewsMap.get($dom[0]).viewData = node;
+
+		this.ceateView($dom,borderType,mapId,viewTitle,node,size,type);
+
+
+	}
 	add(node,$dom,attr,status){
 
 		const {borderType,type,viewTitle} = attr ;
@@ -99,33 +118,14 @@ class TemplateMap{
 			view.attributeObj.createId = mapId;
 
 		}else if(status === "edit" && viewID){
-			
-			api.deleteChart(viewID).then(res=>{
 
-				console.log(res,"删去");
+			view.attributeObj.viewID = "";
+			api.deleteChart(viewID).then(res=>{
 			});
-	
 		}
 
-	    console.log(view);
-
-	 	const border_str = borderType  === "0" ? "" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${borderType}"></div>`;
-
-		const htmlStr = border_str + `<div class="view-content"></div>`;
-		$dom.html(htmlStr);
-
 		$dom.addClass("view-fill");
-
-		const _type = ["line","pie","scatter","bar","rader"].includes(type) ? "chart" : type ;
-
-		
-		new View($dom, {
-			id:mapId,
-			type:_type,
-			index:mapId,
-			viewTitle
-		}, node, "2");
-
+		this.ceateView($dom,borderType,mapId,viewTitle,node,size,type);
 	}
 
 	remove($dom){
@@ -139,7 +139,6 @@ class TemplateMap{
 
 		viewID && api.deleteChart(viewID).then(res=>{
 
-				console.log(res,"删去");
 		});
 
 		viewMap.attributeObj = null ;
@@ -154,7 +153,6 @@ class TemplateMap{
 
 
 		viewMap.viewData = null ;
-		console.log(viewMap);
 
 	}
 

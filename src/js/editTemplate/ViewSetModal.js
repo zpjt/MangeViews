@@ -682,11 +682,13 @@ class ViewSetModal {
 		console.log(this.dimWd.getValue(this.dimWd.box,"all"),"ssss");
 		common[fieldObj[type].pubDimValsField] = this.dimWd.getValue(this.dimWd.box,"all").map(val=>{
 		
+			const obj = {id:val.dim_value,text:val.dim_name};
+
 			if( viewType==="line" || viewType==="bar"){
 					obj.lineType= viewType==="line" ? "1" : "2";
 			}
 
-			const obj = {id:val.dim_value,text:val.dim_name};
+			
 			
 
 			return obj ;

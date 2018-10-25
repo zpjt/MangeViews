@@ -418,9 +418,9 @@ class ChangeView{
 
 		const {newEl,oldEl} = boxObj;
 
-		if(!oldEl.hasClass("view-fill")){
+	/*	if(!oldEl.hasClass("view-fill")){
 			return ;
-		}
+		}*/
 
 		const {templateMap} = this.config;
 
@@ -581,10 +581,12 @@ class TemplateView  extends ChangeView {
 	
 	
 
-	createView(config){
-		const {id,type,item,box} = config;
+	createView(val,viewID,$dom){
 
-		const {unit,templateMap} = this.config;
+		const {templateMap} = this.config;
+		const {type,borderType,size} = val;
+
+		const _type = ["line","pie","scatter","bar","rader"].includes(type) ? "chart" : type ;
 
 		const method={
 			table:{
@@ -596,25 +598,14 @@ class TemplateView  extends ChangeView {
 				configName:"graphInfo",
 			},
 		}
-		const _typeObj = method[type];
+		const _typeObj = method[_type];
 
-		_api[_typeObj.getDataUrl](id).then(res=>{
+		_api[_typeObj.getDataUrl](viewID).then(res=>{
 
 				if(res.data && res.data.length){
-					const node = res.data ;
-					const obj = res[_typeObj.configName];
-					const borderEl = box.find(".bgSvg");
 
-					const viewObj = {
-						$box:box,
-						htmlStr:false,
-						borderType: borderEl.length && borderEl.attr("echo-type") || "0",
-						viewId:id,
-						status:"edit",
-					};
-
-			//		templateMap.add(res,box,)
-					
+					const viewTitle = res[_typeObj.configName].chartName;
+					templateMap.initAdd($dom,borderType,viewTitle,res,size,type);
 
 				}else{
 					unit.tipToast("没数据！",3);
@@ -626,22 +617,31 @@ class TemplateView  extends ChangeView {
 	}
 
 
-	renderTemplateViews(){
+	renderTemplateViews(modelData){
 
-		const _self = this ;
+		const {templateMap} = this.config;
+		const _me =this;
 
-		const views = this.templateBox.find(".view-item.view-fill");
+		const views = this.templateBox.find(".view-item");
+		const templateData = JSON.parse(modelData);
+		templateData.map((val,index)=>{
 
-		$.map(views,(val,index)=>{
-			(function(item,$val){
-				const viewType = $val.attr("echo-type"),
-					  id =  $val.attr("echo-id");
+			const dom = views[index];
+			const $dom = $(dom);
+			templateMap.viewsMap.set(dom,{attributeObj:{create:"",...val},viewData:null});
+			const viewID = val.viewID;
 
-			  	const type =  ["line","pie","scatter","bar","rader"].includes(viewType) && "chart" || viewType ; 
-				_self.createView({item,box:$val,type,id});
-			})(index,$(val));
-			
-		});
+			if(viewID){
+				
+				!function(_val,_viewID,_dom){
+
+					_me.createView(_val,_viewID,_dom);
+
+				}(val,viewID,$dom);
+
+			}
+		})
+		
 				
 	}
 
@@ -656,17 +656,16 @@ class TemplateView  extends ChangeView {
 
 			let templateStr = "";
 
-			if(!res.model){
+			if(res.model){
 
 				templateStr = res.model;
 				this.box.html(templateStr);
 				this.viewDrop();
-				this.renderTemplateViews();
-
+				this.renderTemplateViews(res.modelData);
 			}else{
 
 				const positionArr =TemplateView.positionArr;
-				const strArr = positionArr.map(val=>`<div class="view-item ${val}" draggable="true"   style="grid-area:${val}"></div>`);
+				const strArr = positionArr.map(val=>`<div class="view-item " draggable="true" id="${val}"  style="grid-area:${val}"></div>`);
 				
 				templateStr = `<div class="view-template "  echo-theme="theme4" id="viewTemplate" style='grid-template-areas:
 				    "t-left t-middle t-right"
@@ -691,7 +690,6 @@ class TemplateView  extends ChangeView {
 							size:[1,1],
 							point:[x,y,val],
 							viewID:"",
-							createId:"",
 							borderType:"0",
 							type:"",
 							par:"",
@@ -801,7 +799,11 @@ class TemplateView  extends ChangeView {
 		if(has_fill){
 			
 			const method = chartArr.includes(_viewType_1) ? "graphInfo" : "tabInfo" ;
-			const attr = {borderType:borderType_1,type:_viewType_1,viewTitle:viewData[method].chartName,createId:createId_1,viewID:viewID_1};
+		
+			const viewTitle = viewData_1[method].chartName ;
+				console.log(viewTitle);
+
+			const attr = {borderType:borderType_1,type:_viewType_1,viewTitle,createId:createId_1,viewID:viewID_1};
 			templateMap.add(viewData_1,$dragEl,attr,"replace");
 
 		}else{
