@@ -5,6 +5,8 @@ const  anime = require("js/common/anime.min.js");
 
 const {baseUrl} = window.jsp_config;
 
+console.log("eee22");
+
 
 class Login{
 

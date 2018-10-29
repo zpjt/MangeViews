@@ -391,31 +391,31 @@ $border:#E9E9E9;
 }
 
 /* 模态框 */
-#setComponentMd{
-	.m-content{
+.s-modal{
+	div.m-content{
 		width:850px;
 		overflow:hidden;
 	}
-	.m-title{
-		text-align:left;
-		padding: 0 15px;
-	}
-	#modalType{
-		font-size:28px;
-		vertical-align: middle;
-	}
-
-
-	.m-title{
-		height: 60px;
-    	line-height: 60px;
-    	text-align:center;
-	}
-}
-.s-modal{
 	.view-logo{
 		position: absolute;
 		left:20px;
+		.sicon{
+			font-size:28px;
+			vertical-align: middle;
+		}
+	}
+	div.m-title{
+		height: 60px;
+    	line-height: 60px;
+    	text-align:center;
+		padding: 0 15px;
+	
+		.m-txt{
+			font:{
+				size:16px;
+				weigth:bolder;
+			}
+		}
 	}
 	.g-tab-box{
 		display:flex;
@@ -653,17 +653,43 @@ $border:#E9E9E9;
 	}
 	
 }
+/* 实时组件模态框 */
 
-
-
-
-/* 组件样式 */
-.view-item{
-	
-
-
-		
+#realSelZbs{
+	overflow: auto;
+	height: 380px;
 }
+.g-realBox{
+	display:flex;
+	justify-content: space-between;
+	.g-zb{
+		width:53%;
+		box-sizing:border-box;
+	}	
+	.g-set{
+		width:45%;
+		box-sizing:border-box;
+	}	
+	.dim-item{
+		margin:8px;
+	}
+
+	.zb-name{
+		margin:5px;
+	}
+	.dim-wdItem{
+		.zb-item-box{
+			border-bottom:1px solid ;
+		}
+		
+	}
+	.dim-item[dim-id="2"]{
+		border-bottom:1px solid ;
+	}
+}
+
+
+
 
 
        

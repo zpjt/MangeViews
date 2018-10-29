@@ -9,6 +9,8 @@ import {ViewSetModal} from "./ViewSetModal.js";
 import {ViewComponet} from "./ViewComponet.js";
 import {TemplateMap} from "./templateMap.js";
 import {Summernote} from "./Summernote.js";
+import {TimeRealMd} from "./TimeReal.js";
+import {api} from "api/editTemplate.js";
 
 
 class Page{
@@ -26,11 +28,21 @@ class Page{
 
 		$("#viewTitle").html(`<span>${window.parent.menuName}</span>`);
 
-
 		this.viewSetModal = new ViewSetModal({
 			modal,
 		    unit,
 		    templateMap,
+		});
+
+		this.TimeRealMd = new TimeRealMd({
+			modal,
+		    unit,
+		});
+
+		//编辑器
+		this.editViewMd = new Summernote({
+				modal,
+		    unit,
 		});
 
 		this.viewComponet = new ViewComponet();
@@ -39,7 +51,21 @@ class Page{
 
 	    this.templateView = new TemplateView($("#templateBox"),{
 	   		upModalStatus:(type,$view)=>{
-	   			this.viewSetModal.upModalStatus(type,$view);
+				
+				switch(type){
+					case "timeReal":{
+						this.TimeRealMd.upModalStatus($view);
+						break;
+					}
+					case "editView":{
+						this.editViewMd.upModalStatus($view);
+						break;
+					}
+					default:{
+						this.viewSetModal.upModalStatus(type,$view);
+						break;
+					}
+				}
 	   		},	
 	   		setModalSel:($view)=>{
 				this.viewSetModal.setModalSel($view);
@@ -56,9 +82,30 @@ class Page{
 	    		return this.templateView.getTemplate();
 	    	},
 	    }); 
-		//编辑器
-		new Summernote();
+		
+
+		this.getData();
 	    this.handle();
+	}
+
+	getData(){
+		return Promise.all([api.dimtree(), api.kpitree(), api.orgtree()]).then((res) => {
+			
+			const orgTree = res[2].sub;
+			const kpiTree = res[1].sub;
+			const dimTree = res[0].sub;
+
+			Promise.resolve().then(res=>{
+				this.viewSetModal.renderTreeData(orgTree,kpiTree,dimTree);
+			});
+			
+			Promise.resolve().then(res=>{
+				this.TimeRealMd.renderTreeData(orgTree,kpiTree,dimTree);
+			});
+			
+
+
+		});
 	}
 
 

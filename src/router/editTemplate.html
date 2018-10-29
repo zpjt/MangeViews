@@ -11,7 +11,6 @@
 </head>
 
 <body>
-
     <div id="app">
         <header>
             <div id="headOpt" class="header">
@@ -88,7 +87,6 @@
                        </span>
                    </div>
                    <div class="component-item" draggable="true" echo-type="editView"><i class="sicon sicon-text"></i></div>
-                   <div class="component-item" draggable="true" echo-type="imgView"><i class="sicon sicon-img"></i></div> 
                 </div>
             </aside>
             <section id="g-layout">
@@ -226,7 +224,7 @@
                                 <div class="sel-item">
                                     <div class="sel-item">
                                         <p class="s-title">时间筛选:</p>
-                                        <div id="calendarTime" class="calendar-time">
+                                        <div  class="calendar-time">
                                             <span class="calendar-inp-icon"><i class="fa fa-calendar">&nbsp;</i></span>
                                             <input type="text" id="viewShowTime" read="read" class="calendar-inpTxt s-inp " readonly="readonly">
                                             <div class="dataTime" id="calendarTime"></div>
@@ -291,17 +289,127 @@
     </div>
 
 
-     <!-- 数据选择模态框 -->
-    <div class="s-modal s-effect-2 m-show" id="setComponentMd" style="display: block;">
+     <!-- 编辑器模态框 -->
+    <div class="s-modal s-effect-2" id="editViewMd" >
         <div class="m-content">
             <div class="m-title">
-                <span>编辑器</span>
+                <span class="view-logo">
+                    <b>所选组件：</b>
+                    <span class="sicon sicon-text"></span>
+                </span>
+                <span class="m-tit">编辑器</span>
                 <span class="m-close m-close-icon">
                     <i  class="fa fa-times fa-lg"></i>
                 </span>
             </div>
-            <div class="m-action " style="width:800px;height:500px">
-             <iframe src="assert/summernote-develop/index.html" frameborder="0" style="width: 100%;height: 100%"></iframe>
+            <div class="m-action" style="height:500px;" id="editBox">
+                
+               
+
+            </div>
+            <div class="m-foot">
+                <button class="s-btn sure-btn" >预 览</button>
+                <span>&nbsp;&nbsp;&nbsp;</span>
+                <button class="s-btn s-dashBtn m-close">关 闭</button>
+            </div>
+        </div>
+    </div>
+
+      <!--实时组件模态框 -->
+    <div class="s-modal s-effect-2" id="timeRealMd" >
+        <div class="m-content" style="overflow:initial;width: 950px">
+
+            <div class="m-title">
+                <span class="view-logo">
+                    <b>所选组件：</b>
+                    <span class="sicon sicon-component">
+                       <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                   </span>
+                </span>
+                <span class="m-tit">实时组件</span>
+                <span class="m-close m-close-icon">
+                    <i  class="fa fa-times fa-lg"></i>
+                </span>
+            </div>
+            <div class="m-action g-realBox" style="height:500px;" >
+                 <div class="g-zb">
+                      <div class="sel-item">
+                            <p class="s-title " style="width:100px">选择监测指标:</p>
+                            <div style="position: relative;">
+                                <button class="s-btn  m-rippleBtn" id="realSelZb"><span class="fa fa-plus">&nbsp;</span>添加（多选）</button>
+                                <div class="zb-box" id="realTreeBox">
+                                    <p class="cate-title">指标选择</p>
+                                    <div id="realTree"></div>
+                                    <div id="realZbOpt" class="zb-opt">
+                                        <button class="s-btn s-bevell">确定</button>
+                                        <button class="s-btn  ">取消</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cata-item">
+                            <p class="cate-title">所选指标名称:</p>
+                            <div class="cate-box" id="realSelZbs">
+                            </div>
+                        </div>
+                 </div>
+                 <div class="g-set">
+                   
+                            <div class="cata-item">
+                                <p class="cate-title">条件设置:</p>
+                                <div class="cate-box" >
+                                  
+                                    <div class="sel-item">
+                                         <p class="s-title">时间筛选:</p>
+                                         <div id="realCalendarBox" class="calendar-time">
+                                             <span class="calendar-inp-icon"><i class="fa fa-calendar">&nbsp;</i></span>
+                                           <input type="text" id="realShowTime" read="read" class="calendar-inpTxt s-inp " readonly="readonly">
+                                           <div class="dataTime" id="realCalendar"></div> 
+                                        </div>
+                                    </div>  
+                                    <div class="sel-item" >
+                                         <p class="s-title">机构维度:</p>
+                                          <div class="s-comboBox" id="realOrg"> </div> 
+                                    </div>
+                                    <div class="sel-item" style="position: relative; z-index: 0;">
+                                        <p class="s-title">刷新时间:</p>
+                                        <span class="s-switch" echo-text="关闭" >
+                                            <input type="checkbox" id="refreshTime" checked="checked">
+                                            <label for="refershTime" echo-text="开启"></label>
+                                        </span>
+                                    </div>
+                                     <div class="sel-item" >
+                                        <p class="s-title"></p>
+                                        <div>
+                                            <span>每隔&nbsp;&nbsp;</span>
+                                            <input type="text" placeholder="时间..." value="" required="required" class="s-inp num-valid no-fill" id="refreshVal" pattern="^0\.[0-9]+|^[1-9]\d*\.?\d*">
+                                            <select name="refreshRotate" id="refreshRotate" class="m-select">
+                                                <option value="1" selected="selected">秒</option>
+                                                <option value="2">分</option>
+                                                <option value="3">时</option>
+                                                <option value="4">天</option>
+                                                <option value="5">周</option>
+                                            </select>
+                                            <span>&nbsp;&nbsp;刷新1次</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cata-item">
+                                <p class="cate-title">样式设置:</p>
+                                <div class="cate-box" >
+                                    <div class="sel-item">
+                                        <p class="s-title">样式:</p>
+                                        <div class="g-realStyle">
+                                            <span><input type="radio" class="real-style s-radio " id="real-style1" value="1" name="real-style"><label for="real-style1" class="m-real1 ">1</label></span>
+                                            <span><input type="radio"  class="real-style s-radio " id="real-style2" value="2" name="real-style"><label for="real-style2" class="m-real2 ">2</label></span>
+                                            <span><input type="radio" class="real-style s-radio " id="real-style3" value="3" name="real-style"><label for="real-style3" class="m-real3">3</label></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                 </div>
             </div>
             <div class="m-foot">
                 <button class="s-btn sure-btn" >预 览</button>

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --env=production  --profile --json > compilation-stats.json",
+    "build": "webpack --env=production  --profile ",
     "server": "webpack-dev-server --open=chrome  --env=development -w"
   },
   "keywords": [],

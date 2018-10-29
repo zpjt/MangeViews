@@ -312,7 +312,7 @@ class Chart {
 		const border = this.border;
 
 		const top = border === "3" ? "12%" : "8%";
-		const left_add = is_landscape && 8  || 0;
+		const left_add = is_landscape && 16  || 0;
 		const top_add = border === "3" ? 4 :  3;
 		const grid_top_add = border === "3" ? 8  : 6;
 

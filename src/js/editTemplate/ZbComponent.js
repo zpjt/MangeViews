@@ -19,21 +19,19 @@ class ZbComponent {
 
 		const {kpiTree, dimTree, modal ,getViewModal,unit} = config;
 
-		this.kpiTree = kpiTree;
 		this.dimTree = dimTree;
 		this.getViewModal = getViewModal;
 		this.modal = modal;
 		this.zbBox = $("#zbTreeBox");
 		this.selZbs = $("#selZbs");
 		this.publicDimEl = $("#publicDim");
-		this.init();
+		this.init(kpiTree);
 		this.handle();
 	}
 
 
-	init() {
+	init(kpiTree) {
 
-		const kpiTree = this.kpiTree;
 		this.zbTree = new Tree($("#zbTree"), {
 			"clickAndCheck": false,
 			"checkbox": true,
@@ -167,7 +165,6 @@ class ZbComponent {
 					if(commonObj){
 					
 						this.setCommonVal(commonObj,viewSetModal);
-			//			viewSetModal.dimWd.setValue(commonObj.pubDimValue);
 					}else{
 							viewSetModal.yAxis.clearValue();
 							viewSetModal.xAxis.clearValue();
@@ -279,12 +276,6 @@ class ZbComponent {
 						break;
 				}
 		})
-		
-		
-
-
-
-
 	}
 	
 	renderDimBox(dimVals,dimArr){
@@ -293,19 +284,20 @@ class ZbComponent {
 
 					dimVals.map(val=>{
 						const {dimVal,kpiId,dimId} = val ;
-						const dimCombobox = $(`.dimCombobox[kpi_id=${kpiId}]`);
+						const dimCombobox = $(`#selZbs .dimCombobox[kpi_id=${kpiId}]`);
 						const data = this.findDimData(dimId).sub;
 						new SCombobox(dimCombobox, {
 											data: data,
 											textField: "dim_name",
 											idField: "dim_value",
 											defaultVal:dimVal,
+											
 										});
 					});	
 				
 				}else{
 
-					dimArr.length > 1 && $.map($(".dim-item"), val => {
+					dimArr.length > 1 && $.map($("#selZbs .dim-item"), val => {
 
 										const $val = $(val);
 										const dimId = $val.attr("dim-id");
@@ -369,13 +361,9 @@ class ZbComponent {
 		return str;
 	}
 
-	sureBtnHandle(viewSetModal,object={},viewType=""){
-		
-		
+	setZbTree(viewType,object){
 
-		let selID = null ,
-			commonObj = null ,
-			dim_vals = [];
+		let selID = null ,commonObj = null , dim_vals = [];
 
 		if(viewType==="table"){
 			const {kpi_infos=[],kpis,dim_x,time_start,time_id,orgs,row_wd,col_wd,pub_dim_vals=[]} = object ;
@@ -388,6 +376,7 @@ class ZbComponent {
 
 					return kpi_id ;
 			});
+
 			selID = id_1.concat(id_2);
 			commonObj = {
 				time_start,
@@ -398,7 +387,7 @@ class ZbComponent {
 				pubDimValue:pub_dim_vals.map(val=>val.id),
 			}
 	
-		}else if(["line","pie","scatter","bar","rader"].includes(viewType)){
+		}else {
 			const {kpisDimX=[],kpis,dim_x,time_start,time_id,orgs,contrastDim,rowDim,pubDimValue=[]} = object ;
 			const id_1= kpis.map(val=>val.id);
 			const id_2= kpisDimX.map(val=>{
@@ -419,14 +408,22 @@ class ZbComponent {
 				pubDimValue:pubDimValue.map(val=>val.id)
 			};
 
+
 		}
 
-		if(selID){
-			this.zbTree.setValue(selID);
-		}
+		selID && this.zbTree.setValue(selID);
+
+
+		return {commonObj,dim_vals};
+	}
+
+	sureBtnHandle(viewSetModal,object={},viewType=""){
+		
+		const {commonObj,dim_vals} = viewType && this.setZbTree(viewType,object) || {commonObj:null,dim_vals:[]};
+
 
 		const values = this.zbTree.getValue("all"),
-			      ids = values.map(val => val.kpi_id);
+			   ids = values.map(val => val.kpi_id);
 		
 		if (!ids.length) {
 			return;
@@ -445,8 +442,6 @@ class ZbComponent {
 		 * [指标模态框句柄]
 		 */
 		$("#selZb").click(function() {
-
-			console.log(self,"fsaf");
 
 			const $zbBox = self.zbBox;
 			if ($zbBox.hasClass("active")) {

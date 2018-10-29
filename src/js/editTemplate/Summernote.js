@@ -1,17 +1,42 @@
 
 class Summernote{
 
-	constructor(){
-		console.log("编辑器");
+	static loading = false ;
 
-		this.init();
+	constructor(config){
 
+		const { modal,unit} = config;
+		this.modal = modal;
+		this.unit = unit;
+
+		this.editBox = $("#editBox");
+		this.editMd = $("#editViewMd");
+		this.handle();
 	}
 
 	init(){
-	console.log("d454"); 
 
-	}i
+		if(!Summernote.loading){
+
+			const editFrame = `<iframe src="assert/summernote-develop/index.html" frameborder="0" style="width: 100%;height: 100%"></iframe>`;
+
+			this.editBox.html(editFrame);
+			Summernote.loading = true ;
+	
+		}else{
+			return ;
+		}
+	}
+
+	upModalStatus(){
+
+		this.init();
+		this.modal.show(this.editMd);
+
+	}
+	handle(){
+
+	}
 
 }
 

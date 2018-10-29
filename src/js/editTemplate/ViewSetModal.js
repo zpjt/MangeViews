@@ -30,7 +30,8 @@ class ViewSetModal {
 		this.wd_arr = null;
 		this.commonSel = null ;
 		this.activeViewObje = null ;
-		this.getTreeData();
+
+		this.init();
 		this.handle();
 		
 	}
@@ -38,30 +39,13 @@ class ViewSetModal {
 	init() {
 
 		const self = this;
-		const kpiTree = this.kpiTree,
-			  modal = self.modal,
-			  viewModal = self,
-			  unit = this.unit,
-			  dimTree = this.dimTree;
-
-		this.zbComponent = new ZbComponent({
-			kpiTree,
-			dimTree,
-			modal,
-			unit,
-			getViewModal:()=>{
-				
-				return self ;
-
-			},
-		});
 
 		// 日历
-		this.calendar = new Calendar($(".dataTime"), $("#viewShowTime"), {
+		this.calendar = new Calendar($("#calendarTime"), $("#viewShowTime"), {
 			rotate:3,
 			style: 1,
 		});
-		console.log(this.calendar);
+
 		this.xAxis = new SCombobox($("#XAxis"), {
 			width: 300,
 			"prompt": "请选择横轴维度...",
@@ -112,23 +96,6 @@ class ViewSetModal {
 			}
 		});
 
-		const orgTree = this.orgTree;
-
-		this.orgWd = new SComboTree($("#orgWd"), {
-			"prompt": "请选择科室...",
-			treeConfig: {
-				"clickAndCheck": true,
-				data: orgTree,
-				"childIcon":"sicon sicon-org",
-				idField: "dim_value",
-				textField: "dim_name",
-				childrenField: "sub",
-				judgeRelation: function(val) {
-					return val.type === "0";
-				}
-			}
-		});
-
 		this.dimWd = new SCombobox($("#dimWd"), {
 			width: 300,
 			"prompt": "请选择主题维度...",
@@ -139,14 +106,37 @@ class ViewSetModal {
 		});
 	}
 
-	getTreeData() {
+	renderTreeData(orgTree,kpiTree,dimTree) {
 
-		return Promise.all([api.dimtree(), api.kpitree(), api.orgtree()]).then((res) => {
-			this.orgTree = res[2].sub;
-			this.kpiTree = res[1].sub;
-			this.dimTree = res[0].sub;
-			this.init();
-		})
+			const modal = this.modal,
+				  unit = this.unit;
+
+		  	const _me = this ;
+
+			this.orgWd = new SComboTree($("#orgWd"), {
+				"prompt": "请选择科室...",
+				treeConfig: {
+					"clickAndCheck": true,
+					data: orgTree,
+					"childIcon":"sicon sicon-org",
+					idField: "dim_value",
+					textField: "dim_name",
+					childrenField: "sub",
+					judgeRelation: function(val) {
+						return val.type === "0";
+					}
+				}
+			});
+
+			this.zbComponent = new ZbComponent({
+				kpiTree,
+				dimTree,
+				modal,
+				unit,
+				getViewModal:()=>{
+					return _me ;
+				},
+			});
 	}
 
 	filterAxisData(values) {
@@ -565,7 +555,7 @@ class ViewSetModal {
 
 		let kpis = [],
 			kpi_infos = [];
-		const $dimItems = $(".dim-item");
+		const $dimItems = $("#selZbs .dim-item");
 		
 
 		const objType = fieldObj[type]
