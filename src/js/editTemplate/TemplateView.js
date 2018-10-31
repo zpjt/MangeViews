@@ -458,12 +458,12 @@ class ChangeView{
 
 			switch(_type){
 				case "table":{
-				     new STable(newEl.find(".chart"),{border:borderType},viewData);	
+				     new STable(newEl.find(".view_main"),{border:borderType},viewData);	
 				     chartName = viewData.tabInfo.chartName;
 				}
 				break;
 				case"chart":{
-					echarts.getInstanceByDom(newEl.find(".chart")[0]).resize();	
+					echarts.getInstanceByDom(newEl.find(".view_main")[0]).resize();	
 					chartName = viewData.graphInfo.chartName;
 				}
 				break;
@@ -814,7 +814,7 @@ class TemplateView  extends ChangeView {
 	}
 
 	viewDrop(){
-		const $template = $(".view-item");
+		const $template = this.templateBox.find(".view-item");
 		const viewsArr = Array.from($template);
 		const {upModalStatus} = this.config;
 
@@ -907,8 +907,6 @@ class TemplateView  extends ChangeView {
 		const _self = this;
 		const $templateBox = _self.templateBox;
 		const {setModalSel} = _self.config;
-		const $template = $(".view-item");
-		const viewsArr = Array.from($template);
 
 
 		$templateBox.on("dblclick",".view-item",function(e){
@@ -966,7 +964,6 @@ class TemplateView  extends ChangeView {
 			const $this = $(this);
 			const type = $this.attr("sign");
 			const par = $this.closest(".view-item");
-
 			
 			switch(type){
 

@@ -341,7 +341,7 @@
                                     <p class="cate-title">指标选择</p>
                                     <div id="realTree"></div>
                                     <div id="realZbOpt" class="zb-opt">
-                                        <button class="s-btn s-bevell">确定</button>
+                                        <button class="s-btn s-bevell" >确定</button>
                                         <button class="s-btn  ">取消</button>
                                     </div>
                                 </div>
@@ -359,14 +359,21 @@
                                 <p class="cate-title">条件设置:</p>
                                 <div class="cate-box" >
                                   
-                                    <div class="sel-item">
-                                         <p class="s-title">时间筛选:</p>
-                                         <div id="realCalendarBox" class="calendar-time">
-                                             <span class="calendar-inp-icon"><i class="fa fa-calendar">&nbsp;</i></span>
-                                           <input type="text" id="realShowTime" read="read" class="calendar-inpTxt s-inp " readonly="readonly">
-                                           <div class="dataTime" id="realCalendar"></div> 
+                                    <div class="sel-item" >
+                                        <p class="s-title">时间范围:</p>
+                                        <div>
+                                            <span>前&nbsp;&nbsp;</span>
+                                            <input type="text" placeholder="时间..." value="" required="required" class="s-inp num-valid no-fill" id="timeVal" pattern="^0\.[0-9]+|^[1-9]\d*\.?\d*">
+                                            <select name="timeRotate" id="timeRotate" class="m-select">
+                                                <option value="0" selected="selected">天</option>
+                                                <option value="7">周</option>
+                                                <option value="5">月</option>
+                                                <option value="6">季度</option>
+                                                <option value="4">年</option>
+                                            </select>
+                                            <span>&nbsp;&nbsp;到当前的数据累计</span>
                                         </div>
-                                    </div>  
+                                    </div>
                                     <div class="sel-item" >
                                          <p class="s-title">机构维度:</p>
                                           <div class="s-comboBox" id="realOrg"> </div> 
@@ -412,7 +419,7 @@
                  </div>
             </div>
             <div class="m-foot">
-                <button class="s-btn sure-btn" >预 览</button>
+                <button class="s-btn sure-btn" id="realPre" >预 览</button>
                 <span>&nbsp;&nbsp;&nbsp;</span>
                 <button class="s-btn s-dashBtn m-close">关 闭</button>
             </div>

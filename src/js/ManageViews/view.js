@@ -1,6 +1,7 @@
 import {Border} from "./svgBorder.js";
 import {Chart} from "./chart.js";
 import {STable} from "./sTable.js";
+import {TimeView} from "./TimeView.js";
 
 
 class View {
@@ -21,7 +22,11 @@ class View {
 
 	init(data){
 
-		const method = {"table":"initTable","chart":"initChart","realTime":"initRealTime"}
+		const method = {
+			"table":"initTable",
+			"chart":"initChart",
+			"timeReal":"initRealTime",
+		}
 
 		const chartBox = this.container.children(".view-content");
 		
@@ -31,7 +36,7 @@ class View {
 		this.border && this.initBorder(borderDom);
 
 		chartBox.html(this.renderContent());
-		const chartDom = chartBox.children(".chart");
+		const chartDom = chartBox.children(".view_main");
 		this[method[this.viewType]](chartDom,data);
 		
 	}
@@ -48,8 +53,8 @@ class View {
 	}
 
 	initRealTime($el,data){
-		
-
+		const border = this.borderType;
+		this.timeReal = new TimeView($el,{border},data);
 	}
 
 	initBorder($el){
@@ -95,8 +100,8 @@ class View {
 	}
 
 	renderContent(){
-
-		return `${ this.status == 1 && this.renderViewOpt1() || this.renderViewOpt2()}<div class="chart"></div>`;
+// chart
+		return `${ this.status == 1 && this.renderViewOpt1() || this.renderViewOpt2()}<div class="view_main  ${this.viewType+"_main"}"></div>`;
 	}
 }
 

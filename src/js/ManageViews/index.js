@@ -119,8 +119,6 @@ class App{
 					this.maxWindow.css("backgroundImage",url);
 
 
-					const views = $("#viewTemplate").find(".view-item.view-fill");
-
 					const modelData = JSON.parse(res.modelData);
 
 					modelData.filter(val=>val.viewID).map((val,index)=>{
@@ -131,7 +129,7 @@ class App{
 
 			  				const type =  ["line","pie","scatter","bar","rader"].includes(_type) && "chart" || viewType ; 
 							self.createView({item,box:$dom,type,id});
-						})(index,val,);
+						})(index,val);
 					});
 				}else{
 
@@ -170,12 +168,12 @@ class App{
 											
 										</div>
 						        	</div>
-						            <div class="chart"></div>
+						            <div class="view_main"></div>
 						        </div>
 						    </div>
 							`
 		$maxWindow.html(templateStr);
-		const chartDom = $maxWindow.find(".chart");
+		const chartDom = $maxWindow.find(".view_main");
 		if(viewType=="table"){
 
 			api.getTableData(id).then(res=>{

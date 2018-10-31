@@ -37,6 +37,7 @@ class Page{
 		this.TimeRealMd = new TimeRealMd({
 			modal,
 		    unit,
+		    templateMap
 		});
 
 		//编辑器
@@ -68,7 +69,26 @@ class Page{
 				}
 	   		},	
 	   		setModalSel:($view)=>{
-				this.viewSetModal.setModalSel($view);
+				
+				const  view = templateMap.viewsMap.get($view[0]);
+				const  type = view.attributeObj.type ;
+
+	   			switch(type){
+					case "timeReal":{
+						this.TimeRealMd.setModalSel($view,view);
+						break;
+					}
+					case "editView":{
+						this.editViewMd.setModalSel($view,view);
+						break;
+					}
+					default:{
+						this.viewSetModal.setModalSel($view);
+						break;
+					}
+				}
+
+				
 	   		},
 	   		unit,
 	   		templateMap,

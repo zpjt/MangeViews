@@ -4,15 +4,13 @@
 	display:flex;
 	justify-content: center;
 	height:100%;
-	//background: #fff ;
-	background: var(--color-item-bg) ;
+	background: #fff ;
+	//background: var(--color-item-bg) ;
 	padding:2rem;
 	box-sizing:border-box;
 	
 }
-.test{
-	background:url("../img/beida.png")
-}
+
 #j-login{
 	cursor: pointer;
 }
@@ -391,26 +389,24 @@ $screemMap:(
 	}
 }
 
-@for $i from 1 through 2 {
 
-	.roate-container.type990#{$i}{
+	.roate-container{
 		.screen-bg{
-			background-image: url(../img/990#{$i}/bg3.png);
+			background-image: url(../img/9902/bg3.png);
 		}
 		.icon-roate-1{
-			background-image: url(../img/990#{$i}/ic_1.png);
+			background-image: url(../img/9902/ic_1.png);
 		}
 		.icon-roate-2{
-			background-image: url(../img/990#{$i}/ic_2.png);
+			background-image: url(../img/9902/ic_2.png);
 		}
 		.icon-roate-3{
-			background-image: url(../img/990#{$i}/ic_3.png);
+			background-image: url(../img/9902/ic_3.png);
 		}
 		.icon-roate-4{
-			background-image: url(../img/990#{$i}/ic_4.png);
+			background-image: url(../img/9902/ic_4.png);
 		}
 	} 
-}
 	
 
 
