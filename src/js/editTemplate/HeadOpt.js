@@ -66,6 +66,7 @@ class HeadOpt {
 		const methodObj = {
 			table: "saveTableInfo",
 			chart: "saveGraphInfo",
+			timeReal: "saveTableInfo",
 		};
 
 		console.log(viewsMap);
@@ -87,8 +88,15 @@ class HeadOpt {
 
 			if (!viewID && createId) {
 
-				const _type = type === "table" && "table" || "chart";
-				const object = type === "table" && viewData.tabInfo || viewData.graphInfo;
+				const config = {
+					chart:"graphInfo",
+					table:"tabInfo",
+					timeReal:"tabInfo"
+				}
+
+				const _type = ["line","bar","scatter","pie","radar"].includes(type) && "chart" || type;
+				
+				const object = viewData[config[_type]];
 
 				const req = api[methodObj[_type]](object).then(res => {
 					const {

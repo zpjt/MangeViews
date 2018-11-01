@@ -440,7 +440,7 @@ class ChangeView{
 			attributeObj.type = type ;
 
 
-			const _type = type === "table" && "tabInfo" || "graphInfo";
+			const _type = (type === "table" || type === "timeReal" ) && "tabInfo" || "graphInfo";
 
 			const viewTitle = viewData[_type].chartName ;
 
@@ -454,7 +454,9 @@ class ChangeView{
 			
 			let chartName ;
 
-			const _type = type !== "table" && "chart" || "table";
+			const _type = ["line","pie","bar","scatter","radar"].includes(type) && "chart" || type;
+
+			console.log(type);
 
 			switch(_type){
 				case "table":{
@@ -466,6 +468,9 @@ class ChangeView{
 					echarts.getInstanceByDom(newEl.find(".view_main")[0]).resize();	
 					chartName = viewData.graphInfo.chartName;
 				}
+				break;
+				default:
+				console.log(_type);
 				break;
 			}
 			
@@ -593,6 +598,10 @@ class TemplateView  extends ChangeView {
 				getDataUrl:"getTableData",
 				configName:"tabInfo",
 			},
+			timeReal:{
+				getDataUrl:"getTableData",
+				configName:"tabInfo",
+			},
 			chart:{
 				getDataUrl:"getGraphData",
 				configName:"graphInfo",
@@ -605,7 +614,7 @@ class TemplateView  extends ChangeView {
 				if(res.data && res.data.length){
 
 					const viewTitle = res[_typeObj.configName].chartName;
-					templateMap.initAdd($dom,borderType,viewTitle,res,size,type);
+					templateMap.initAdd($dom,viewTitle,res);
 
 				}else{
 					unit.tipToast("没数据！",3);
@@ -628,7 +637,7 @@ class TemplateView  extends ChangeView {
 
 			const dom = views[index];
 			const $dom = $(dom);
-			templateMap.viewsMap.set(dom,{attributeObj:{create:"",...val},viewData:null});
+			templateMap.viewsMap.set(dom,{attributeObj:{createId:"",...val},viewData:null,timer:null});
 			const viewID = val.viewID;
 
 			if(viewID){

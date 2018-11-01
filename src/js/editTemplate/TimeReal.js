@@ -1,7 +1,9 @@
 import {api} from "api/editTemplate.js";
 import { SCombobox ,Calendar, Tree, SComboTree } from "js/common/Unit.js";
 
+
 class TimeRealMd{
+	static status = "";
 	constructor(config){
 		const { modal,unit,templateMap} = config;
 		this.modal = modal;
@@ -23,12 +25,12 @@ class TimeRealMd{
 	}
 	init(){
 
-		console.log(this.templateMap.viewsMap);
 	}
 	upModalStatus($view){
 	
 		this.activeBox = $view;
 		this.modal.show(this.box);
+		TimeRealMd.status = "create";
 	}
 
 	renderTreeData(orgTree,kpiTree,dimTree){
@@ -70,27 +72,26 @@ class TimeRealMd{
 		const {viewData} = viewMap;
 		this.activeBox = $view;
 		this.modal.show(this.box);
-		console.log(viewData); 
 
-		const {tabInfo:{kpis=[],kpi_infos=[],orgs,time_id,time_start,chartName,isMerge,tab_style}} = viewData ;
+		const {tabInfo:{kpis=[],kpi_infos=[],orgs,time_id,time_start,isDsType,isMerge,tab_style}} = viewData ;
 
 		const id_1 = kpis.map(val=>val.id);
 		const id_2 = kpi_infos.map(val=>val.kpi_id);
 		const dimVals = kpi_infos.map(val=>({kpiId:val.kpi_id,dimId:val.dim_id,dimVal:val.dim_val}))
 		const zbArr = id_1.concat(id_2);
-		this.setZbTree(zbArr);
-		this.refreshTime.prop(checked,!!chartName);
+		this.setZbTree(zbArr,dimVals);
+		this.refreshTime.prop("checked",isDsType!=="0");
 		this.orgWd.setValue(orgs[0].id);
 		this.timeVal.val(time_start);
-		this.timeRotate.val(time_id.split("_"[1]));
-		this.refreshVal.val(chartName);
+		this.timeRotate.val(time_id.split("_")[1]);
+		this.refreshVal.val(isDsType);
 		this.refreshRotate.val(isMerge);
 		$(".real-style").eq(tab_style - 1 ).prop("checked",true);
 
-		
+		TimeRealMd.status = "edit";
 	}
 
-	setZbTree(zbArr){
+	setZbTree(zbArr,dimVals){
 		this.zbTree.setValue(zbArr);
 
 		this.sureBtnHandle(dimVals);
@@ -176,12 +177,11 @@ class TimeRealMd{
 		return node;
 	}
 
-	renderDimBox(dimArr,dimVals){
+	renderDimBox(dimVals){
 
 		const _me = this ;
 
 		if(dimVals){
-
 					dimVals.map(val=>{
 						const {dimVal,kpiId,dimId} = val ;
 						const dimCombobox = $(`#realSelZbs .dimCombobox[kpi_id=${kpiId}]`);
@@ -216,10 +216,6 @@ class TimeRealMd{
 												};
 
 												_me.selZbArr[dimZbIndex] = obj ;
-
-												console.log(_me.selZbArr);
-
-
 											}
 										});
 				});	
@@ -264,8 +260,6 @@ class TimeRealMd{
 												};
 
 												_me.selZbArr[dimZbIndex] = obj ;
-
-												console.log(_me.selZbArr);
 											}
 										});
 					});
@@ -348,7 +342,7 @@ class TimeRealMd{
 				     "userColumnId":-1, //-1实时组件,0表格
 				     "startTime": null,
 				     "endTime": null,
-				     "chartName": this.refreshVal.val() ,//刷新值,
+				     "chartName": "",
 				     kpi_infos,
 				     "row_wd": ["1"],
 				     "col_wd": ["3"],
@@ -356,12 +350,11 @@ class TimeRealMd{
 				     "tab_style": $(".real-style:checked").val(),
 				     "total":  "0",
 				     "isMerge": this.refreshRotate.val(), //刷新频率
-				     "isDsType": "1", 
+				     "isDsType":this.refreshTime.prop("checked") ? 1 : 0 ,//是否刷新
 				     "dim_x": false
 				 }
 
 		 api.getTableInfo(parmas).then(res=>{
-						console.log(res);
 					
 				const attr = {
 					type:"timeReal",
@@ -369,19 +362,16 @@ class TimeRealMd{
 					viewTitle:"",
 				}
 
-				this.templateMap.add(res,this.activeBox,attr,"create");
-
-				// add(node,$dom,attr,status){
+				const status = TimeRealMd.status ;
+				this.templateMap.add(res,this.activeBox,attr,status);
 		 });
-
-
-
 	}
 
 	handle(){
 
 		const _self = this ;
 		const $zbBox = _self.zbBox;
+		const $refreshTimeSel = $("#refreshTimeSel")
 	    $("#realSelZb").click(function() {
 			
 			if ($zbBox.hasClass("active")) {
@@ -389,6 +379,15 @@ class TimeRealMd{
 			}
 			_self.modal.show($zbBox, "active");
 		 });
+
+	    this.refreshTime.click(function(){
+			
+
+			!$(this).prop("checked") && $refreshTimeSel.show() || $refreshTimeSel.hide();
+				
+
+
+	    });
 
 
 		/**

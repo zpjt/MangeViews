@@ -27,7 +27,14 @@ class API {
 	getTableData(chartId){
 		return Promise.resolve($.post(URL_V+"getTableData",{chartId}));
 	}
-
+	getTableInfo(obj){
+		return Promise.resolve($.ajax({
+				url:URL_V+"getTableInfo",
+				data:JSON.stringify(obj),
+				contentType:"application/json",
+				type:"post",
+			}));
+	}
 
 	
 	

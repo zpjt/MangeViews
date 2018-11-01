@@ -363,7 +363,7 @@
                                         <p class="s-title">时间范围:</p>
                                         <div>
                                             <span>前&nbsp;&nbsp;</span>
-                                            <input type="text" placeholder="时间..." value="" required="required" class="s-inp num-valid no-fill" id="timeVal" pattern="^0\.[0-9]+|^[1-9]\d*\.?\d*">
+                                            <input type="text" placeholder="时间..." value="" required="required" class="s-inp num-valid no-fill" id="timeVal" pattern="0|^0\.[0-9]+|^[1-9]\d*\.?\d*">
                                             <select name="timeRotate" id="timeRotate" class="m-select">
                                                 <option value="0" selected="selected">天</option>
                                                 <option value="7">周</option>
@@ -385,11 +385,11 @@
                                             <label for="refershTime" echo-text="开启"></label>
                                         </span>
                                     </div>
-                                     <div class="sel-item" >
+                                     <div class="sel-item" id="refreshTimeSel">
                                         <p class="s-title"></p>
                                         <div>
                                             <span>每隔&nbsp;&nbsp;</span>
-                                            <input type="text" placeholder="时间..." value="" required="required" class="s-inp num-valid no-fill" id="refreshVal" pattern="^0\.[0-9]+|^[1-9]\d*\.?\d*">
+                                            <input type="text" placeholder="时间..." value="" required="required" class="s-inp num-valid no-fill" id="refreshVal" pattern="^[1-9]\d*\.?\d*">
                                             <select name="refreshRotate" id="refreshRotate" class="m-select">
                                                 <option value="1" selected="selected">秒</option>
                                                 <option value="2">分</option>
@@ -409,7 +409,7 @@
                                     <div class="sel-item">
                                         <p class="s-title">样式:</p>
                                         <div class="g-realStyle">
-                                            <span><input type="radio" class="real-style s-radio " id="real-style1" value="1" name="real-style"><label for="real-style1" class="m-real1 ">1</label></span>
+                                            <span><input type="radio" class="real-style s-radio " checked="checked" id="real-style1" value="1" name="real-style"><label for="real-style1" class="m-real1 ">1</label></span>
                                             <span><input type="radio"  class="real-style s-radio " id="real-style2" value="2" name="real-style"><label for="real-style2" class="m-real2 ">2</label></span>
                                             <span><input type="radio" class="real-style s-radio " id="real-style3" value="3" name="real-style"><label for="real-style3" class="m-real3">3</label></span>
                                         </div>

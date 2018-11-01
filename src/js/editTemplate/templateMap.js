@@ -1,5 +1,6 @@
 import {View } from "js/ManageViews/view.js";
 import {api } from "api/editTemplate.js";
+
 class TemplateMap{
 
 	static MapID = 0 ;
@@ -27,16 +28,13 @@ class TemplateMap{
 
 
 		viewsDomArr.forEach((val,item)=>{
-
 							
 			const attributeObj = { createId:"",...templateDatas[item]};
-
-
 			const viewData = null;
-
 			const data = {
 				attributeObj,
 				viewData,
+				timer:null,
 			};
 
 			this.viewsMap.set(val,data);
@@ -66,7 +64,9 @@ class TemplateMap{
 
 	}
 
-	ceateView($dom,borderType,mapId,viewTitle,node,size,type){
+	ceateView($dom,viewTitle,viewMap){
+
+			const {attributeObj:{borderType,createId,size,type},viewData:node} = viewMap ;
 
 			const border_str = borderType  === "0" ? "" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${borderType}"></div>`;
 
@@ -74,22 +74,73 @@ class TemplateMap{
 			$dom.html(htmlStr);
 
 			const _type = ["line","pie","scatter","bar","rader"].includes(type) ? "chart" : type ;
+
 			
-			new View($dom, {
-				id:mapId,
+			const view = new View($dom, {
+				id:createId,
 				type:_type,
-				index:mapId,
-				viewTitle
+				index:createId,
+				viewTitle,
 			}, node, "2");
+
+			console.log("init-createView");
+
+
+		this.IntervalreFresh(type,view,viewMap);
+		
+
+	}
+
+	clearRefresh(view){
+
+		if(view.timer){
+			console.log("清除定时器");
+			clearInterval(view.timer);
+			view.timer = null ;
+		}
+	}
+
+	IntervalreFresh(type,view,viewMap){
+
+
+		switch(type){
+			case "timeReal":{
+				const {tabInfo:{isDsType}} = viewMap.viewData ;
+						
+				if(isDsType === "1"){
+					
+					viewMap.timer = setInterval(function(){
+
+						console.log("定时器");
+						
+						api.getTableInfo(viewMap.viewData.tabInfo).then(res=>{
+
+							view.timeReal.init(res);
+						});
+			
+					},3000);
+					
+				}
+
+				break;
+			}
+			
+			default:
+			break;
+
+		}
+
 	}
 	
-	initAdd($dom,borderType,viewTitle,node,size,type){
+	initAdd($dom,viewTitle,node){
 
 		const mapId  = ++TemplateMap.MapID;
 
-		this.viewsMap.get($dom[0]).viewData = node;
+		const view = this.viewsMap.get($dom[0]);
+		  	  view.viewData = node;
+			  view.attributeObj.createId = mapId;
 
-		this.ceateView($dom,borderType,mapId,viewTitle,node,size,type);
+		this.ceateView($dom,viewTitle,view);
 
 
 	}
@@ -124,8 +175,10 @@ class TemplateMap{
 			});
 		}
 
+		this.clearRefresh(view);
+
 		$dom.addClass("view-fill");
-		this.ceateView($dom,borderType,mapId,viewTitle,node,size,type);
+		this.ceateView($dom,viewTitle,view);
 	}
 
 	remove($dom){
@@ -153,6 +206,8 @@ class TemplateMap{
 
 
 		viewMap.viewData = null ;
+
+		this.clearRefresh(viewMap);
 
 	}
 

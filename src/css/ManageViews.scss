@@ -111,15 +111,18 @@ $headH:50px;
 						height:100%;
 						margin:auto;
 					}
-					.chart{
-						//width:95%;
-						width:100%;
+					.chart_main{
 						padding:15px;
-						box-sizing:border-box;
-						height:100%;
-						margin:auto;
-					   // transform: translateY(5%);
 					}
+					.table_main{
+						padding:8px;
+					}
+					.timeReal_main{
+						padding:8px;
+					}
+					/* .chart{
+					
+					} */
 					 .view-optBox{
 					 	font-size:16px;
 					 	color:#7EBFCB;
