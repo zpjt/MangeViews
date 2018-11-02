@@ -72,20 +72,20 @@ class TimeRealMd{
 		const {viewData} = viewMap;
 		this.activeBox = $view;
 		this.modal.show(this.box);
-
-		const {tabInfo:{kpis=[],kpi_infos=[],orgs,time_id,time_start,isDsType,isMerge,tab_style}} = viewData ;
+		//	ref_time ref_frequency
+		const {tabInfo:{kpis=[],kpi_infos=[],orgs,time_id,time_start,ref_time ,ref_frequency,tab_style}} = viewData ;
 
 		const id_1 = kpis.map(val=>val.id);
 		const id_2 = kpi_infos.map(val=>val.kpi_id);
 		const dimVals = kpi_infos.map(val=>({kpiId:val.kpi_id,dimId:val.dim_id,dimVal:val.dim_val}))
 		const zbArr = id_1.concat(id_2);
 		this.setZbTree(zbArr,dimVals);
-		this.refreshTime.prop("checked",isDsType!=="0");
+		this.refreshTime.prop("checked",ref_frequency!=="0");
 		this.orgWd.setValue(orgs[0].id);
 		this.timeVal.val(time_start);
 		this.timeRotate.val(time_id.split("_")[1]);
-		this.refreshVal.val(isDsType);
-		this.refreshRotate.val(isMerge);
+		this.refreshVal.val(ref_time);
+		this.refreshRotate.val(ref_frequency);
 		$(".real-style").eq(tab_style - 1 ).prop("checked",true);
 
 		TimeRealMd.status = "edit";
@@ -120,25 +120,23 @@ class TimeRealMd{
 					}
 				});
 
-			   const leg = dataArr.length === 1 ;
+				const leg = dataArr.length === 1 ;
 				
-				 const strArr = dataArr.map(dimItem=>{
+				const strArr = dataArr.map(dimItem=>{
+					
+				const [dim,dimVals] = dimItem;	
 
-					const [dim,dimVals] = dimItem;	
+				const dimId = dim.split("_")[1];
 
-					const dimId = dim.split("_")[1];
+				const zbNodeArr = leg && values ||  values.filter(node => {
+					return dimVals.includes(node.kpi_id);
+				});
 
-					const zbNodeArr = leg && values ||  values.filter(node => {
-						return dimVals.includes(node.kpi_id);
-					});
-
-					const dimWd = dimId !== "2" && this.findDimData(dimId)|| null ;
-					const strArr = zbNodeArr.map(val=>this.renderZb(val,dimWd));
+				const dimWd = dimId !== "2" && this.findDimData(dimId)|| null ;
+				const strArr = zbNodeArr.map(val=>this.renderZb(val,dimWd));
 													
-					const dimClass = dimId !== "2" && "dim-wdItem" || "";
-						return `<div class="dim-item ${dimClass}" dim-id="${dimId}" >${strArr.join("")}</div>`;
-
-
+				const dimClass = dimId !== "2" && "dim-wdItem" || "";
+					return `<div class="dim-item ${dimClass}" dim-id="${dimId}" >${strArr.join("")}</div>`;
 				});
 
 				this.selBox.html(strArr.join(""))
@@ -163,15 +161,11 @@ class TimeRealMd{
 				}
 
 				const sub = val.sub;
-
 				if (sub.length) {
-
 					return !status && findFn(sub) || status;
-
 				} else {
 					return status;
 				}
-
 			});
 		}
 		return node;
@@ -328,8 +322,9 @@ class TimeRealMd{
 		let timeRotate = this.timeRotate.val(); 
 		let timeVal = this.timeVal.val();
 	
-		let refreshVal = this.refreshVal.val();
-		let refreshRotate = this.refreshRotate.val();
+		const is_refersh = this.refreshTime.prop("checked");
+		let refreshVal =is_refersh && this.refreshVal.val() || "0" ;
+		let refreshRotate = is_refersh && this.refreshRotate.val() || "0";
 	 
 	    let time_id  =(timeVal=== "0" ? "@" : "_" ) + timeRotate ;
 
@@ -349,8 +344,10 @@ class TimeRealMd{
 				     "isAdded": "0",
 				     "tab_style": $(".real-style:checked").val(),
 				     "total":  "0",
-				     "isMerge": this.refreshRotate.val(), //刷新频率
-				     "isDsType":this.refreshTime.prop("checked") ? 1 : 0 ,//是否刷新
+				     ref_time:refreshVal,//刷新时间
+				     ref_frequency:refreshRotate,//刷新频率
+				     "isMerge": "1", 
+				     "isDsType":"1" ,
 				     "dim_x": false
 				 }
 

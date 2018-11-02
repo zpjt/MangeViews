@@ -83,12 +83,7 @@ class TemplateMap{
 				viewTitle,
 			}, node, "2");
 
-			console.log("init-createView");
-
-
 		this.IntervalreFresh(type,view,viewMap);
-		
-
 	}
 
 	clearRefresh(view){
@@ -102,32 +97,24 @@ class TemplateMap{
 
 	IntervalreFresh(type,view,viewMap){
 
-
 		switch(type){
 			case "timeReal":{
-				const {tabInfo:{isDsType}} = viewMap.viewData ;
+				const {tabInfo:{ref_time , ref_frequency}} = viewMap.viewData ;
 						
-				if(isDsType === "1"){
+				if( ref_frequency !== "0"){
 					
 					viewMap.timer = setInterval(function(){
 
-						console.log("定时器");
-						
 						api.getTableInfo(viewMap.viewData.tabInfo).then(res=>{
-
 							view.timeReal.init(res);
 						});
 			
 					},3000);
-					
 				}
-
 				break;
 			}
-			
 			default:
 			break;
-
 		}
 
 	}

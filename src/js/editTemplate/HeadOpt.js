@@ -67,9 +67,8 @@ class HeadOpt {
 			table: "saveTableInfo",
 			chart: "saveGraphInfo",
 			timeReal: "saveTableInfo",
+			editView: "addAssembly",
 		};
-
-		console.log(viewsMap);
 
 		const arr = [...viewsMap.keys()];
 
@@ -96,8 +95,14 @@ class HeadOpt {
 
 				const _type = ["line","bar","scatter","pie","radar"].includes(type) && "chart" || type;
 				
-				const object = viewData[config[_type]];
-
+				let object = null ;
+				if(type !=="editView"){
+					object =    viewData[config[_type]];
+				}else{
+					object = new FormData();	
+					object.set("assembly_data",viewData);
+				}
+				
 				const req = api[methodObj[_type]](object).then(res => {
 					const {
 						state,
@@ -106,7 +111,7 @@ class HeadOpt {
 					if (state) {
 						val.attributeObj.viewID = id;
 					} else {
-						init.tipToast(object.chartName + "保存失败,请稍后重新再保存！", 0);
+						unit.tipToast(object.chartName + "保存失败,请稍后重新再保存！", 0);
 					}
 					return state;
 				});

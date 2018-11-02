@@ -2,6 +2,7 @@ import {Border} from "./svgBorder.js";
 import {Chart} from "./chart.js";
 import {STable} from "./sTable.js";
 import {TimeView} from "./TimeView.js";
+import {EditView} from "./EditView.js";
 
 
 class View {
@@ -26,6 +27,7 @@ class View {
 			"table":"initTable",
 			"chart":"initChart",
 			"timeReal":"initRealTime",
+			"editView":"initEditView",
 		}
 
 		const chartBox = this.container.children(".view-content");
@@ -55,6 +57,12 @@ class View {
 	initRealTime($el,data){
 		const border = this.borderType;
 		this.timeReal = new TimeView($el,{border},data);
+	}
+
+	initEditView($el,data){
+
+		const border = this.borderType;
+		this.editView = new EditView($el,{border},data);
 	}
 
 	initBorder($el){

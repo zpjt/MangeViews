@@ -42,8 +42,9 @@ class Page{
 
 		//编辑器
 		this.editViewMd = new Summernote({
-				modal,
+			modal,
 		    unit,
+		    templateMap
 		});
 
 		this.viewComponet = new ViewComponet();

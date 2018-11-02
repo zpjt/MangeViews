@@ -35,6 +35,19 @@ class API {
 				type:"post",
 			}));
 	}
+	addAssembly(formData){
+			return Promise.resolve($.ajax({
+				url: URL_L + 'addAssembly',
+				type: 'post',
+				cache: false,
+				data: formData,
+				processData: false,
+				contentType: false,
+	    	}));
+	}
+	getAssembly(assembly_id){
+			return Promise.resolve($.get(URL_L+"getAssembly",{assembly_id}));
+	}
 
 	getGraphInfo(obj){
 		return Promise.resolve($.ajax({

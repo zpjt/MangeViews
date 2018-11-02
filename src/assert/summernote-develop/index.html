@@ -14,10 +14,15 @@
    <script src="codemirror.js"></script>
   <script src="summernote.js"></script>
   <script>
-    $(document).ready(function() {
-       const edit = $('#summernote').summernote();
 
-       console.log(edit);
+    window.$summernote = $('#summernote');
+
+    $(document).ready(function() {
+       const edit = $summernote.summernote({
+        height:400,
+        minHeight:300,
+        focus:true,
+       });
     });
   </script>
 </body>
