@@ -126,6 +126,8 @@ class Table extends EasyUITab{
 
 }
 
+
+
 class RestModal{
 
 	constructor(unit,modal){
@@ -221,7 +223,7 @@ class RestModal{
 
 class Page{
 
-	state = "layout" ;
+	static state = "layout" ;
 
 	constructor(){
 		this.unit = new Unit();
@@ -238,19 +240,31 @@ class Page{
 		this.modal = new SModal();
 		this.restModal = new RestModal(unit);
 		this.inp = new SInp();
-		this.search = new Search($("#u-search"));
+		this.search = new Search($("#u-search"),{
+			serachCallback:(result)=>{
+				
+				this.table.loadTab(result,Page.state);
+			},
+			closeCallback:(res)=>{
+				
+				this.table.loadTab(res,Page.state);
+			},
+			keyField:"layout_name",
+
+		});
 		this.getData();
 	}
 
 	getData(){
 
-		const  method = this.state === "layout" && "RecycleLayoutshow" || "RecycleChartshow";
+		const  method = Page.state === "layout" && "RecycleLayoutshow" || "RecycleChartshow";
 		api[method]().then(res=>{
 
 			if(!res){
 				this.unit.tipToast("出错！",0);
 			}else{
-				this.table.loadTab(res,this.state);
+				this.search.data = res ;
+				this.table.loadTab(res,Page.state);
 			}
 
 		});
@@ -258,7 +272,7 @@ class Page{
 
 	del(obj){
 
-		const  method = this.state === "layout" && "delLayout" || "delchart";
+		const  method = Page.state === "layout" && "delLayout" || "delchart";
 
 		api[method](obj).then(res=>{
 			if(!res){
@@ -282,7 +296,7 @@ class Page{
 			}
 
 			$this.addClass("active").siblings().removeClass("active");
-			_self.state = type === 0 ? "layout" : "chart" ;
+			Page.state = type === 0 ? "layout" : "chart" ;
 			_self.getData();
 
 		});

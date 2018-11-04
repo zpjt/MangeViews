@@ -4,7 +4,7 @@ import "css/common/Svg.scss";
 
 
 import { EasyUITab } from "js/common/EasyUITab.js";
-import {Unit,SCombobox,SModal,Calendar,Tree,SInp,DropMenu ,Search} from "js/common/Unit.js";
+import {Unit,SCombobox,SModal,Calendar,SComboTree,Tree,SInp,DropMenu ,Search} from "js/common/Unit.js";
 import {api} from "api/szViews.js";
 
 
@@ -22,6 +22,7 @@ const UnitOption = new Unit();
 // 表格视图相关dom
 const $tab = $("#tab"),
 	  $ViewContainer = $("#section"),
+	  $treeTab = $("#tree-tab"),
 	  $tabContainer = $("#tabBox"),
 	  $styleView = $(".style-view"),
 	  $catalogueBox = $("#catalogueBox"),
@@ -160,6 +161,119 @@ class TableStyle extends EasyUITab{
 		this.creatTab(data,$tab,this.tabConfig("layout_id"));
     }
 
+    createTreeGrid(data){
+
+		let order = 0;
+		$treeTab.treegrid({
+				animate: true,
+				data: data,
+				checkbox: true,
+				fitColumns: true,
+				scrollbarSize: 0,
+				rownumbers: false,
+				idField: 'layout_id',
+				treeField: 'layout_name',
+				columns: [
+					[{
+						"field": "order",
+						"title": "行号",
+						"align": "center",
+						"width": "60px",
+						"formatter": function() {
+							order++;
+							return order;
+						}
+					}, {
+						"field": "layout_name",
+						"title": "视图名称",
+						"align": "left",
+						"width": "34%",
+						"formatter": function(val, rowData) {
+
+							const {layout_icon_name,layout_type} = rowData;
+							const arr = ["","node-catalogue","node-file"];
+							return `<div class="tab-node ${arr[+rowData.layout_type]}" echo-data="${rowData.layout_id}"><i class="sicon ${layout_icon_name}">&nbsp;</i><span>${val}</span></div>` ;
+						}
+
+					}, {
+						field: 'layout_type',
+						title: '类型',
+						width: 80,
+						formatter: function(val,rowData,index) {
+
+							return `<span class="${val===2 ? "tab-type" : null }">${val===1 ? "分类" :"视图"}</span>`;
+						}
+					},  {
+						field: 'create_user_name',
+						title: '创建人',
+						width: 100,
+					},
+					 {
+						field: 'updata_time',
+						title: '更新时间',
+						width: 180,
+					},{
+						field: 'optBtn',
+						title: '操作',
+						align:"center",
+						width: "30%",
+						formatter: function(val,rowData) {
+							
+							let str="" ;
+							switch (rowData.layout_type){
+
+								case 1 ://目录
+								      str =`
+											<div class="tab-opt s-btn s-Naira" node-sign="icon">
+													<i class="sicon sicon-btn-3"></i>
+													<span>图标</span>	
+											</div>
+											<div class="tab-opt s-btn s-Naira" node-sign="rename">
+													<i class="sicon sicon-btn-4"></i>	
+													<span>重命名</span>	
+											</div>	
+								   		`;
+
+									break;
+								case 2 ://文件
+									 str =`
+									 		<div class="tab-opt s-btn s-Naira" node-sign="icon">
+													<i class="sicon sicon-btn-3"></i>	
+													<span>图标</span>
+											</div>
+											<div class="tab-opt s-btn s-Naira" node-sign="rename">
+													<i class="sicon sicon-btn-4"></i>	
+													<span>重命名</span>
+											</div>
+											<div class="tab-opt s-btn s-Naira" node-sign="pre">
+													<i class="fa fa-eye"></i>
+													<span>预览</span>		
+											</div>
+											<div class="tab-opt s-btn s-Naira" node-sign="issue">
+													<i class="fa fa-paper-plane-o"></i>	
+													<span>发布</span>
+											</div>
+											<div class="tab-opt s-btn s-Naira" node-sign="copy">
+													<i class="sicon sicon-btn-1"></i>	
+													<span>复制</span>
+											</div>
+											
+											
+								   		`;
+									break;
+							}
+
+							return `
+									<div class="tabBtnBox" echo-data='${rowData.layout_id}' >
+											${str}
+									</div>
+								`;
+						}
+					}]
+				],
+		});
+	}
+
     changeTabcard($this){ // 进入目录
 
 		const tabData = $tab.datagrid("getData").rows;
@@ -191,6 +305,10 @@ class TableStyle extends EasyUITab{
 			page.toEdit($(this),0);
 		});
 
+		$("#treeTabBox").on("click",".node-file",function(){
+			page.toEdit($(this),2);
+		});
+
 		//复选框事件
 		$tabContainer.on("click",".checkSingle",function(){
 			_self.checkSingleHandle($tabContainer);
@@ -219,7 +337,7 @@ class CatalogueStyle{
 							<p><i class="sicon ${layout_icon_name}"></i></p>
 							<p class="catalogue-name"><span>${layout_name}</span></p>
 							<span class="s-checkbox catalogue-chec ${!is_disCheck && "dis-check" || ""}">
-									${is_disCheck && '<input type="checkbox"  class="catalogue-chec-inp" >' || ""}
+									${is_disCheck && '<input type="checkbox"  class="catalogue-chec-inp" value="'+layout_id+'">' || ""}
 									<label class="fa fa-square-o"></label>
 							</span>
 						</div>
@@ -341,6 +459,8 @@ class CatalogueStyle{
 class AddModal{
 
 	constructor(){
+
+		this.parCatalogCombox = $("#parName") ;
 		this.handle();
 		this.init();
 		this.orgBoxInit();
@@ -356,21 +476,50 @@ class AddModal{
 			style:2
 		});
 
-		// 目录选择下拉框
-		this.parCatalogSel = new SCombobox($("#parName"),{
+		/*// 目录选择下拉框
+		this.parCatalogSel = new SCombobox(this.parCatalogCombox,{
 			"textField":"layout_name",
 			"idField":"layout_id",
 			"validCombo":false,
 			"prompt":"请选择所属分类...",
 			"width":300,
-		});
+		});*/
 
 	}
+		
+	reloadParCatalogCombox(data,style){
 
+		this.parCatalogSel = null ;
+		this.parCatalogCombox.unbind();	
+
+		this.parCatalogSel = style == 1 ? new SCombobox(this.parCatalogCombox,{
+			 data:data,
+			"textField":"layout_name",
+			"idField":"layout_id",
+			"validCombo":false,
+			"prompt":"请选择所属分类...",
+			"width":300,
+		}) : new SComboTree(this.parCatalogCombox,{
+				width:300,
+				treeConfig:{
+					 data:data,
+					"textField":"layout_name",
+					"idField":"layout_id",
+					"childIcon":"fa fa-folder-open-o",
+					"parClick":true,
+				}
+		});
+
+		const  curId =data[0].layout_id ;
+
+		this.parCatalogSel.setValue(curId);
+
+	}
 	
-
+	
 	addCatalogue(type,obj,style){
-	
+
+		
 		api.checkName(obj)
 		.then(res=>{
 			return res ? api.addView(type,{user_id,...obj}) : "重名" ;
@@ -412,18 +561,16 @@ class AddModal{
 					"textField":"name",
 					"idField":"id",
 					"checkbox":true,
-					 "checkCallback":function(){
+					 "checkCallback":function(node,$this,selArr){
 
 					 	setTimeout(function(){
-							const selArr = [].slice.call($org.find(".child-checkinp:checked"));
+							
 							const strArr = selArr.map(val=>{
-								    const $val = $(val);
-									const name = $val.parent().siblings(".item-txt").text();
-									const id = val.value ;
+									const {id,name} = val ;
 									return 	`<li echo-id="${id}" class="org-sel-item ">
 												<i class="fa fa-user-circle-o">&nbsp;</i>
 												<b>${name}</b>
-											 </li>`
+											 </li>`;
 
 							});
 							$("#orgSel").html(strArr.join(""));
@@ -457,9 +604,8 @@ class AddModal{
 			const method = $(this).attr("method");
 			const name = $inpName.val().trim();
 			if(!name){return ; }
-
-			const par_id = method==="create" ? _self.parCatalogSel.getValue() : $ViewContainer.attr("curid");
-			const style = $(".style-sel").index() ? "catalogue":"tab";
+			const par_id = method==="create" ? _self.parCatalogSel.box.find(".combo-value").val() : $ViewContainer.attr("curid");
+			const style = Page.style;
 
 			switch(method){
 				case "create":{
@@ -467,6 +613,7 @@ class AddModal{
 				}
 					break;
 				case "copy":{
+
 					const tabCardArr = $tabCard.data("menuArr");
 					api.checkName({par_id:tabCardArr[tabCardArr.length-1].layout_id,name})
 					.then(res=>{
@@ -496,6 +643,7 @@ class AddModal{
 					}
 					break;
 				case "modify":{
+
 					api.updataName({name,id:par_id}).then(res=>{
 							if(res){
 									const menuIndexArr = $tabCard.data("menuArr").map(val=>{
@@ -571,7 +719,7 @@ class AddModal{
 					const menuIndexArr = $tabCard.data("menuArr").map(val=>{
 							  return  val.index ;
 					}) ;
-					page.styleBoxrender(menuIndexArr);
+					page.styleBoxrender(menuIndexArr,Page.style);
 					page.modal.close($issueMView);
 				}else{
 					UnitOption.tipToast("设置失败！",0);
@@ -608,10 +756,27 @@ class DelModal{
 	handle(){
 		//删除
 		$("#delBtn").click(function(){
+
+
+			let selArr = null;
 			
-			const selArr = $.map($(".checkSingle:checked"),function(val){
-				return val.value;
-			});
+			if(Page.style===0){
+
+				 selArr = $.map($tabContainer.find(".checkSingle:checked"),function(val){
+						return val.value;
+				});
+
+			}else if(Page.style===1){
+
+				 selArr = $.map($catalogueBox.find(".catalogue-chec-inp:checked"),function(val){
+						return val.value;
+				 });
+
+			}else{
+				
+				 selArr = $treeTab.treegrid("getCheckedNodes").map(val=>val.layout_id);
+
+			}
 			
 			if(!selArr.length){
 				return ;
@@ -633,7 +798,10 @@ class DelModal{
 					const menuIndexArr = $tabCard.data("menuArr").map(val=>{
 							  return  val.index ;
 					}) ;
-					page.styleBoxrender(menuIndexArr);
+
+					const style = Page.style;
+
+					page.styleBoxrender(menuIndexArr,style);
 					UnitOption.renderTipM($svg_statusBox,"#g-success");
 				}else{
 					UnitOption.renderTipM($svg_statusBox,"#g-error");
@@ -714,7 +882,7 @@ class IconBox{
 							  return  val.index ;
 							}) ;
 
-							const style =$(".style-sel").index() ? "catalogue" :"tab";
+							const style = Page.style ;
 
 							page.styleBoxrender(menuIndexArr,style);
 							UnitOption.tipToast("图标更新成功！",1);
@@ -743,14 +911,37 @@ class IconBox{
 //初始化页面类
 class Page  {
 
-	constructor(){
-		this.handle();
-		this.init();
-	}
 	static dropMenuConfig=[
 		{"icon":"fa fa-file-text",text:"创建视图",id:"view"},
 		{"icon":"fa fa-folder",text:"创建分类",id:"catalogue"},
 	];
+
+	static style = 0 ;
+
+	constructor(){
+		this.handle();
+		this.init();
+		this.searchTreeMd = $("#search-MView");
+	}
+
+	getCatalogue(arr){
+
+		return arr.filter(val=>{
+			const child = val.children ;
+			if(child.length){
+
+				const filteArr = this.getCatalogue(child);
+				val.children = filteArr ;
+
+				return true ;
+
+
+			}else{
+				return val.layout_type === 1 ;
+			}
+		});
+	}
+	
     init(){
 
     	const _self = this ;
@@ -762,7 +953,21 @@ class Page  {
 		this.delModal = new DelModal();
 		this.iconBox = new IconBox();
 		this.inp = new SInp();
-		this.search = new Search($("#u-search"));
+		this.search = new Search($("#u-search"),{
+			serachCallback:(result)=>{
+				console.log(result);
+				this.changeStyle($(".style-item").eq(2),result);
+			},
+			closeCallback:(res)=>{
+				this.table.createTreeGrid(res);	
+			},
+			keyField:"layout_name",
+			judgeRelation:(val)=>{
+				return val["layout_type"] === 1;
+			},
+			is_Arr:false,
+
+		});
 		this.dropMenu = new DropMenu($("#dropMenu"),{
 			buttonTxt:"新增",
 			itemCallback:function($this){
@@ -772,23 +977,48 @@ class Page  {
 				const type =$this.attr("echo-data");
 				$addMBtn.attr({"type":type,"method":"create"});
 				$inpName.val(null);
+
+				let curCatalogueArr = null;
+
+				// layout_type :0:根目录 1 目录 ，2：文件
+				let comboboxType = null ;
+
+				if(Page.style === 2){
+
+					comboboxType = 2 ;
+
+					const _data =JSON.stringify( $treeTab.treegrid("getData"));
+					const copy_data = JSON.parse(_data);
+					const obj = _self.getCatalogue(copy_data);
 					
-				// layout_type : 1 目录 ，0：文件
-				const curCatalogueArr = $tab.datagrid("getData").rows.reduce(function(total,curVal){
+					 curCatalogueArr = [{
+						"layout_name":"当前分类",
+						"layout_id":-2,
+						 children:obj,
+					}];
+
+				}else{
+
+					comboboxType = 1 ;
+
+					const _data = Page.style === 0 ? $tab.datagrid("getData").rows :
+							    $catalogueBox.data("getData");
+
+					curCatalogueArr = _data.reduce(function(total,curVal){
 						const {layout_name,layout_id,layout_type} = curVal;
 						layout_type === 1 && total.push({layout_name,layout_id});
 						 return total;
-				},[]);
+					},[]);
+
+					const menuArr = $tabCard.data("menuArr");
+					const curId = menuArr[menuArr.length-1].layout_id;
+					curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
+				};
+
+				_self.addModal.reloadParCatalogCombox(curCatalogueArr,comboboxType);
 				
-				const menuArr = $tabCard.data("menuArr");
-				const curId = menuArr[menuArr.length-1].layout_id;
-				curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
-				
-				_self.addModal.parCatalogSel.loadData(curCatalogueArr);
-				_self.addModal.parCatalogSel.setValue(curId);
 				$parName.parent().show();
 				page.modal.show($addMView);
-
 
 			},
 			slideCallBack:()=>{
@@ -802,7 +1032,13 @@ class Page  {
  	}
     dropMenuCallback(state){
 
-    		const lev = $tabCard.data("menuArr").length;
+	    	let lev = $tabCard.data("menuArr").length;
+
+
+	    	if(Page.style === 2){
+				lev = 2 ;
+	    	}
+
 		
 			let dropMenuConfig = Page.dropMenuConfig.filter(val=>{
 
@@ -818,19 +1054,30 @@ class Page  {
 			
 			this.dropMenu.reload(dropMenuConfig);
     }
-    styleBoxrender(menuIndexArr=[0],type="tab"){
+    styleBoxrender(menuIndexArr=[0], type = 0){
 		api.getAllLayout().then(res=>{
 
 			if(res){
+				
+				const copy_data= JSON.parse(JSON.stringify(res.sub).replace(/sub/g,"children"));
+
+				this.search.data = copy_data ;
+
+				
 				const  allData = [res] ;
+				
 				$ViewContainer.data("tabData",allData);
+				
 				let tabData=JSON.stringify(allData);
 				    tabData=JSON.parse(tabData);
+
+				//获取当前tab的层级
 				menuIndexArr.map(function(val){
 					tabData = tabData[val].sub
 				});
 
-				type==="tab"?this.table.loadTab(tabData):this.catalogue.catalogueInit(tabData);
+				type===0 ? this.table.loadTab(tabData) : type === 1 ? this.catalogue.catalogueInit(tabData) 
+				:this.table.createTreeGrid(copy_data);
 			
 			}else {
 
@@ -859,8 +1106,10 @@ class Page  {
     }
 
     toEdit($this,style){
+
 		const index = +$this.attr("echo-data");
-		const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
+		const data = style === 1 ?  $catalogueBox.data("getData")[index] 
+		: style === 0 ? $tab.datagrid("getData").rows[index] : $treeTab.treegrid("find",index);
 		
 		const {layout_name,layout_id} = data ;
 
@@ -906,26 +1155,57 @@ class Page  {
 		this.tabCardInit(newmenuArr);
 
     }
-    changeStyle($this){
+    changeStyle($this,reloadData = null){
+
 		if($this.hasClass("style-sel")){
+
+			Page.style === 2 && reloadData && this.table.createTreeGrid(reloadData);
+		
 			return ;
 		}
 
-		const  index = $this.index();
+		const type = $this.attr("sign");
 
-		page.modal.close($styleView.eq(1-index),"style-active");
-		page.modal.show($styleView.eq(index),"style-active");
+		let index = $this.index();
+
+		Page.style = index ;
+
+		// 要先显示容器，不然加载出来的表格没高度
+		
+		const showView = $styleView.eq(index);
+
+		page.modal.close(showView.siblings(".style-view"),"style-active");
+		page.modal.show(showView,"style-active");
 
 		$this.addClass("style-sel").siblings(".style-item").removeClass("style-sel");
 
-		if(index){
-			const tabData = $tab.datagrid("getData").rows;
-			this.catalogue.catalogueInit(tabData);
-		}else{
-			const tabData = $catalogueBox.data("getData");
-			this.table.loadTab(tabData);
-		}
+		switch(type){
+			case "icon":{
+				const tabData = $tab.datagrid("getData").rows;
+				this.catalogue.catalogueInit(tabData);
+				$tabCard.show();
+				break;
+			}
+			case "list":{
+				const tabData = $catalogueBox.data("getData");
+				this.table.loadTab(tabData);
+				$tabCard.show();
+				break;
+			}
+			case "tree":{
 
+				$tabCard.hide();
+
+				if(!reloadData){
+					const tabData = page.search.data;
+				    this.table.createTreeGrid(tabData);
+				}else{
+					this.table.createTreeGrid(reloadData);
+				}
+			
+				break;
+			}
+		}
     }
 
     handle(){
@@ -955,8 +1235,11 @@ class Page  {
 			const type = $(this).attr("node-sign");
 			const index = $(this).parent().attr("echo-data");
 
-			const style = $(".style-sel").index();
-			const data = style ? $catalogueBox.data("getData")[index] :$tab.datagrid("getData").rows[index];
+			const style = Page.style;
+
+			const data = style === 1 ?  $catalogueBox.data("getData")[index] 
+			: style === 0 ? $tab.datagrid("getData").rows[index] : $treeTab.treegrid("find",index);
+
 
 			const {layout_type,layout_id,layout_icon,layout_icon_name,layout_name} = data ;    
 			const last_layoutId = +$ViewContainer.attr("curId");

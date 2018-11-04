@@ -200,7 +200,18 @@ class Page{
 		this.unit = new Unit();
 		this.modal = new SModal();
 		this.inp = new SInp();
-		this.search = new Search($("#u-search"));
+		this.search = new Search($("#u-search"),{
+			serachCallback:(result)=>{
+				
+				this.table.loadTab(result);
+			},
+			closeCallback:(res)=>{
+				
+				this.table.loadTab(res);
+			},
+			keyField:"kpi_name",
+
+		});
 		this.levDrop = "";
 		this.levDropInit();
 		this.getData();
@@ -246,6 +257,7 @@ class Page{
 				page.unit.tipToast("获取预警指标失败！",0);
 			}else{
 				this.tabData = res;
+				this.search.data = res ;
 				this.table.loadTab(res);
 			}
 

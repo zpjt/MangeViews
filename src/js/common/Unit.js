@@ -103,16 +103,78 @@ class Search{
 	constructor(el,obj){
 
 		const defaultConfig ={
-				serachCallback:function(){},
-				closeCallback:function(){},
+			serachCallback:function(){},
+			closeCallback:function(){},
+			childrenField:"children",
+			keyField:"id",
+			judgeRelation:function(){return false},
+			is_Arr:true,
 		};
 
 		this.config =  Object.assign({},defaultConfig,obj);
 		this.box = el;
+		this.data = [];
 		this.renderSearch();
 		this.handle();
 	}
-	
+	seachTree(key){
+
+		const {childrenField,keyField,judgeRelation} = this.config ;
+		const data = this.data;
+
+		function filterJson(arr){
+
+			return arr.filter(val=>{
+				const child = val[childrenField];
+				const type = judgeRelation(val);
+				const text = val[keyField];
+
+				if(type){
+
+					if(child.length){
+
+						const result = filterJson(child) ;
+
+						val[childrenField] = result ;
+						
+						return result.length;
+			
+					}else{
+						return false ;
+					}
+
+				}else{
+
+					const is_key = val[keyField].includes(key);
+
+					if(child.length){
+						const result = filterJson(child) ;
+							val[childrenField] = result ;
+						return result.length || is_key;
+					}else{
+						return is_key;
+					}
+				}
+			})
+
+		}
+		const copy_data = JSON.parse(JSON.stringify(data));
+		
+		return filterJson(copy_data);
+
+	}	
+
+	serachArr(keywords){
+
+		const {keyField} = this.config ;
+		const data = this.data;
+
+		return data.filter(val=>{
+
+			return val[keyField] === keywords ;
+		});
+
+	}
 
 	renderSearch(){
 
@@ -131,22 +193,40 @@ class Search{
 		this.box.html(str) ;
 	}
 
+	search(){
+		
+		return this.config.is_Arr ? this.serachArr : this.seachTree;
+	}
+
 	handle(){
 
 		// 搜索
 		const _self = this ;
 		const {box,config:{serachCallback,closeCallback}} = _self ;
+		const inp = box.find(".search-inp");
+
+		const searchMethod = this.search();
+
+
 		box.on("click",".search-btn",function(){
 			const state = box.hasClass("active-search");
-			if(state){return ; }
-			box.addClass("active-search");
-			serachCallback();
+			
+			!state && box.addClass("active-search");
+
+			if(!state){return;}
+
+			const keywords = inp.val().trim();
+			if(!keywords){return };
+
+			const result = searchMethod.call(_self, keywords);
+			serachCallback(result);
 
 		});
 		// 搜索按钮关闭
 		box.on("click",".search-close",function(){
 			box.removeClass("active-search");
-			closeCallback();
+
+			closeCallback(_self.data);
 		});
 	}
 
@@ -216,8 +296,6 @@ class RippleBtn{
 
 			const $this = $(this) ;
 			_self.renderRipple($this,e);
-
-
 
 
 		});
@@ -751,16 +829,22 @@ class Tree{
 
 		this.config = Object.assign({},defaultConfig,config);
 		this.box = $el ;
+		this.selArr = null;
+		this.searchStatus = null ;
 		this.init();
 		this.handle();
+
 	}
 
 	init(){
 
+		this.selArr = [];
+		this.searchStatus = false ;
+
 		const {data,search} = this.config;
 		const str = this.renderOrgJson(data,0);
 		const searchStr = search  ? `<div class="tree-search">
-										<label >
+									<label >
 											<input type="text" class="s-inp" placeholder="搜索..." />
 											<span class="search-close">
 												<i class="fa fa-times"></i> 
@@ -773,6 +857,7 @@ class Tree{
 	}
 
 	changeType(checkbox,value){
+		
 		this.config.checkbox = checkbox;
 		this.box.unbind();
 		this.init();
@@ -875,13 +960,15 @@ class Tree{
 
 	async reload(key=""){
 
-		let data = data = this.config.data;
-		if(key){
+		let data = key ? this.seachTree(key) : this.config.data ;
 
-			data = this.seachTree(key);		
-		}
 		const str = this.renderOrgJson(data,0);
+
 		this.box.find(".s-tree").html(str);
+
+		const idField = this.config.idField ;
+		const ids = this.selArr.map(val=>val[idField]);
+		this.setValue(ids);
 	}
 	
 	parentComponent(child,data){
@@ -930,13 +1017,140 @@ class Tree{
 			</li>
 		`);		
 	}
+	
+	/**
+	 * [复选框的级联事件，可以当作是事件冒泡那样，得一级一级往上找]
+	 * <ul class="par-menu">
+			<li lev="3" class="tree-li">
+				<div class="menuItem par-item" echo-id="206">
+					<span class="indent"></span><span class="indent"></span><span class="indent"></span>
+					<span class="s-checkbox">
+						<input type="checkbox" class="par-checkinp tree-inp" value="206"><label class="fa fa-square-o"></label>
+					</span>
+					<i class="fa fa-folder-open-o"></i>
+					<span class="item-txt">耳鼻咽喉科</span><span class="tree-slide-icon"><i class="fa fa-minus-square-o"></i></span>
+				</div>
+				<ul class="par-menu">
+					...
+				</ul>
+			<li>
+		</ul>
+	 * @return {[type]} [description]
+	 */
+	cascadeTreeInp($this,is_par,status){
+
+
+		let up_par_li =  $this.closest(".tree-li");
+		let lev = up_par_li.attr("lev");
+
+		if(is_par){
+			up_par_li.find(".has-chec").removeClass("has-chec");
+			up_par_li.find(".tree-inp").prop("checked",status);
+		}
+
+		while (lev > 1 ){
+			  up_par_li = up_par_li.parent().parent();
+			  lev = +up_par_li.attr("lev");
+
+			  const checkEl = up_par_li.children(".menuItem").find(".tree-inp");
+			  const ul_par =  up_par_li.children(".par-menu") ;
+			  const ul_par_leg = ul_par.children("li").length;
+			  const check_leg = ul_par.children("li").children(".menuItem").find(".tree-inp:checked").length;
+
+			 if(check_leg === 0 ){ //一个没选
+			 	checkEl.siblings("label").removeClass("has-chec");
+			 	checkEl.prop("checked",false);
+				
+			 }else if( check_leg < ul_par_leg ){
+				checkEl.prop("checked",false);
+				checkEl.siblings("label").addClass("has-chec");
+			 }else{// 全选 
+
+			 	checkEl.siblings("label").removeClass("has-chec");
+			 	checkEl.prop("checked",false);
+
+			 	checkEl.prop("checked",true);
+				checkEl.siblings("label").removeClass("has-chec");
+			 }
+
+			  const is_has_chec = up_par_li.find(".has-chec").length;
+
+			 if(check_leg == 0 &&  is_has_chec){
+			 	checkEl.prop("checked",false);
+				checkEl.siblings("label").addClass("has-chec");
+			 }
+
+		}
+
+
+		return this.findNode($this.val());
+
+	}
+
+	upDataSelArr(node,$this,type,status){
+
+		const idField = this.config.idField;
+
+		if(!type){
+
+				if(status){
+					this.selArr.push(node);
+				}else{
+					const delIndex = this.selArr.findIndex(val=>val[idField] == node[idField])
+					this.selArr.splice(delIndex,1);
+				}
+		}else{
+
+				
+
+				if(!this.searchStatus){
+
+					const _selArr = $.map(this.box.find(".child-checkinp:checked"),val=>{
+							const id = val.value ;	
+							return this.findNode(id);
+					});
+					this.selArr = _selArr ;
+
+				}else{
+
+					const idField = this.config.idField;
+
+					const _selArr = $.map($this.parent().parent().siblings(".par-menu").find(".child-checkinp"),val=>{
+							const id = val.value ;	
+							return this.findNode(id);
+					});
+
+					_selArr.map(val=>{
+
+						const is_exit = this.selArr.findIndex(node=>node[idField] == val[idField]);	
+						
+						
+
+						if(status){
+
+							is_exit == -1 &&  this.selArr.push(val);
+						
+						}else{
+							
+							is_exit > -1 && this.selArr.splice(is_exit,1);
+
+						}
+							
+					});
+				}
+
+		}
+
+	}
 
 	handle(){
 
 		const {clickCallback,clickAndCheck,checkbox,checkCallback,parClick} = this.config;
-
 		const self = this;
-
+		/**
+		 * [折叠收缩,通过class tree-active 类名来来控制收缩图标的样式，用jq的slideToggle来控制具体的收缩]
+		 * @return {[type]}           [description]
+		 */
 		this.box.on("click",".tree-slide-icon",function(e){
 			
 		    e.stopPropagation();
@@ -959,25 +1173,33 @@ class Tree{
 			const $this = $(this);
 			const node = self.findNode( +$this.attr("echo-id"));
 		
-			checkbox && clickAndCheck && $this.find(".tree-inp").click();
+		
 			
 			if(checkbox){
-				
+			
+				clickAndCheck && $this.find(".tree-inp").click();
+			
 			}else{
 				//關閉下拉框
 				$this.closest(".s-tree").find(".active").removeClass("active");
 				$this.addClass("active");
+				self.selArr = [node];
 			}
 
-			clickCallback(node,$this);
+			clickCallback(node,$this,self.selArr);
 
     	});
-
+		/**
+		 * [树收索]
+		 * @param  {[type]} ){			const $this         [description]
+		 * @return {[type]}             [description]
+		 */
     	this.box.on("click",".search-close",function(){
 			const $this = $(this);
 			$this.siblings(".s-inp").val(null);
 			$this.hide();
 
+			self.searchStatus = false ;
 			self.reload();
 		
     	});
@@ -994,6 +1216,8 @@ class Tree{
 				return ;
 			}
 
+			self.searchStatus = true ;
+			
 		    self.reload(key);
 
 
@@ -1010,82 +1234,56 @@ class Tree{
 			checkbox && clickCallback(node,$this);
 
 			if(!checkbox && parClick){
-				clickCallback(node,$this);
+				
+				
+				
 				$this.closest(".s-tree").find(".active").removeClass("active");
 				$this.addClass("active");
+
+				self.selArr = [node];
+
+				clickCallback(node,$this,self.selArr);
+		
 			}
 
     	});
-
+		/**
+		 * [复选框时间]
+		 * @return {[type]}                                     [description]
+		 */
     	this.box.on("click",".tree-inp",function(e){
 
-			e.stopPropagation();
+			e.stopPropagation(); // 防止点击 li 时触发 checkbox
 
 			const $this= $(this);
     		const status = $this.prop("checked");
     		const type =  $this.hasClass("par-checkinp");
-			const par_li =  $this.closest(".tree-li");
 
-			if(type){
-				par_li.find(".has-chec").removeClass("has-chec");
-				par_li.find(".tree-inp").prop("checked",status);
-			}
+			const node = self.cascadeTreeInp($this,type,status);
 
-			let lev = par_li.attr("lev");
-			if(lev!=="1"){
-				
-				let up_par_li =  $this.closest(".tree-li");
-
-				while (lev > 1 ){
-					  up_par_li = up_par_li.parent().parent();
-					  lev = +up_par_li.attr("lev");
- 					  const checkEl = up_par_li.children(".menuItem").find(".tree-inp");
- 					  const ul_par =  up_par_li.children(".par-menu") ;
-					  const ul_par_leg = ul_par.children().length;
-					  const check_leg = ul_par.children().children(".menuItem").find(".tree-inp:checked").length;
-
-					 if(check_leg === 0 ){ //一个没选
-					 	checkEl.siblings("label").removeClass("has-chec");
-					 	checkEl.prop("checked",false);
-						
-					 }else if( check_leg < ul_par_leg ){
-						checkEl.prop("checked",false);
-						checkEl.siblings("label").addClass("has-chec");
-					 }else{// 全选 
-
-					 	checkEl.siblings("label").removeClass("has-chec");
-					 	checkEl.prop("checked",false);
-
-					 	checkEl.prop("checked",true);
-						checkEl.siblings("label").removeClass("has-chec");
-					 }
-
-					  const is_has_chec = up_par_li.find(".has-chec").length;
-
-					 if(check_leg == 0 &&  is_has_chec){
-					 	checkEl.prop("checked",false);
-						checkEl.siblings("label").addClass("has-chec");
-					 }
-
-				}
-				
-			}
+			self.upDataSelArr(node,$this,type,status);
 			
-			const node = self.findNode( +$this.val());
-			checkCallback(node, $this);
+			checkCallback(node,$this,self.selArr);
+
     	});
 
 	}
 	setValue(ids,$el=this.box){
 
 		if(this.config.checkbox){
+		
 			$el.find(".tree-inp").prop("checked",false).removeClass("has-chec");
 			ids.map(val=>{
-				$el.find(`.child-checkinp[value=${val}]`).click();
+				
+				const checkEl = $el.find(`.child-checkinp[value=${val}]`).prop("checked",true);
+				this.cascadeTreeInp(checkEl,false,true);
+
 			});
+	
 		}else{
 			this.setSingleValue(ids);
 		}
+	
 	}
 
 	setSingleValue(id,$el=this.box){
@@ -1197,7 +1395,6 @@ class SComboTree {
 	setValue(values,$el = this.box){
 		
 	  this.tree.setValue(values);
-	//  this.updateInpBox($el.find(".combo-drop"),values);
 
 	}
 
@@ -1216,9 +1413,11 @@ class SComboTree {
 		
 		this.config.treeConfig.checkbox && $el.find(".tree-inp").prop("checked",false).removeClass("has-chec") || $el.find(".active").removeClass("active");
 	}
-	updateInpBox($drop,node){
-		const {checkbox} = this.tree.config;
-		const inpBox = $drop.siblings();
+	updateInpBox(node){
+
+		const {idField,textField,checkbox} = this.tree.config;
+
+		const inpBox = this.box.find(".combo-inp");
         const comboText = inpBox.children(".combo-text"),
         	  comboValue=inpBox.children(".combo-value");
 
@@ -1226,23 +1425,23 @@ class SComboTree {
 		    ids = [];
 
 		if(checkbox){
-			txts = $.map($drop.find(".child-checkinp:checked"),function(val,index){
-					const $this = $(val);
-					ids[index]=$this.val();
-					return $this.parent().siblings(".item-txt").text();
-			});
 
+			txts = this.tree.selArr.map(val=>{
+					ids.push(val[idField]);
+					return val[textField] ;
+
+			});
+		
 		}else{
-			const {id,txt} = node ;
-			txts[0] = txt;
-			ids[0] = id;
+			txts[0] = node[textField];
+			ids[0] = node[idField];
 		}
 
 		comboText.val(txts.join(","));
 		comboValue.val(ids.join(","));
 
 		if(this.config.validCombo){
-			!ids.join(",") ? inpBox.addClass("no-fill") :inpBox.removeClass("no-fill");
+			ids.length === 0 ? inpBox.addClass("no-fill") :inpBox.removeClass("no-fill");
 		}
 	}
 
@@ -1251,22 +1450,18 @@ class SComboTree {
 		const treeBox = this.box.children(".combo-drop");
 
 		const {clickCallback:clickHandle,checkCallback:checkHandle} = this.config.treeConfig;
-
+	
+		// 点击li
 		const clickCallback = (node,$dom)=>{
 
-			    const id = node[this.tree.config.idField];
-			    const txt = node[this.tree.config.textField];
-			    const curTreeBox = $dom.closest(".combo-drop");
-
-				this.updateInpBox(curTreeBox,{id,txt});
+				this.updateInpBox(node);
 				!this.tree.config.checkbox && this.hideUp(this.box);
 				clickHandle && clickHandle(node);
 		}
-
+		//点击复选框事件
 		const checkCallback = (node,$dom)=>{
 
-			    const curTreeBox = $dom.closest(".combo-drop");
-				this.updateInpBox(curTreeBox);
+				this.updateInpBox();
 				checkHandle && checkHandle(node);
 		}
 

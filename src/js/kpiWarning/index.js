@@ -734,7 +734,18 @@ class Page{
 		this.modal = new SModal();
 		this.addModal = new AddModal();
 		this.inp = new SInp();
-		this.serach = new Search($("#u-search"));
+		this.search = new Search($("#u-search"),{
+			serachCallback:(result)=>{
+				
+				this.table.loadTab(result);
+			},
+			closeCallback:(res)=>{
+				
+				this.table.loadTab(res);
+			},
+			keyField:"kpi_name",
+
+		});
 		this.getData();
 	}
 
@@ -745,6 +756,7 @@ class Page{
 			if(!res){
 				page.unit.tipToast("获取预警指标失败！",0);
 			}else{
+				this.search.data = res;
 				this.table.loadTab(res);
 			}
 

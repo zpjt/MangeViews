@@ -29,6 +29,7 @@ $slectColor:#aee6ff;
 	height:50px;
 	align-items:center;
 	padding:0 8px;
+	justify-content: flex-end;
 	@at-root{
 		.tab-card{
 			display:flex;
