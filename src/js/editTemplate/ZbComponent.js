@@ -130,7 +130,8 @@ class ZbComponent {
 
 				const htmlStr = !publicDim ? zbObj.join("") : `<div class="publicDim dim-item" >${zbObj.join("")}</div>`;
 
-
+				// 只有table 类型的x轴维度才可以选择指标
+				
 				const specialWd = viewSetModal.viewType === "table" ?
 				   
 				     [...wd_arr_common, {
@@ -153,21 +154,35 @@ class ZbComponent {
 					const dImNode = this.findDimData(dimId);
 					viewSetModal.dimWd.loadData(dImNode.sub);
 					viewSetModal.dimWd.clearValue();
-					viewSetModal.wd_arr = specialWd;
+					viewSetModal.wd_arr = specialWd; // 用于在 viewSetModal类里使用
 
-					let yAxisData =viewSetModal.viewType !== "table" ? this.isOneZb  && [{"id":"4","text":"指标"}] || [...specialWd,{"id":"4","text":"指标"}] : specialWd;
+					let yAxisData = viewSetModal.viewType !== "table" ?
+					 this.isOneZb ? [{"id":"4","text":"指标"}] : [...specialWd,{"id":"4","text":"指标"}]
+					 : specialWd;
 
-					viewSetModal.yAxis.loadData(yAxisData);
-				
-					viewSetModal.xAxis.loadData(viewSetModal.wd_arr);
+					
+					/*viewSetModal.yAxis.loadData(yAxisData);
+					viewSetModal.xAxis.loadData(viewSetModal.wd_arr);*/
 				
 
 					if(commonObj){
+
+						const {xAxis,yAxis} = commonObj ;
+						const yData = yAxisData.filter(val=>!xAxis.includes(val.id));
+						const xData = viewSetModal.wd_arr.filter(val=>!yAxis.includes(val.id))
+
+						viewSetModal.yAxis.loadData(yData);
+						viewSetModal.xAxis.loadData(xData);
+					
 					
 						this.setCommonVal(commonObj,viewSetModal);
 					}else{
-							viewSetModal.yAxis.clearValue();
-							viewSetModal.xAxis.clearValue();
+
+						viewSetModal.yAxis.loadData(yAxisData);
+						viewSetModal.xAxis.loadData(viewSetModal.wd_arr);
+							//viewSetModal.yAxis.clearValue();
+							//viewSetModal.xAxis.clearValue();
+							
 					}
 
 					this.publicDimEl.show();
@@ -180,19 +195,34 @@ class ZbComponent {
 					specialWd.pop();
 					const AxisData = specialWd;
 
-					let yAxisData =viewSetModal.viewType !== "table" ? this.isOneZb  && [{"id":"4","text":"指标"}] || [...specialWd,{"id":"4","text":"指标"}] : specialWd;
+					let yAxisData =viewSetModal.viewType !== "table" ? 
+					this.isOneZb  ? [{"id":"4","text":"指标"}] : [...specialWd,{"id":"4","text":"指标"}]
+					 : specialWd;
 
 					viewSetModal.wd_arr = AxisData;
-					viewSetModal.yAxis.loadData(yAxisData);
-					viewSetModal.xAxis.loadData( AxisData);
+				
+
+					/*viewSetModal.yAxis.loadData(yAxisData);
+					viewSetModal.xAxis.loadData( AxisData);*/
 				
 
 					if(commonObj){
+
+						const {xAxis,yAxis} = commonObj ;
+						const yData = yAxisData.filter(val=>!xAxis.includes(val.id));
+						const xData = viewSetModal.wd_arr.filter(val=>!yAxis.includes(val.id))
+
+						viewSetModal.yAxis.loadData(yData);
+						viewSetModal.xAxis.loadData(xData);
 					
 						this.setCommonVal(commonObj,viewSetModal);
 					}else{
-						viewSetModal.yAxis.clearValue();
-						viewSetModal.xAxis.clearValue();
+
+						viewSetModal.yAxis.loadData(yAxisData);
+						viewSetModal.xAxis.loadData( AxisData);
+				
+						//viewSetModal.yAxis.clearValue();
+				     	//	viewSetModal.xAxis.clearValue();
 					}
 					
 				}
@@ -215,8 +245,6 @@ class ZbComponent {
 	setCommonVal(commonObj,viewSetModal){
 
 		const {xAxis,yAxis,orgs,time_start,time_id,pubDimValue} = commonObj;
-		const yAxisBox = viewSetModal.yAxis.box;
-		const xAxisBox = viewSetModal.xAxis.box;
 
 		let arr = null ,
 			sel_arr = null;
@@ -251,6 +279,7 @@ class ZbComponent {
 							viewSetModal.calendar.setTime([time_id]);
 							break;
 						case "2": //科室
+					//		viewSetModal.orgWd.selArr = []
 							viewSetModal.orgWd.setValue(orgs[0]);
 							break;
 						case wd_id:{ // 维度值
@@ -422,7 +451,7 @@ class ZbComponent {
 		const {commonObj,dim_vals} = viewType && this.setZbTree(viewType,object) || {commonObj:null,dim_vals:[]};
 
 
-		const values = this.zbTree.getValue("all"),
+		const values = this.zbTree.selArr,
 			   ids = values.map(val => val.kpi_id);
 		
 		if (!ids.length) {

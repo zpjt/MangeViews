@@ -465,8 +465,7 @@ class Chart {
 		 * @return {[type]}     [description]
 		 */
 
-		console.log(res);
-
+		const color =  ["#1296FB", "#8FD6FA", "#0088CC", "#06B76A", "#CBC450", "#FD8D1D"];
 		const {rowDimName, landscape, legend, threeD, stack ,lineType} = res[0];
 
 		const Axis = threeD.split(",");
@@ -482,7 +481,6 @@ class Chart {
 
 		let legendArr = [];
 
-		const color = ['#1a9bfc', '#99da69', '#7049f0', '#fa704d', '#01babc'];
 		
 		const series = res.map((val, index) => {
 
@@ -587,7 +585,7 @@ class Chart {
 		const yAxisObj = is_landscape && flagCategory || flagValue ;
 
 		return {
-			color:['#1a9bfc', '#99da69', '#e32f46', '#7049f0', '#fa704d', '#01babc'],
+			color:['#1a9bfc', '#99da69','#01babc',"#5c8d89"],
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {

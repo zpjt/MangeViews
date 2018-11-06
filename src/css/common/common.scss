@@ -191,12 +191,11 @@ $border:#E9E9E9;
 /* hover 动画下划线 */
 .g-tab{
 	display:flex;
-	padding:8px 0;
+	padding: 0 10px;
+	justify-content: space-between;
 	.m-tab-item{
 		cursor: pointer;
 		font-size:16px;
-		text-align:center;
-		margin-right:32px;
 	}
 }
 .line-hover{

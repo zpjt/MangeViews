@@ -141,7 +141,7 @@
 							<input type="text" id="viewShowTime"  read="read"  class="calendar-inpTxt s-inp" readonly="readonly" >
 						</span>
 					</div>
-					<div class="dataTime"> </div>
+					<div class="dataTime" id="calendarBox"> </div>
 				</div>
 				<div class="issue-item">
 					<div class="item-status">
@@ -239,13 +239,8 @@
 	
 	<script src="assert/js/jquery.min.js"></script>
 	<script src="assert/js/jquery.easyui.min.js"></script>
-	<script type="text/javascript" >
-		window.jsp_config={
-			baseUrl:'/ManageViews/',
-			base:'main/',
-			user_id:"10",
-			role_id:"70000",
-		};
-	</script>
+	 <script type="text/javascript">
+      window.jsp_config = window.parent.jsp_config;
+    </script>
 </body>
 </html>

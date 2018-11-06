@@ -171,7 +171,7 @@ class Search{
 
 		return data.filter(val=>{
 
-			return val[keyField] === keywords ;
+			return val[keyField].includes(keywords);
 		});
 
 	}
@@ -479,7 +479,7 @@ class SCombobox {
 			"dropFormatter":null,
 			"multiply":false,
 			"defaultVal":"",
-			 clickCallback:null,
+			 clickCallback:function(){},
 			 width:260,
 			 textarea:false,
 		}
@@ -543,6 +543,7 @@ class SCombobox {
 	   }
 
 	  this.updateInpBox($drop);
+
 	}
 
 	getValue($el=this.box,node="id"){
@@ -642,17 +643,18 @@ class SCombobox {
 		//选择item
 		this.box.on("click",".drop-item",function(e){
 
-		
 
 			e.stopPropagation();
 
 			const $this= $(this);
 			let status = null ;
 			const is_self = $this.hasClass("active");
+
 			if(self.config.multiply){
 				 is_self &&  $this.removeClass("active")|| $this.addClass("active");
 				 status	= !is_self;
 			}else{
+				
 				if(is_self){
 					return ;
 				}
@@ -669,13 +671,11 @@ class SCombobox {
 			!self.config.multiply && self.hideUp(self.box);
 
 			//回调函数
-			if(self.config.clickCallback){
-				const id = $this.attr("echo-id");
-				const node = self.config.data.find(val=>{
-					return val[self.config.idField] == id ;
-				});
-				self.config.clickCallback(node,self,status);
-			}
+			const id = $this.attr("echo-id");
+			const node = self.config.data.find(val=>{
+				return val[self.config.idField] == id ;
+			});
+			self.config.clickCallback(node,self,status);
 
 		});
 
@@ -853,10 +853,10 @@ class Tree{
 										<button class="s-btn j-search"><i class="fa fa-search-plus"></i></button>
 									</div>` : "";
 		this.box.html(`${searchStr}<ul class="s-tree">${str.join("")}</ul>`);
-		
+	
 	}
 
-	changeType(checkbox,value){
+	changeType(checkbox){
 		
 		this.config.checkbox = checkbox;
 		this.box.unbind();
@@ -968,7 +968,7 @@ class Tree{
 
 		const idField = this.config.idField ;
 		const ids = this.selArr.map(val=>val[idField]);
-		this.setValue(ids);
+		this.setValue(ids,false);
 	}
 	
 	parentComponent(child,data){
@@ -1268,17 +1268,27 @@ class Tree{
     	});
 
 	}
-	setValue(ids,$el=this.box){
+	setValue(ids,reSet = true){
+
+		const $el = this.box;
+
+	 	
 
 		if(this.config.checkbox){
+
+			if(reSet){
+				this.selArr = ids.map(val=>this.findNode(val));
+		 	}
 		
 			$el.find(".tree-inp").prop("checked",false).removeClass("has-chec");
 			ids.map(val=>{
 				
 				const checkEl = $el.find(`.child-checkinp[value=${val}]`).prop("checked",true);
 				this.cascadeTreeInp(checkEl,false,true);
-
+					
 			});
+
+			this.config.checkCallback(null,null,this.selArr);
 	
 		}else{
 			this.setSingleValue(ids);
@@ -1392,6 +1402,8 @@ class SComboTree {
 				`
 	}
 
+	// 参数values 必须是数组
+
 	setValue(values,$el = this.box){
 		
 	  this.tree.setValue(values);
@@ -1473,7 +1485,7 @@ class SComboTree {
 
 	changeType(checkbox,value=null,$el=this.box){
 
-		this.tree.changeType(checkbox);
+		this.tree.changeType(checkbox,value);
 		$el.find(".combo-inp").html(this.renderInpBox(checkbox));
 		this.config.validCombo && $el.children(".combo-inp").addClass("no-fill");
 

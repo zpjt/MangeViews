@@ -454,15 +454,17 @@ class Calendar{
 			rotate:3,
 			style:1,
 			time:false,
+			hasInp:true,
 		};
 
 		const config = Object.assign({},defaultConfig,obj);
 
 
-		const {rotate,style,time} = config ;
+		const {rotate,style,time,hasInp} = config ;
 		this.rotate = rotate ; // 1:year,2:seraon,3:mons,4:day
 		this.style = style; // 1:单选 2:多选
 		this.time = time; // 1:单选 2:多选
+		this.hasInp = hasInp; // 1:单选 2:多选
 		this.CurTime=this.getCurTime();
 		this.selTime=this.initSelTime();
 		this.typeChange = [{rotate:"年"},{rotate:"季"},{rotate:"月"},{rotate:"日"}];
@@ -541,10 +543,8 @@ class Calendar{
 					<div class="showSel-box">
 						${this.renderTimeStr().join("")}
 					</div>
-					<div>
-						<button class="s-btn calendar-opt sure-btn">确定</button>
-						<button class="s-btn calendar-opt cancel-btn">取消</button>
-					</div>
+					${this.hasInp?`<div> <button class="s-btn calendar-opt sure-btn">确定</button> <button class="s-btn calendar-opt cancel-btn">取消</button> </div>`:""}
+					
 				</div>
 
 				`
@@ -693,6 +693,10 @@ class Calendar{
 	}
 	upInp(){
 
+		if(!this.hasInp){
+			return ;
+		}
+
 		const val = this.value.map((val,index)=>{
 
 			const watchTime = this.time && this.rotate === 4 && "  "+this.timeWatchArr[index].join(" : ") ||　"";
@@ -778,11 +782,12 @@ class Calendar{
 	Handle(){
 
 		const self = this ;
+		const hasInp = this.hasInp;
 		//频率选择
 		this.container.on("click",".frequemcy-item",function(){
 			
 			const index = $(this).index();
-		//	$(this).addClass("frequemcy-active").siblings().removeClass("frequemcy-active");
+			//	$(this).addClass("frequemcy-active").siblings().removeClass("frequemcy-active");
 			self.frequemcy.slideToggle("fast",function(){
 				self.rotate = index+1;
 				self.updateRotate();
@@ -793,19 +798,18 @@ class Calendar{
 						view.updateCalendar();
 				});
 			});
-			
-
-
 		});
 		//日历显隐
 	 	this.container.on("click",function(e){
 	 		e.stopPropagation();
 		});
 		//日历显隐
-		this.inp.click(function(e){
-			 e.stopPropagation();
-			self.container.is(":visible") ? self.container.hide() :self.container.show() ;
-		});
+		if(hasInp){
+			this.inp.click(function(e){
+				 e.stopPropagation();
+				self.container.is(":visible") ? self.container.hide() :self.container.show() ;
+			});
+		}
 
 		//频率触发
 		this.container.on("click",".frequemcy-sel",function(){

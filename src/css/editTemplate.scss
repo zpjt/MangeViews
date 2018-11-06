@@ -507,6 +507,9 @@ $border:#E9E9E9;
 			max-width:200px;
 			text-align:left;
 			background:#638CCC;
+			text-overflow: ellipsis;
+		    overflow: hidden;
+		    white-space: nowrap;
 		}
 		.dim-combox{
 			margin-left:20px;

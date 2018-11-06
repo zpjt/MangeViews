@@ -10,7 +10,7 @@ $slectColor:#aee6ff;
 	border:1px solid $themeColor;
 	position: absolute;
 	display:none;
-	top:30px;
+	top:44px;
 	left:0;
 	box-shadow: 4px 4px 22px 0px rgba(0, 0, 0, 0.46);
 }
@@ -63,7 +63,8 @@ $slectColor:#aee6ff;
 		font:{
 			weight:bolder;
 		}
-		.sel-time-inp{
+	}
+	.sel-time-inp{
 			background: #0080bb;
 			width: 178px;
 			display: inline-block;
@@ -72,7 +73,6 @@ $slectColor:#aee6ff;
 			border-radius: 28px;
 			line-height: 28px;
 		}
-	}
 	.sure-btn{
 		color:$themeColor;
 		background:white;

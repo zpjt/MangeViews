@@ -35,9 +35,9 @@ class API {
 				type:"post",
 			}));
 	}
-
-	
-	
+	getAssembly(assembly_id){
+			return Promise.resolve($.get(URL_M+"getAssembly",{assembly_id}));
+	}
 }  
 
 const api = new API();

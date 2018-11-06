@@ -179,7 +179,9 @@ class ViewSetModal {
 
 		this.activeViewObje = {
 			$box:$view,
-		};
+		};	
+
+		ViewSetModal.status = "create";
 		// 当前模态框所创建的组件的类型
 		this.$componentName.val("");
 		const icon = $(`.component-item[echo-type=${type}]`).html();
@@ -190,7 +192,7 @@ class ViewSetModal {
 	    this.upComboxStatus();
 		this.modal.show(this.setMd);
 		this.zbComponent.sureBtnHandle(this);
-		ViewSetModal.status = "create";
+	
 			
 	}
 
@@ -252,11 +254,17 @@ class ViewSetModal {
 		this.xAxis.config.multiply = status;
 		this.yAxis.config.multiply = status;
 		this.dimWd.config.multiply = false;
-		this.xAxis.clearValue();
-		this.yAxis.clearValue();
-		this.dimWd.clearValue();
-		this.orgWd.changeType(false);
-		this.calendar.changeStyle(1);
+
+	  
+
+		if(ViewSetModal.status === "create"){
+		    this.xAxis.clearValue();
+		    this.yAxis.clearValue();
+			this.dimWd.clearValue();
+			this.orgWd.changeType(false);
+			this.calendar.changeStyle(1);
+		}
+		
 	}
 
 	

@@ -79,11 +79,10 @@ class Menu{
 		return (`
 			<li class="par_li_${lev} par_li" >
 				<div class="menuItem par-item " data-url=${url} lev="${lev}" echo-id="${id}">
-					${indent}<i class="sicon ${sys_param}"></i>
-					<span class="icon-wrap"><span class="menu-name">${name}</span><span class="slide-icon"><i class="fa fa-chevron-down  "></i></span></span>
+					${indent}<i class="sicon ${sys_param}"></i><span class="icon-wrap"><span class="menu-name">&nbsp;${name}</span><span class="slide-icon"><i class="fa fa-chevron-down  "></i></span></span>
 				</div>
 				<ul class="par-menu">${child.join("")}</ul>
-			</li>
+		</li>
 		`);
 
 	}
@@ -103,9 +102,26 @@ class Menu{
 		`);		
 	}
 
+	getIframeUrl(){
+		
+		if(!window.jsp_config.resourse){
+			
+			return function(url){
+					return url.split("/")[2];
+			}
+		
+		}else{
+			return function(url){
+				return url ;
+			};
+		}
+	}
+
 	handle(){
 
 		const _self = this ;
+
+		const getUrlMethod = this.getIframeUrl();
 
 		/*收缩目录*/
 		this.box.on("click",".slide-icon",function(e){
@@ -135,18 +151,17 @@ class Menu{
 
 			const  par_item =  $this.closest(".par-menu").siblings(".menuItem");
 			par_item.addClass("active-par");
-			$(this).addClass("active");
+			$this.addClass("active");
 
 			window.menuID = $this.attr("echo-id");
 			window.menuName = $this.find(".menu-name").html();
 
-			const url=$this.attr("data-url").split("/")[2];
-			page.iframe[0].src="./"+url+".html";
-			
-/*			const url=$(this).attr("data-url");
-			 page.iframe[0].src=url;
+			const url=$this.attr("data-url");
 
-*/		});
+			const iframeUrl = getUrlMethod(url);
+			 page.iframe[0].src=iframeUrl+".html";
+
+		});
 	}
 }
 
@@ -211,7 +226,6 @@ class SoketNews{
 		// 收到服务端消息
         webSocket.onmessage = function (msg) {
 
-        	 console.log("  收到消息 : "+msg.data);
 
         	 const result = msg.data;
 
@@ -280,22 +294,54 @@ class Page{
 
 
 	constructor(){
-		this.init();
+
 		this.handle();
+		this.init();
+		
 	}
 
 	init(){
-	   this.iframe = $("#router");
+	    this.iframe = $("#router");
 		this.menu = new Menu();
 		this.renderMenu();
 		this.news = new SoketNews();
 	}
 
+	findFistMenuID(res){
+		
+		let flag = res[0];
+
+		let is_par = flag.menu_type_id === 1 ; 
+
+		let id = flag.id;
+
+		while(is_par){
+
+			flag = flag.sub[0];
+			is_par = flag.menu_type_id === 1 ; 
+			id = flag.id;
+
+		}
+
+		return id ;
+	}
+
 	renderMenu(flag=0){
 		return api.getLeftMenu(role_id,flag).then(res=>{
-			const ElArr = this.menu.mapMenuJson(res.sub,0);
-			this.menu.box.html(ElArr.join(""));
-			return true ;
+
+			if(res && res.sub){
+				const data = res.sub;
+				const ElArr = this.menu.mapMenuJson(res.sub,0);
+				this.menu.box.html(ElArr.join(""));
+					
+				const id_first = this.findFistMenuID(res.sub);
+				$(`.menuItem[echo-id=${id_first}]`).click();
+
+			}else{
+				alert("菜单为空！");
+				
+			}
+			
 		});
 	}
 
@@ -345,12 +391,16 @@ class Page{
 
 				case "password"://修改密码
 
-					break;
+				break;
 				case "power": //退出登录
+
+					if(window.jsp_config.resourse){
+						window.location.href=baseUrl+"login/logOut";
+					}else{
+						window.location.href="login.html";
+					}
 				
-//					window.location.href=baseUrl+"login/logOut";
-					window.location.href="login.html";
-					break;
+				break;
 			}
 		});
 
@@ -384,7 +434,12 @@ class Page{
 				
 			console.log("333333");
 		});
+
+	    $("#preToNews").click(function(){
+			 page.iframe[0].src=baseUrl+"index/lists/News.html";			
+		});
 	}
+
 }
 
 const page = new Page();

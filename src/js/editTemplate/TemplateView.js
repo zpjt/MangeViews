@@ -606,20 +606,29 @@ class TemplateView  extends ChangeView {
 				getDataUrl:"getGraphData",
 				configName:"graphInfo",
 			},
+			editView:{
+				getDataUrl:"getAssembly",
+			}
 		}
 		const _typeObj = method[_type];
 
 		_api[_typeObj.getDataUrl](viewID).then(res=>{
 
-				if(res.data && res.data.length){
 
-					const viewTitle = res[_typeObj.configName].chartName;
-					templateMap.initAdd($dom,viewTitle,res);
 
-				}else{
+				if(!res){
+
 					unit.tipToast("没数据！",3);
 					box.removeClass("view-fill");
 					box.attr("echo-id","");
+
+				}else{
+
+					const viewTitle =_type === "editView" ? "" :  res[_typeObj.configName].chartName;
+
+					const result = _type === "editView" ? res.assembly_data : res ;
+
+					templateMap.initAdd($dom,viewTitle,result);
 				}
 		});
 

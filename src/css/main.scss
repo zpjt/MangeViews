@@ -155,14 +155,26 @@
 						}
 					}
 				}
-				.messages-ul{
-					max-height:300px;
-					overflow:auto;
-					&>li{
-						padding:4px 8px;
-						border-bottom: 1px solid rgba(0,0,0,0.15);
+
+				@at-root{
+
+					.messages-ul{
+						max-height:300px;
+						overflow:auto;
+						&>li{
+							padding:4px 8px;
+							border-bottom: 1px solid rgba(0,0,0,0.15);
+							
+						}
+						p{
+							text-overflow: clip;
+							overflow: hidden;
+	    					white-space: nowrap; 
+						}
 					}
+
 				}
+				
 			}	
 		}
 		
@@ -216,7 +228,7 @@
 
 	.active{
 		background:$active;
-		border-right:3px solid #1890FF;
+	//	border-right:3px solid #1890FF;
 		color:#1890FF;
 	}
 	.active-par{
@@ -228,6 +240,8 @@
 		padding:10px 0;
 		position: relative;
 		cursor: pointer;
+		display: flex;
+		align-items: center;
 		&:hover{
 			color:$hoverColor;
 			background:$active;
@@ -243,7 +257,7 @@
 	.slide-icon{
 		position: absolute;
 		right: 10px;
-    	top: 8px;
+    	top: 2px;
     	padding:5px;
     	&:hover .fa{
 			color:$hoverColor;
@@ -272,8 +286,8 @@
 			color:#A4BED7;
 			height: calc( 100% - #{$slideH  + 30 });
     		overflow-y: auto;
-			overflow-x: hidden; 
-			padding-botom:30px;
+			overflow-x: hidden;
+			padding-bottom:30px;
 		}
 		.change-box{
 			box-shadow:  0 0 10px 0 #807d83de;

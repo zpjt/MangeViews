@@ -9,6 +9,7 @@ const PATHS = {
 	kpiWarning:path.join(__dirname,"./src/js/kpiWarning/index.js"),
 	manageWarning:path.join(__dirname,"./src/js/manageWarning/index.js"),
 	News:path.join(__dirname,"./src/js/News/index.js"),
+	manageRole:path.join(__dirname,"./src/js/manageRole/index.js"),
 //	test:path.join(__dirname,"./src/js/test/index.js"),
 	build:path.join(__dirname,"dist"),
 	publicPath:"/",
@@ -101,6 +102,14 @@ module.exports=function(env,argv){
 				template:"./src/router/News.html",
 				chunks:["News","vendor","manifest"],//对应关系,main.js对应的是index.html
 			}),
+			new htmlPlugin({
+				title: "权限管理",
+				filename:'manage_Role.html',
+	            inject:'body',
+	            hash:false,
+				template:"./src/router/manage_Role.html",
+				chunks:["manageRole","vendor","manifest"],//对应关系,main.js对应的是index.html
+			}),
 			/*new htmlPlugin({
 				title: "test",
 				filename:'myTest.html',
@@ -172,6 +181,7 @@ module.exports=function(env,argv){
 				hsViews: PATHS.hsViews,
 				kpiWarning: PATHS.kpiWarning,
 				manageWarning: PATHS.manageWarning,
+				manageRole: PATHS.manageRole,
 				News: PATHS.News,
 			//	test: PATHS.test,
 			},

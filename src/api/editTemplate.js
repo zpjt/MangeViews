@@ -45,9 +45,9 @@ class API {
 				contentType: false,
 	    	}));
 	}
-	getAssembly(assembly_id){
+	/*getAssembly(assembly_id){
 			return Promise.resolve($.get(URL_L+"getAssembly",{assembly_id}));
-	}
+	}*/
 
 	getGraphInfo(obj){
 		return Promise.resolve($.ajax({

@@ -5,6 +5,8 @@ const  anime = require("js/common/anime.min.js");
 
 const {baseUrl} = window.jsp_config;
 
+const imgUrl = window.jsp_config.resourse && window.jsp_config.resourse || "../";
+
 
 
 class Login{
@@ -65,7 +67,7 @@ class Login{
 
        return  Promise.resolve(
             $.ajax({
-                url:baseUrl+"/login/logVal",
+                url:baseUrl+"login/logVal",
                 contentType:"application/json",
                 type:"post",
                 asyncBoolean:false,
@@ -143,12 +145,13 @@ class Login{
                 const data = res[1];
                 if(data.url ==="/index") {
 
-
                      page.remind.reminCheck.prop("checked") ? page.remind.setRemind({originPwd,user_name:obj.user_name}) : page.remind.removeRemind();
                   
-                  //  window.location.href=baseUrl+data.url;  
-                     
-                    window.location.href = data.url;  
+                     if(window.jsp_config.resourse){
+                         window.location.href= baseUrl+data.url; 
+                     }else{
+                        window.location.href= data.url; 
+                     }
                 }
             });
            
@@ -262,14 +265,10 @@ class AnimateView{
                  if(end >-1){
 
                     $screen.css({
-                        "background-image":"url(../img/"+color[end]+".png",
-                    });
+                        "background-image":`url(${imgUrl}img/${color[end]}.png)`,
+                    }); 
 
-                    /*$screen.css({
-                        "background-image":`url(${baseUrl}/resources/webpack/dist/img/${color[end]}.png`,
-                    });
-
-*/                    anime({
+                   anime({
                               targets: '.screen-bg',
                               translateY:374,
                               scale:1.5,
@@ -293,6 +292,9 @@ class AnimateView{
             }
 
         }, opts.delay);
+
+
+        //反转方向
 
        /* this.parent().mousemove(function(event) {
             if(event.offsetX<width/2){

@@ -1,9 +1,9 @@
-import "css/ManageViews.scss";
 import {api} from "api/ManageViews.js";
 import {View,Border,STable} from "./view.js";
-
+import {Calendar,SModal,SInp,RippleBtn} from "js/common/Unit.js";
+import "css/ManageViews.scss";
 /*Jq对象*/
-
+new RippleBtn();
 const {baseUrl} = window.jsp_config;
 
 
@@ -17,7 +17,7 @@ class App{
 		this.layoutName = fatherWin.menuName;
 		this.app = $("#app");
 		this.maxWindow = $("#maxWindow");
-
+		this.timeBox = $("#g-timeContent");
 
 		this.items=[];
 		this.init();
@@ -29,6 +29,18 @@ class App{
 		this.getPre();
 		this.renderModal();
 		this.initHead();
+		this.initCalarder();
+	}
+
+	initCalarder(){
+
+		this.modal = new SModal();
+		new SInp();
+		this.calendar = new Calendar($("#calendarBox"),$("#viewShowTime"),{
+			rotate:4,
+			style:2,
+		});
+
 	}
 
 	initHead(){
@@ -73,8 +85,35 @@ class App{
 
 	getPre(){
 		
-		 !window.location.search.includes("pre") && $("#back").remove();
+		 window.location.search.includes("pre") && this.app.append(`<span class="backManage" id="back"><i class="fa fa-chevron-circle-left " ></i></span>`);
 
+				
+	}
+
+	IntervalreFresh(type,view,viewData){
+
+		console.log(view);
+
+
+		switch(type){
+			case "timeReal":{
+					const {tabInfo:{ref_time , ref_frequency}} = viewData ;
+						
+				if( ref_frequency !== "0"){
+					
+					view[type].timer = setInterval(function(){
+
+						api.getTableInfo(viewData.tabInfo).then(res=>{
+							view.timeReal.init(res);
+						});
+			
+					},3000);
+				}
+				break;
+			}
+			default:
+			break;
+		}
 
 	}
 
@@ -85,20 +124,45 @@ class App{
 				getDataUrl:"getTableData",
 				configName:"tabInfo",
 			},
+			timeReal:{
+				getDataUrl:"getTableData",
+				configName:"tabInfo",
+			},
 			chart:{
 				getDataUrl:"getGraphData",
 				configName:"graphInfo",
 			},
+			editView:{
+				getDataUrl:"getAssembly",
+			}
 		}
 
 		api[method[type].getDataUrl](id).then(res=>{
 
-				if(res.data && res.data.length){
+				if(!res){
+
+					unit.tipToast("没数据！",3);
+					box.removeClass("view-fill");
+					box.attr("echo-id","");
+
+				}else{
+
+					const viewTitle = type === "editView" ? "" :  res[method[type].configName].chartName;
+
+					const result = type === "editView" ? res.assembly_data : res ;
+
+					this.items[item] = new View(box,{id,type,index:item,viewTitle},result);
+
+					this.IntervalreFresh(type,this.items[item],result);
+					
+				}
+
+				/*if(res.data && res.data.length){
 					const viewTitle =res[method[type].configName].chartName;
 					this.items[item] = new View(box,{id,type,index:item,viewTitle},res);
 				}else{
 					console.log("该视图已经不存在！");
-				}
+				}*/
 			
 
 		});
@@ -111,7 +175,7 @@ class App{
 		api.showLayoutModel(this.layout_id).then(res=>{
 
 				
-				if(res.model){
+				if(res.modelData){
 					const model = res.model.replace(/draggable="true"/,"");
 					$("#viewsContent").html(model);
 					
@@ -127,7 +191,7 @@ class App{
 							const {point,size,viewID:id,type:_type} = _val;
 							const $dom = $("#"+point[2]);
 
-			  				const type =  ["line","pie","scatter","bar","rader"].includes(_type) && "chart" || viewType ; 
+			  				const type =  ["line","pie","scatter","bar","rader"].includes(_type) && "chart" || _type ; 
 							self.createView({item,box:$dom,type,id});
 						})(index,val);
 					});
@@ -329,9 +393,37 @@ class App{
 	}
 	handle(){
 
-		const $maxWindow = this.maxWindow ;
+		   const $maxWindow = this.maxWindow ;
 
-			$("#back").click(function(){
+			const timeBox = $(".time-content-item");
+			$("#g-timeContent").on("click",".m-tab-item",function(){
+				const $this= $(this);
+				const index = $this.index();
+				timeBox.eq(index).show().siblings().hide();
+				$this.addClass("active").siblings().removeClass("active")
+			});
+
+			$("#globalSet").on("click",".global-itme",function(){
+
+				const $this = $(this);
+				const type  = $this.attr("sign");
+
+				switch(type){
+					case"filter":{
+						
+						page.modal.show(page.timeBox);
+
+						break;
+					}
+					default:
+					break;
+
+				}
+
+
+			});
+
+			this.app.on("click","#back",function(){
 				
 				const $slide = $("#slide", window.parent.document);
 				const $head = $("#content", window.parent.document);
@@ -417,6 +509,7 @@ class App{
 						break;
 					case "filter":
 
+						page.modal.show(page.timeBox);
 						break;
 				}
 			});
