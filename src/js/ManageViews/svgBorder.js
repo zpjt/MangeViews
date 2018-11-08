@@ -2,14 +2,14 @@
 class  Border{
 	
 	constructor($el,config){
-		const {id,title} = config;
+		const {id,title,size,borderType} = config;
 
 		this.box = $el;
-		this.w = +$el.attr("echo-w");
-		this.h = +$el.attr("echo-y");
+		this.w = size[0];
+		this.h = size[1];
 		this.id=id;
-		this.title=title;
-		this.type= +$el.attr("echo-type");
+		this.title = title;
+		this.type= +borderType;
 		this.init();
 	}
 	

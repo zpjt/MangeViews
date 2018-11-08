@@ -1,232 +1,225 @@
 import "css/manageRole.scss";
 import {api} from "api/manageRole.js";
 
-import {EasyUITab} from "js/common/EasyUITab.js";
-import {Unit, SModal, SComboTree ,SInp ,Search} from "js/common/Unit.js";
+import {Unit, SModal, SCombobox ,SInp ,Search} from "js/common/Unit.js";
 
+class Table {
 
-/* 
- jq 对象
- @$table：回收表格 
- */
+	constructor(config){
 
- const $tableBox = $("#tabBox"),
-       $table = $("#tab"),
-       $restModal = $("#restModal");
+	    const {unit} = config;
 
+	   this.tabBox = $("#tabBox");
 
-class Table extends EasyUITab{
-
-	constructor(unit){
-       super();
-       this.setPageHeight($tableBox,140);
-       this.unit = unit ;
+	   this.unit = unit;
        this.handle();
+       this.init();
     }
 
-	tabConfig(idField){
-		const name = this.state === "layout" && "视图名称" || "图表名称" ;
-		return {
-			idField:idField,
-			tabId:"#tabBox",
-			frozenColumns: this.frozenColumns(idField),
-			columns: [
-				[{
-					field: 'layout_name',
-					title: name,
-					width: "35%",
-				}, 
-				{
-					field: 'recycle_username',
-					title: '删除人',
-					width: "15%",
-				}, 
-				{
-					field: 'updata_time',
-					title: '删除时间',
-					width: "25%",
-				},
-				
-				{
-					field: 'optBtn',
-					title: '操作',
-					align:"center",
-					width: "20%",
-					formatter: function(val, rowData,index) {
-						
-						let str = `
-										<div class="tab-opt s-btn s-Naira" node-sign="rest">
-												<i class="fa fa-edit"></i>
-												<span>还原</span>	
-										</div>
-										<div class="tab-opt s-btn s-Naira" node-sign="del">
-												<i class="fa fa-trash"></i>	
-												<span>删除</span>	
-										</div>	
-							   		`;
+    init(){
+		
+		const str = this.templateStr();
+		this.loadTab(str);
 
-						return `
-								<div class="tabBtnBox" echo-data='${rowData.layout_id}' >
-										${str}
-								</div>
-							`;
-					}
-				}]
-			],
-		};
+		const data = [
+			{
+				id:"1",
+				text:"系统管理员"
+			},
+			{
+				id:"2",
+				text:"部门管理员"
+			},
+			{
+				id:"3",
+				text:"质能科室"
+			},
+		]
+
+		this.roleCombo = new SCombobox($("#roleCombo"),{
+			data:data,
+			defaultVal:"1",
+			clickCallback:function(node){
+				console.log(node);
+			}
+		});
+
     }
 
-    loadTab(data,type){
-    	this.state = type ;
-		this.creatTab(data,$table,this.tabConfig("layout_id"));
+    loadTab(data){
+		
+
+		 this.tabBox.html(data);
+
+    }
+    templateStr(){
+
+    	 const obj =[
+	    	 {
+	    	 	text:" 视图管理",
+	    	 	children:[
+							{
+								text:"创建视图分类",
+								limit:true,
+							},
+							{
+								text:"修改分类图标",
+								limit:true,
+							},
+							{
+								text:"重命名分类",
+								limit:true,
+							},
+							{
+								text:"删除分类",
+								limit:true,
+							},
+							{
+								text:"创建视图",
+								limit:true,
+							},
+							{
+								text:"删除视图",
+								limit:true,
+							},
+							{
+								text:"预览视图",
+								limit:true,
+							},
+							{
+								text:"发布视图",
+								limit:true,
+							},
+							{
+								text:"复制视图",
+								limit:true,
+							},
+							{
+								text:"修改视图图标",
+								limit:true,
+							},
+							{
+								text:"重命名视图",
+								limit:true,
+							},
+		    			]
+	    	 },
+	    	 {
+	    	 	text:"视图回收站",
+	    	 	children:[
+							{
+								text:"还原",
+								limit:true,
+							},
+							{
+								text:"删除",
+								limit:true,
+							},
+		    			]
+	    	 },
+	    	 {
+	    	 	text:"预警设置",
+	    	 	children:[
+							{
+								text:"新增",
+								limit:true,
+							},
+							{
+								text:"设置预警",
+								limit:true,
+							},
+							{
+								text:"删除",
+								limit:true,
+							},
+		    			]
+	    	 },
+
+    	 ];
+
+
+
+    	 const str = obj.map(val=>{
+
+    	 	const inpStatus ='checked="checked"';
+			
+    	 	const funItemsStr = val.children.map(val=>{
+    	 		return `
+						<div class="funBtn">
+								<span class="s-checkbox">
+										<input type="checkbox" ${val.limit && inpStatus || ""} class="child-checkbox" ><label class="fa fa-square-o"></label>
+								</span>
+								<b>${val.text}</b>
+						</div>
+						`;
+    	 	});
+
+			return `<tr>
+						<td width="30%">
+							<p>
+								<span class="s-checkbox">
+										<input type="checkbox" ${inpStatus} class="par-checkbox" ><label class="fa fa-square-o"></label>
+								</span>
+								<b>${val.text}</b>
+							</p>
+						</td>
+						<td width="70%">
+							<div>
+								${funItemsStr.join("")}
+							</div>
+						</td>
+					</tr>`;
+
+
+    	 });
+		
+    	return str.join("");
     }
 
     handle(){
-    	const _self = this ;
-		//复选框事件
-		$tableBox.on("click",".checkSingle",function(){
-			_self.checkSingleHandle($tableBox);
-		});
-		//
-		$tableBox.on("click",".tab-opt",function(){
+    	this.tabBox.on("click",".par-checkbox",function(){
+    		const $this= $(this);
+    		const status = $this.prop("checked");
+			const childTd = $this.closest("td").siblings("td");
+			childTd.find(".child-checkbox").prop("checked",status);
 
-			const type =  $(this).attr("node-sign");
-			const par = $(this).parent(),
-				  id = +par.attr("echo-data");
+			$this.siblings("label").removeClass("has-chec");
+    	});	
 
+    	this.tabBox.on("click",".child-checkbox",function(){
+    		
+    		const $this= $(this);
+    		const par = $this.closest("td");
+
+    		const childEl = par.find(".child-checkbox");
+			const notCheckCount = childEl.not(":checked").length;
+
+			const parTd = par.siblings("td");
+
+			if(notCheckCount > 0 && notCheckCount < childEl.length){
+				
+				parTd.find("label").addClass("has-chec");
+				parTd.find(".par-checkbox").prop("checked",false);
 			
-			switch(type){
-				case "rest":{
-
-					const node = $table.datagrid("getData").rows.find(val=>{
-
-						return val.layout_id === id ;
-					});
-
-
-					page.restModal.setValue(node.layout_name,node.par_id,id);
-
-					break;
-				}
-				case "del":{
-
-					const obj = {ids:[id]} ;
-					page.del(obj);
-
-					break;
-					}
-				default:
-					break;
+			}else{
+				parTd.find("label").removeClass("has-chec");
+				parTd.find(".par-checkbox").prop("checked",!notCheckCount);
 			}
+			
 
-
-
-		});
+    	});	
     }
 
 }
 
 
-
-class RestModal{
-
-	constructor(unit,modal){
-		 this.unit = unit ;
-		 this.modal = modal ;
-		this.init();
-		this.handle();
-	}
-
-	init(){
-		this.getAllLayoutPar();
-	}
-
-	setValue(name,par_id,id){
-
-		this.optId = id ;
-		$("#name").val(name);
-		this.restCombo.tree.setSingleValue(par_id);
-		page.modal.show($restModal);
-	}
-
-	getAllLayoutPar(){
-
-		api.getAllLayoutPar().then(res=>{
-
-			if(res){
-
-				this.restCombo = new SComboTree($("#parName"),{
-					width:300,
-					treeConfig:{
-						data:res.sub,
-						"textField":"layout_name",
-						"idField":"layout_id",
-						"childIcon":"fa fa-folder-open-o",
-						"childrenField":"sub",
-						"parClick":true,
-						"judgeRelation":(val)=>{//自定义判断是目录还是文件的函数
-								return val.sub.length > 0 ;
-						 }
-					}
-				});
-				
-			}else{
-
-				this.unit.tipToast("获取目录出错！",0);
-			}
-		})
-		
-	}
-
-	handle(){
-
-		const _self = this ;
-		const unit = this.unit;
-		const modal = this.modla;
-		
-		$("#addMBtn").click(function(){
-			
-			const par_id = _self.restCombo.box.find(".combo-value").val(),
-				  name = $("#name").val();
-
-			if(!name || !par_id){
-				unit.tipToast("请填写完整！",2);
-				return ;
-			}
-		    api.checkName({par_id,name}).then(res=>{
-
-		   	  if(res){
-				const id = _self.optId;
-				api.RecycleLayout({id,par_id}).then(res=>{
-					
-					if(res){
-						unit.tipToast("还原成功！",1);
-						page.getData();
-
-						modal.hide($restModal);
-
-					}else{
-						unit.tipToast("还原失败！",0);
-					}
-				});
-
-		   	  }else{
-		   	  	unit.tipToast("此目录下已经存在该名称！",2);
-		   	  }
-		   })
-
-			
-
-		});
-	}
-}
-
 class Page{
 
-	static state = "layout" ;
 
 	constructor(){
 		this.unit = new Unit();
+		this.modal = new SModal();
+		this.roleMd = $("#roleMd");
 		this.handle();
 		this.init();
 
@@ -235,85 +228,41 @@ class Page{
 	init(){
 
 		const unit = this.unit;
-		this.table = new Table(unit);
+		this.table = new Table({
+			unit
+		});
 		
 		this.modal = new SModal();
-		this.restModal = new RestModal(unit);
 		this.inp = new SInp();
-		this.search = new Search($("#u-search"),{
-			serachCallback:(result)=>{
-				
-				this.table.loadTab(result,Page.state);
-			},
-			closeCallback:(res)=>{
-				
-				this.table.loadTab(res,Page.state);
-			},
-			keyField:"layout_name",
-
-		});
+	
 		this.getData();
 	}
 
 	getData(){
 
-		const  method = Page.state === "layout" && "RecycleLayoutshow" || "RecycleChartshow";
-		api[method]().then(res=>{
-
-			if(!res){
-				this.unit.tipToast("出错！",0);
-			}else{
-				this.search.data = res ;
-				this.table.loadTab(res,Page.state);
-			}
-
-		});
+		
 	}
 
-	del(obj){
+	del(){
 
-		const  method = Page.state === "layout" && "delLayout" || "delchart";
-
-		api[method](obj).then(res=>{
-			if(!res){
-				this.unit.tipToast("删除失败！",0);
-			}else{
-				this.unit.tipToast("删除成功！",1);
-				this.getData();
-			}
-		});
+	
 	}
 
 	handle(){
-		const _self = this ;
-		// 切换 视图与图表
-		$("#j-tab").on("click",".m-tab-item",function(){
-			const $this = $(this);
-			const type = $this.index();
 
-			if($this.hasClass("active")){
-					return ;			
-			}
+		const _self= this;
+		$("#j-addBtn").click(function(){
 
-			$this.addClass("active").siblings().removeClass("active");
-			Page.state = type === 0 ? "layout" : "chart" ;
-			_self.getData();
+			_self.modal.show(_self.roleMd);
 
 		});
-		//批量删去
-		$("#delBtn").click(function(){
-
-			const ids =$.map($tableBox.find(".checkSingle:checked"),function(val){
-					return +val.value;
-			}) ;
-
-			if(!ids.length){
-				return ;
-			}
-
-			_self.del({ids});
+		
+		$("#j-set").click(function(){
+				
+			
 
 		});
+
 	}
 }
 

@@ -17,15 +17,12 @@ class Chart {
 
 	constructor($el, config, data) {
 
-		const {
-			border
-		} = config;
+		const {border,size} = config;
 		this.border = border;
+		this.size = size;
 		this.type = "";
 		this.Box = $el;
 		this.init(data);
-		this.color = ["#1296FB", "#8FD6FA", "#0088CC", "#06B76A", "#CBC450", "#FD8D1D"];
-
 	}
 
 	init(res) {
@@ -329,8 +326,8 @@ class Chart {
 					const grid = {
 						top: grid_top_add + 20 + "%",
 						left: left_add + 10 +"%",
-						right: "6%",
-						bottom: "12%",
+						right: "10%",
+						bottom: "16%",
 						containLabel: false,
             			//width:"70%",
 					};
@@ -356,7 +353,7 @@ class Chart {
 					const grid = {
 						top: grid_top_add + 12 + "%",
 						left: left_add + 10 +"%",
-						right: "6%",
+						right: "10%",
 						bottom: "32%",
 						containLabel: false,
 					};
@@ -381,8 +378,8 @@ class Chart {
 					const grid = {
 						left: left_add + 30 +"%",
 						top: grid_top_add + 12 + "%",
-						right: "6%",
-						bottom: "14%",
+						right: "10%",
+						bottom: "16%",
 						containLabel: false,
 					};
 
@@ -406,7 +403,7 @@ class Chart {
 
 					const grid = {
 						top: grid_top_add + 14 + "%",
-						right: "24%",
+						right: "26%",
 						left: left_add + 10 +"%",
 						bottom: "14%",
 						containLabel: false,
@@ -429,7 +426,7 @@ class Chart {
 
 					const grid = {
 						left: left_add + 10 +"%",
-						right: "6%",
+						right: "10%",
 						top: grid_top_add + 12 + "%",
 						bottom: "14%",
 						containLabel: false,

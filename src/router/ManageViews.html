@@ -8,13 +8,15 @@
 	<script src="assert/js/modernizr.custom.63321.js"></script>
 	<link rel="stylesheet" href="assert/css/normalize.css">
 	<link rel="stylesheet" href="assert/font/css/font-awesome.min.css">
+	  <link rel="stylesheet" href="assert/sekin-font/style.css">
 </head>
 <body>
 
 	<div id="app" style="width:100%;height:100%">
 		
-		<div class="global-set" id="globalSet">
-			<span class="m-rippleBtn global-itme" sign="filter"><i class="fa fa-filter fa-lg"></i>&nbsp;<b>全局筛选</b></span>
+		<div class="global-set m-rippleBtn" id="globalSet">
+			<span class="global-itme" sign="filter"><i class="fa fa-filter fa-lg"></i>&nbsp;</span>
+			<span class="global-itme" sign="refresh"><i class="fa fa-refresh fa-lg"></i>&nbsp;</span>
 		</div>
 		<div class="manage-views ">
 			<div class="head" id="viewsHead">
@@ -30,11 +32,11 @@
 	        <div class="m-content">
 	            <div class="m-title">
 	                <div class="g-tab" >
-						<span class="m-tab-item line-hover active ">
+						<!-- <span class="m-tab-item line-hover active ">
 							动态时间
-						</span>
-						<span class="m-tab-item line-hover">
-							静态时间
+						</span> -->
+						<span class="m-tab-item">
+							时间筛选
 						</span> 
 					</div>
 	                <span class="m-close m-close-icon">
@@ -42,25 +44,25 @@
 	                </span>
 	            </div>
 	            <div class="m-action time-content" >
-	                <div class="time-content-item" >
-	                	<div class="sel-item" >
-                            <p class="s-title">时间筛选:</p>
-                            <div>
-                                <span>前&nbsp;&nbsp;</span>
-                                <input type="text" placeholder="时间..." value="" required="required" class="s-inp num-valid no-fill" id="timeVal" pattern="0|^0\.[0-9]+|^[1-9]\d*\.?\d*">
-                                <select name="timeRotate" id="timeRotate" class="m-select">
-                                    <option value="0" selected="selected">天</option>
-                                    <option value="7">周</option>
-                                    <option value="5">月</option>
-                                    <option value="6">季度</option>
-                                    <option value="4">年</option>
-                                </select>
-                                <span>&nbsp;&nbsp;到当前的数据累计</span>
-                            </div>
-                        </div>	
-
-	                </div>
-					<div class="time-content-item" >
+	               <!--  <div class="time-content-item active" >
+	               	<div class="sel-item" >
+	                                           <p class="s-title">时间筛选:</p>
+	                                           <div>
+	                                               <span>前&nbsp;&nbsp;</span>
+	                                               <input type="text" placeholder="时间..." value="" required="required" class="s-inp num-valid no-fill" id="timeVal" pattern="0|^0\.[0-9]+|^[1-9]\d*\.?\d*">
+	                                               <select name="timeRotate" id="timeRotate" class="m-select">
+	                                                   <option value="0" selected="selected">天</option>
+	                                                   <option value="7">周</option>
+	                                                   <option value="5">月</option>
+	                                                   <option value="6">季度</option>
+	                                                   <option value="4">年</option>
+	                                               </select>
+	                                               <span>&nbsp;&nbsp;到当前的数据累计</span>
+	                                           </div>
+	                                       </div>	
+	               
+	               </div> -->
+					<div class="time-content-item active" >
 						  <div class="sel-item">
 	                            <p class="s-title">时间筛选:</p>
 	                            <div  class="calendar-time">
@@ -71,11 +73,11 @@
 	                        </div>
 					</div>
 	            </div>
-	            <div class="m-foot">
-	                <button class="s-btn sure-btn" id="editPre">预 览</button>
+	            <!-- <div class="m-foot">
+	                <button class="s-btn sure-btn" id="filterTime">预 览</button>
 	                <span>&nbsp;&nbsp;&nbsp;</span>
 	                <button class="s-btn s-dashBtn m-close">关 闭</button>
-	            </div>
+	            </div> -->
 	        </div>
 	    </div>
 		
@@ -83,8 +85,9 @@
 	<div class="s-md-overlay"></div>
 
 	 <div class="g-tip-toast" id="tipToast"></div>	
-	<script src="assert/js/jquery.min.js"></script>
-	<script src="assert/js/echarts.min.js"></script>
+	 <script src="assert/js/jquery.min.js"></script>
+	 <script src="assert/js/jquery.nicescroll.js"></script>
+	 <script src="assert/js/echarts.min.js"></script>
 	 <script type="text/javascript">
       window.jsp_config = window.parent.jsp_config;
     </script>

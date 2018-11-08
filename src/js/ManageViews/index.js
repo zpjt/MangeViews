@@ -1,6 +1,6 @@
 import {api} from "api/ManageViews.js";
-import {View,Border,STable} from "./view.js";
-import {Calendar,SModal,SInp,RippleBtn} from "js/common/Unit.js";
+import {View,Border,STable,TimeView} from "./view.js";
+import {Calendar,SModal,SInp,RippleBtn,Unit} from "js/common/Unit.js";
 import "css/ManageViews.scss";
 /*Jq对象*/
 new RippleBtn();
@@ -8,6 +8,8 @@ const {baseUrl} = window.jsp_config;
 
 
 class App{
+
+	static activeView = null ;
 
 
 	constructor(){
@@ -19,7 +21,13 @@ class App{
 		this.maxWindow = $("#maxWindow");
 		this.timeBox = $("#g-timeContent");
 
+		this.maxTimer = null ;
+		this.maxView = null ;
+
+		this.unit = new  Unit();
+
 		this.items=[];
+		this.apiData = [];
 		this.init();
 		this.handle();
 	}
@@ -39,6 +47,11 @@ class App{
 		this.calendar = new Calendar($("#calendarBox"),$("#viewShowTime"),{
 			rotate:4,
 			style:2,
+			callback:()=>{
+
+				const index = App.activeView;
+				index==="all" ? this.filterAll()　: this.filterTime(index) ;
+			}
 		});
 
 	}
@@ -92,9 +105,6 @@ class App{
 
 	IntervalreFresh(type,view,viewData){
 
-		console.log(view);
-
-
 		switch(type){
 			case "timeReal":{
 					const {tabInfo:{ref_time , ref_frequency}} = viewData ;
@@ -118,7 +128,7 @@ class App{
 	}
 
 	createView(config){
-		const {id,type,item,box} = config;
+		const {id,type,item,box,size,borderType} = config;
 		const method={
 			table:{
 				getDataUrl:"getTableData",
@@ -141,7 +151,7 @@ class App{
 
 				if(!res){
 
-					unit.tipToast("没数据！",3);
+					this.unit.tipToast("没数据！",2);
 					box.removeClass("view-fill");
 					box.attr("echo-id","");
 
@@ -151,20 +161,11 @@ class App{
 
 					const result = type === "editView" ? res.assembly_data : res ;
 
-					this.items[item] = new View(box,{id,type,index:item,viewTitle},result);
-
+					this.items[item] = new View(box,{id,type,index:item,viewTitle,size,borderType},result);
+					this.apiData[item] = {viewType:type};
+					this.apiData[item].params = type === "editView" ? null : (result.tabInfo || result.graphInfo);
 					this.IntervalreFresh(type,this.items[item],result);
-					
 				}
-
-				/*if(res.data && res.data.length){
-					const viewTitle =res[method[type].configName].chartName;
-					this.items[item] = new View(box,{id,type,index:item,viewTitle},res);
-				}else{
-					console.log("该视图已经不存在！");
-				}*/
-			
-
 		});
 
 	}
@@ -178,6 +179,9 @@ class App{
 				if(res.modelData){
 					const model = res.model.replace(/draggable="true"/,"");
 					$("#viewsContent").html(model);
+
+
+					
 					
 					const url = $("#viewTemplate").css("backgroundImage");
 					this.maxWindow.css("backgroundImage",url);
@@ -188,11 +192,11 @@ class App{
 					modelData.filter(val=>val.viewID).map((val,index)=>{
 
 						(function(item,_val){
-							const {point,size,viewID:id,type:_type} = _val;
+							const {point,size,viewID:id,type:_type,borderType} = _val;
 							const $dom = $("#"+point[2]);
 
 			  				const type =  ["line","pie","scatter","bar","rader"].includes(_type) && "chart" || _type ; 
-							self.createView({item,box:$dom,type,id});
+							self.createView({item,box:$dom,type,id,size,borderType});
 						})(index,val);
 					});
 				}else{
@@ -209,13 +213,7 @@ class App{
 		const poitionClass = borderType == "2" ? "border3-opt" : "";	
 
 		const $maxWindow = this.maxWindow ;
-
-		//<span class="fa fa-filter view-btn" sign="filter" title="筛选"></span>
-		//<span class="fa fa-refresh view-btn" sign="refresh" title="刷新"></span>
-		
-
-		const borderStr = borderType === "0" ? "" : ` <div class="bgSvg" echo-w="3" echo-y="3" echo-type="${borderType}"></div>` ;
-
+		const borderStr = borderType === "0" ? "" : ` <div class="bgSvg"></div>` ;
 		const templateStr=`
 							<div class="view-item" echo-id="max" style="width:100%;height:100%;">
 						       ${borderStr}
@@ -225,31 +223,59 @@ class App{
 											<span class="fa fa-bars" ></span>
 										</div>
 						        		<div class="view-btns" echo-id="${id}" echo-index="${index}">
-											
 											<span class="fa fa-compress view-btn" sign="compress" title="最小化"></span>
 											<span class="fa fa-file-excel-o view-btn" sign="excel" title="导出excel"></span>
 											<span class="fa fa-file-image-o view-btn" sign="image" title="导出图片"></span>
-											
 										</div>
 						        	</div>
-						            <div class="view_main"></div>
+						            <div class="view_main ${viewType}_main"></div>
 						        </div>
 						    </div>
 							`
 		$maxWindow.html(templateStr);
 		const chartDom = $maxWindow.find(".view_main");
-		if(viewType=="table"){
+
+		const size = [3,3];
+		if(viewType==="table" || viewType==="timeReal"  ){
 
 			api.getTableData(id).then(res=>{
-				new STable(chartDom,{borderType},res);
+				if(viewType==="table"){
+					new STable(chartDom,{borderType,size},res)
+				}else{
+
+					const view =  new TimeView(chartDom,{borderType,size},res);
+
+					const {tabInfo,tabInfo:{ref_time , ref_frequency}} = res ;
+						
+					if( ref_frequency !== "0"){
+						
+						this.maxTimer = setInterval(function(){
+
+							console.log("dddd");
+
+							api.getTableInfo(tabInfo).then(res=>{
+								view.init(res);
+							});
+				
+						},3000);
+					}
+				}
+				
 			});
 			
 		}else if(viewType=="chart"){
+			
 			let myChart= echarts.init(chartDom[0]); 
 			    myChart.setOption(option);
+	
+		}else if(viewType=="editView"){
+					
+			chartDom.html(option);
+
 		}
+
 		if(borderType !== "0"){
-			 new  Border($maxWindow.find(".bgSvg"),{id:"max",title:viewTitle});
+			 new  Border($maxWindow.find(".bgSvg"),{id:"max",title:viewTitle,borderType,size});
 		}	
 	}
 
@@ -336,8 +362,6 @@ class App{
 			});
 
 		}
-		
-		
 			
 	}
 
@@ -391,6 +415,51 @@ class App{
 		}
 
 	}
+
+	filterAll(){
+		const time = this.calendar.value; 
+		this.apiData.map((val,index)=>{
+			const view = this.items[index];
+			const {viewType,params} = val ;
+			
+			if(!refreshArr.includes(viewType)){
+				return ;
+			}
+			
+			const method = viewType === "chart" && "getGraphInfo" || "getTableInfo"　;
+			params.startTime = time[0].join("");
+			params.endTime = time[1].join("");
+			api[method](params).then(res=>{
+				view[viewType].init(res);
+			});
+		});
+
+	}
+	filterTime(index,is_reload){
+
+     	const view = this.items[index];
+		const viewParams = this.apiData[index];
+
+		const {viewType,params} = viewParams ;
+		const time = this.calendar.value; 
+		const method = viewType === "chart" && "getGraphInfo" || "getTableInfo"　;
+
+		if(is_reload){
+			params.startTime = null;
+			params.endTime = null;
+		
+		}else{
+			params.startTime = time[0].join("");
+			params.endTime = time[1].join("");
+		}
+
+		const {time_id,time_start} = params;
+
+		api[method](params).then(res=>{
+			view[viewType].init(res);
+		});
+
+	}
 	handle(){
 
 		   const $maxWindow = this.maxWindow ;
@@ -399,7 +468,7 @@ class App{
 			$("#g-timeContent").on("click",".m-tab-item",function(){
 				const $this= $(this);
 				const index = $this.index();
-				timeBox.eq(index).show().siblings().hide();
+				timeBox.eq(index).addClass("active").siblings().removeClass("active");
 				$this.addClass("active").siblings().removeClass("active")
 			});
 
@@ -410,8 +479,27 @@ class App{
 
 				switch(type){
 					case"filter":{
-						
+
+					    const refreshArr = ["chart","table"];
+						const is_able = page.apiData.some(val=>refreshArr.includes(val.viewType));
+
+						if(!is_able){
+							page.unit.tipToast("不存在可以刷新的视图！",2);
+							return ;
+						}
+
 						page.modal.show(page.timeBox);
+						App.activeView = "all" ;
+						break;
+					}
+					case"refresh":{
+						
+						page.apiData.map((val,index)=>{
+							const viewType = val.viewType;
+							if(viewType === "table" || viewType === "chart"){
+							  page.filterTime(index,true);
+							}
+						});
 
 						break;
 					}
@@ -446,7 +534,7 @@ class App{
 				const index = par.attr("echo-index");
 				const view = page.items[+index];
 
-				const {viewType,viewTitle,borderType,id} = view ;
+				const {viewType,viewTitle,borderType,id,size} = view ;
 
 
 				let option = null,
@@ -472,11 +560,25 @@ class App{
 					chartType = _chartType;
 					option = Mychart.getOption();
 					WdArr=["","时间","科室","维度值","指标"];
+				
+				} else if(viewType === "timeReal"){
 
-				}
+					const {timeReal:{box,title,data,config}} = view;
+
+					$el = box ;
+					option = view.id;
+
+				}else {
+					const {editView:{box}} = view;
+					option = box.html();
+				} 
+
+				App.activeView = index;
 				switch(type){
 
 					case "refresh":
+
+						page.filterTime(index,true);
 					
 						break;
 					case "excel":
@@ -492,11 +594,18 @@ class App{
 								viewTitle,
 								viewType,
 								id,
+								size
 							});
 						});
 						
 						break;
 					case "compress":
+
+						if(page.maxTimer){
+							console.log("qiangc");
+							clearInterval(page.maxTimer);
+						}
+				     	 
 						const $slide = $("#slide",window.parent.document);
 						const width = $slide.hasClass("collapsed") && 45 || 250;
 						$slide.animate({"width":width},500,function(){
@@ -508,9 +617,15 @@ class App{
 					 	page.Toimage(view);
 						break;
 					case "filter":
+						
+						const {time_id,time_start,startTime,endTime} = page.apiData[index].params;
 
+						const flagStart = startTime || time_id ;
+						const flagEnd = endTime || time_start ;
+						page.calendar.setTime([flagStart,flagEnd]);
 						page.modal.show(page.timeBox);
 						break;
+
 				}
 			});
 	}
@@ -519,11 +634,5 @@ class App{
 const page = new App();
 
 
-
-
-
-
-
- 
 
 

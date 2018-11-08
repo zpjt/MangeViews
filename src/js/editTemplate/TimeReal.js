@@ -17,6 +17,7 @@ class TimeRealMd{
 		this.refreshVal = $("#refreshVal");
 		this.refreshRotate = $("#refreshRotate");
 		this.refreshTime = $("#refreshTime");
+		 this.$refreshTimeSel =  $("#refreshTimeSel");
 
 		this.selZbArr = null ; // 所选择的指标； 
 		this.init();
@@ -81,12 +82,19 @@ class TimeRealMd{
 		const zbArr = id_1.concat(id_2);
 		this.setZbTree(zbArr,dimVals);
 		this.refreshTime.prop("checked",ref_frequency!=="0");
+
+		ref_frequency!=="0" && this.$refreshTimeSel.show() || this.$refreshTimeSel.hide();
 		this.orgWd.setValue(orgs[0].id);
 		this.timeVal.val(time_start);
 		this.timeRotate.val(time_id.split("_")[1]);
-		this.refreshVal.val(ref_time);
-		this.refreshRotate.val(ref_frequency);
+		this.timeVal.removeClass("no-fill");
+
+		ref_frequency!=="0" && this.refreshVal.val(ref_time);
+		ref_frequency!=="0" && this.refreshRotate.val(ref_frequency);
+		ref_frequency!=="0" && this.refreshVal.removeClass("no-fill");
 		$(".real-style").eq(tab_style - 1 ).prop("checked",true);
+
+
 
 		TimeRealMd.status = "edit";
 	}
@@ -368,7 +376,7 @@ class TimeRealMd{
 
 		const _self = this ;
 		const $zbBox = _self.zbBox;
-		const $refreshTimeSel = $("#refreshTimeSel")
+		const $refreshTimeSel = this.$refreshTimeSel;
 	    $("#realSelZb").click(function() {
 			
 			if ($zbBox.hasClass("active")) {
@@ -380,7 +388,7 @@ class TimeRealMd{
 	    this.refreshTime.click(function(){
 			
 
-			!$(this).prop("checked") && $refreshTimeSel.show() || $refreshTimeSel.hide();
+			$(this).prop("checked") && $refreshTimeSel.show() || $refreshTimeSel.hide();
 				
 
 
@@ -409,7 +417,7 @@ class TimeRealMd{
 		});
 		$("#realPre").click(function(){
 
-			if(_self.box.find(".no-fill").length){
+			if(_self.box.find(".no-fill:visible").length){
 				
 				_self.unit.tipToast("请填完数据！",2);
 				return ;

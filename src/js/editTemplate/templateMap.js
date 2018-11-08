@@ -4,6 +4,7 @@ import {api } from "api/editTemplate.js";
 class TemplateMap{
 
 	static MapID = 0 ;
+	static delArr = [];
 
 	constructor(){
 
@@ -68,7 +69,7 @@ class TemplateMap{
 
 			const {attributeObj:{borderType,createId,size,type},viewData:node} = viewMap ;
 
-			const border_str = borderType  === "0" ? "" : `<div class="bgSvg" echo-w="${size[0]}" echo-y="${size[1]}" echo-type="${borderType}"></div>`;
+			const border_str = borderType  === "0" ? "" : `<div class="bgSvg"></div>`;
 
 			const htmlStr = border_str + `<div class="view-content"></div>`;
 			$dom.html(htmlStr);
@@ -81,6 +82,8 @@ class TemplateMap{
 				type:_type,
 				index:createId,
 				viewTitle,
+				borderType,
+				size,
 			}, node, "2");
 
 		this.IntervalreFresh(type,view,viewMap);
@@ -106,6 +109,7 @@ class TemplateMap{
 					viewMap.timer = setInterval(function(){
 
 						api.getTableInfo(viewMap.viewData.tabInfo).then(res=>{
+							view.timeReal.size=viewMap.attributeObj.size;
 							view.timeReal.init(res);
 						});
 			
@@ -117,6 +121,11 @@ class TemplateMap{
 			break;
 		}
 
+	}
+
+	getDelArr(){
+
+		return TemplateMap.delArr;
 	}
 	
 	initAdd($dom,viewTitle,node){
@@ -137,6 +146,8 @@ class TemplateMap{
 		const view = this.viewsMap.get($dom[0]);
 		const {attributeObj:{size,createId,viewID}} = view;
 
+		this.clearRefresh(view);
+
 		let mapId = createId;
 
 		view.viewData = node ;
@@ -156,17 +167,19 @@ class TemplateMap{
 			view.attributeObj.createId = mapId;
 
 		}else if(status === "edit" && viewID){
-
 			view.attributeObj.viewID = "";
-			api.deleteChart(viewID).then(res=>{
-			});
+			type !== "editView" &&　TemplateMap.delArr.push(viewID);
 		}
 
-		this.clearRefresh(view);
+		
 
 		$dom.addClass("view-fill");
 		this.ceateView($dom,viewTitle,view);
 	}
+
+	delChart(viewID){
+		return api.deleteChart(viewID);
+	};
 
 	remove($dom){
 
@@ -175,11 +188,12 @@ class TemplateMap{
 
 		const viewMap = this.viewsMap.get($dom[0]);
 
-		const {attributeObj:{size,point,viewID}} = viewMap;
 
-		viewID && api.deleteChart(viewID).then(res=>{
+		this.clearRefresh(viewMap);
 
-		});
+		const {attributeObj:{size,point,viewID,type}} = viewMap;
+
+		viewID && type !== "editView" &&  TemplateMap.delArr.push(viewID) ;
 
 		viewMap.attributeObj = null ;
 		viewMap.attributeObj = {
@@ -194,19 +208,12 @@ class TemplateMap{
 
 		viewMap.viewData = null ;
 
-		this.clearRefresh(viewMap);
 
 	}
 
 	getMap(){
-
-
 		return this.viewsMap;
 	}
-
-
-
-
 
 }
 

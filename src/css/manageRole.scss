@@ -4,22 +4,44 @@ $border:#E9E9E9;
 $slectColor:#aee6ff;
 
 /* 选项卡盒子 */
-div.g-tab{
-	background: $slectColor;
-	padding-left:16px;
-	border-radius:8px 8px 0 0;
-	padding:10px;
-	.m-tab-item.active{
-		color:$themeColor;
-		&:after{
-			transform:scaleX(1)
-		}
+.btnBox{
+	&>button{
+		margin-left: 20px;
+	}
+}
+/* 表格样式 */
+.g-tabBox{
+	background: #fff ;
+	border-radius:  8px;
+	position: relative;
+	.g-titleBox{
+
+		height: 40px;
 	}
 }
 
-/* 还原模态框 */
-#restModal{
-	#name{
-		width:300px;
+#roleCombo{
+	.combo-inp{
+		border: 1px solid white;
+		background:white;
+	}
+}
+.g-limitTab	{
+	width: 100%;
+	thead{
+		background:#AEE6FF;
+	}
+	th{
+		height: 40px;
+		padding: 8px 20px;
+	}
+	td{
+		padding: 8px 20px;
+	}
+	tr:nth-child(2n){
+		background: #f1ece2;
+	}
+	.funBtn{
+		margin:10px;
 	}
 }

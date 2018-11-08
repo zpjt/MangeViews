@@ -22,8 +22,31 @@ $themeColor:#00a0e9;
 }
 .editView_main{
 	word-wrap: break-word;
+	line-height: 1.2rem;
 	p{
 		text-align: initial;
+		margin:10px;
+		
+	}
+	h1{
+		font-size: 24px;
+		margin:20px;	
+	}
+	h2{
+		font-size: 22px;
+		margin:16px;	
+	}
+	h3{
+		font-size: 18px;
+		margin:14px;	
+	}
+	h4{
+		margin:14px;
+		margin:10px;
+	}
+	h5{
+		font-size: 12px;
+		margin:8px;
 	}
 }
 .manage-views{
@@ -84,13 +107,6 @@ $themeColor:#00a0e9;
 						height: 100%;
 						position: absolute;
 						z-index:5;
-						span.fa{
-							padding:5px 4px;
-							&:hover{
-								color:white;
-								cursor:pointer;
-							}
-						}
 					}
 					.view_main{
 						width:100%;
@@ -103,33 +119,61 @@ $themeColor:#00a0e9;
 						padding:15px;
 					}
 					.table_main{
-						padding:8px;
+						padding:10px 20px;
 					}
 					.timeReal_main{
 						padding:8px;
 					}
-					/* .chart{
+					.editView_main{
+						color:black;
+						background: #fff ;
+    					border-radius: 8px;
+    					overflow: auto;
+					}
 					
-					} */
 					 .view-optBox{
 					 	font-size:16px;
 					 	color:#7EBFCB;
 					 	position: absolute;
 					 	z-index:10;
 					 	right:18px;
-					 	top:12px;
-					 	display:none;
+					 	top:20px;
+						cursor:pointer;
+						display: none;
+					 }
+					 .btn-handle{
+					 	 text-align: center;
+					 	 padding:5px 6px;
+					 	 background: #0d507e;
+    					 border: 2px solid #6dd6ff;
+    					 border-radius:100%;
+					     margin-bottom: 5px;
+					     box-shadow: 0px 0px 10px 3px rgba(195, 189, 189, 0.48);
+					 	&:hover{
+					 		color:white;
+					 	}
 					 }
 
 					 .view-btns{
-						 display:flex;
-						 overflow:hidden;
-						 transition: all .3s ease-out;
+						 display:none;
 						 flex-direction:column;
-						 height:0px;
+						 background: #0d507e;
+    					 border: 2px solid #6dd6ff;
+    					 border-radius:4px;
 					 }
+
+					  .view-btn{ 
+					  	border-bottom:1px solid #6dd6ff;
+					  	padding:5px;
+				  	    text-align: center;
+						&:hover{
+							color:white;
+						}
+					 }
+
+
 					.active~.view-btns{
-						height:150px;
+						display: flex;
 					}
 					 .border3-opt{
 					 	top:40px;
@@ -170,22 +214,21 @@ $themeColor:#00a0e9;
     	display: none;
     	position: relative;
     }
-     .time-content-item:first-child{
-    	display: block;
-    }
+     .time-content-item.active{
+     	display: block;
+     } 
 }
 /* 时间筛选模态框 */
 #g-timeContent{
   .g-tab{
-    	width: 160px;
+    	width: 80px;
   }
   .m-title{
-		height: auto;
-     line-height: 30px;
+	 height: auto;
   }
   .m-action{
-  	width: 480px;
-  	height: 110px;
+  	width: 440px;
+  	height: 100px;
   }
 }
 /* 全局设置 */
@@ -197,11 +240,20 @@ $themeColor:#00a0e9;
 	font-size:14px;
 	color:#6DD6FF;
 	cursor: pointer;
-	&>span{
-		padding:6px;
-		border-radius:4px;
-		background: #0D507E ;
-		border: 2px solid #6DD6FF;
+	border-radius:4px;
+	background: #0D507E ;
+	border: 2px solid #6DD6FF;
+
+	.global-itme{
+		padding:6px 8px;
+		border-left:1px solid  #6DD6FF;
+		&:hover{
+			color:white;
+		}
+	}	
+
+	.global-itme:first-child{
+		border-left:none;
 	}	
 }
 

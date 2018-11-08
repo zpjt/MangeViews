@@ -20,13 +20,13 @@
                     <span echo-text="全局样式" sign="style" class="head-btn"><i class="fa fa-th-large"></span></i>
                 </div>
                 <div class="opt-box">
-                     <span echo-text="预览" sign="pre" class="head-btn"><i class="sicon sicon-pre"></i></span> 
+                    <!--  <span echo-text="预览" sign="pre" class="head-btn"><i class="sicon sicon-pre"></i></span>  -->
                     <span echo-text="保存" sign="save" class="head-btn"><i class="sicon sicon-save"></i></span>
                      <span echo-text="另存为" sign="save-as" class="head-btn"><i class="sicon sicon-save-as"></i></span>
-                   <span echo-text="导出" sign="export" class="head-btn" id="testObject"><i class="sicon sicon-export"></i></span> 
+                  <!--  <span echo-text="导出" sign="export" class="head-btn" id="testObject"><i class="sicon sicon-export"></i></span>  -->
                 </div>
             </div>
-            <div class="global-box" id="globalBox">
+            <div class="global-box global-style" id="globalBox">
                 <ul class="cate-content">
                     <li>
                         <p class="cate-title" style="border-top:none;">背景样式:</p>
@@ -34,12 +34,11 @@
                            <div class="theme-box">
                                <div class="theme-item" echo-theme="theme1"></div>
                                <div class="theme-item active" echo-theme="theme2"></div>
-                               <div class="theme-item" echo-theme="theme3"></div>
+
                            </div> 
                             <div class="theme-box">
+                               <div class="theme-item" echo-theme="theme3"></div>
                                 <div class="theme-item" echo-theme="theme4"></div>
-                                <div class="theme-item" echo-theme="theme5"></div>
-                                <div class="theme-item" echo-theme="theme6"></div>
                             </div>
                         </div>
                     </li>
@@ -53,8 +52,19 @@
                     </li>
                 </ul>
             </div>
+             <div class="global-box global-filter" id="globalFilter" >
+                <div class="content">
+                    <div class="dataTime" id="globalCalendar"></div>
+                </div>
+                <div class="footer" id="filterFoot">
+                    <button class="s-btn">确定</button>
+                    <button class="s-btn">关闭</button>
+                </div>
+
+             </div>
+
             <div id="viewTitle" class="view-title">
-                
+              
             </div>
         </header>
         <div class="container">
@@ -394,8 +404,6 @@
                                                 <option value="1" selected="selected">秒</option>
                                                 <option value="2">分</option>
                                                 <option value="3">时</option>
-                                                <option value="4">天</option>
-                                                <option value="5">周</option>
                                             </select>
                                             <span>&nbsp;&nbsp;刷新1次</span>
                                         </div>
@@ -439,11 +447,12 @@
     </svg>
     <div id="g-templateDom" style="display: none"></div>
     <div class="g-tip-toast" id="tipToast"></div>
-
+    
     <div class="s-md-overlay"></div>
 
     
     <script src="assert/js/jquery.min.js"></script>
+    <script src="assert/js/jquery.nicescroll.js"></script>
     <script src="assert/js/echarts.min.js"></script>
     <script type="text/javascript">
       window.jsp_config = window.parent.jsp_config;

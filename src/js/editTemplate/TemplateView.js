@@ -456,8 +456,6 @@ class ChangeView{
 
 			const _type = ["line","pie","bar","scatter","radar"].includes(type) && "chart" || type;
 
-			console.log(type);
-
 			switch(_type){
 				case "table":{
 				     new STable(newEl.find(".view_main"),{border:borderType},viewData);	
@@ -469,6 +467,16 @@ class ChangeView{
 					chartName = viewData.graphInfo.chartName;
 				}
 				break;
+				case "timeReal":{
+					
+					
+					const  tab_style = viewData.tabInfo.tab_style;
+					const oWidth = (1/(tab_style*size[0]))*100-2;
+
+					newEl.find(".timeItem").css("width",oWidth+"%");
+				   
+				}
+				break;
 				default:
 				console.log(_type);
 				break;
@@ -477,9 +485,7 @@ class ChangeView{
 			if(borderType!=="0"){
 				const borderBox = newEl.find(".bgSvg");
 
-				borderBox.attr({"echo-y":size[1],"echo-w":size[0]});
-
-				new Border(borderBox,{id:viewID,title:chartName});
+				new Border(borderBox,{id:viewID,title:chartName,size,borderType});
 			}
 			viewMap.attributeObj.size = rotate ;
 		}
@@ -516,13 +522,41 @@ class TemplateView  extends ChangeView {
        this.handle();
 	}
 
+	imgToUrl(viewsMap){
+
+		const imgElArr = $(".editView_main img").not(".has_url");
+
+		if(!imgElArr.length){return true;}
+		const baseArr = Array.from(imgElArr).map(function(val){
+			return  val.src.split(",")[1];
+		});
+
+		return  api.upload(baseArr).then(res=>{
+
+				if(res){
+					Object.entries(res).forEach(item=>{
+						const [index,url] = item ;
+					
+						imgElArr.eq(+index).prop("src",url).addClass("has_url")
+					});
+
+					viewsMap.forEach((value,key)=>{
+
+						const {attributeObj:{type}} = value;
+						if(type === "editView"){
+							value.viewData = $(key).find(".editView_main").html();
+						}
+					})
+
+				}
+				return !!res ;
+		});
+	}
+
 	getTemplate(){
 
-		
 		const str = this.templateBox.html();
-				
 		this.templateContainer.html(str);
-
 		this.templateContainer.find(".view-content").html(null);
 		this.templateContainer.find(".bgSvg").html(null);
 		const htmlStr = this.templateContainer.html();
@@ -530,7 +564,6 @@ class TemplateView  extends ChangeView {
 			htmlStr,
 			box:this.templateContainer
 		}
-
 	}
 	throttle(fn,interval){
 
@@ -618,10 +651,10 @@ class TemplateView  extends ChangeView {
 
 				if(!res){
 
-					unit.tipToast("没数据！",3);
-					box.removeClass("view-fill");
-					box.attr("echo-id","");
-
+					this.config.unit.tipToast("没数据！",2);
+					$dom.removeClass("view-fill");
+					templateMap.remove($dom);
+					
 				}else{
 
 					const viewTitle =_type === "editView" ? "" :  res[_typeObj.configName].chartName;
@@ -630,6 +663,10 @@ class TemplateView  extends ChangeView {
 
 					templateMap.initAdd($dom,viewTitle,result);
 				}
+		}).catch(res=>{
+
+				this.config.unit.tipToast("组件获取出错,已删掉错误的组件！",0);
+				templateMap.remove($dom);
 		});
 
 	}
@@ -811,15 +848,16 @@ class TemplateView  extends ChangeView {
 		const chartArr = ["line","pie","scatter","bar","rader"];
 		const method = chartArr.includes(_viewType) ? "graphInfo" : "tabInfo" ;
 
-		const attr = {borderType,type:_viewType,viewTitle:viewData[method].chartName,createId,viewID};
+		const viewTitle = _viewType !== "editView" ? viewData[method].chartName : "";
+
+		const attr = {borderType,type:_viewType,viewTitle,createId,viewID};
 		templateMap.add(viewData,$this,attr,"replace");
 
 		if(has_fill){
 			
 			const method = chartArr.includes(_viewType_1) ? "graphInfo" : "tabInfo" ;
 		
-			const viewTitle = viewData_1[method].chartName ;
-				console.log(viewTitle);
+			const viewTitle = _viewType_1 !== "editView" ? viewData_1[method].chartName  : "";
 
 			const attr = {borderType:borderType_1,type:_viewType_1,viewTitle,createId:createId_1,viewID:viewID_1};
 			templateMap.add(viewData_1,$dragEl,attr,"replace");
@@ -977,8 +1015,11 @@ class TemplateView  extends ChangeView {
 			$(this).toggleClass("active");
 		});
 
-		$templateBox.on("click",".view-btn",function(){
+		$templateBox.on("dblclick",".view-optBox ",function(e){
+			e.stopPropagation();
+		});
 
+		$templateBox.on("click",".view-btn",function(e){
 			const $this = $(this);
 			const type = $this.attr("sign");
 			const par = $this.closest(".view-item");

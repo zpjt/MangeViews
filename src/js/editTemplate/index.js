@@ -99,6 +99,9 @@ class Page{
 	    	modal,
 	    	templateMap,
 	    	unit,
+	    	imgToUrl:(viewsMap)=>{
+				return this.templateView.imgToUrl(viewsMap);
+	    	},
 	    	getTemplate:()=>{
 	    		return this.templateView.getTemplate();
 	    	},

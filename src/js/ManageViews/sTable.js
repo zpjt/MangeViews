@@ -4,9 +4,10 @@ class STable {
 
 
 	constructor($el,config,data){
-		const {border} = config;
+		const {border,size} = config;
 		const data_copy = JSON.parse(JSON.stringify(data));
 		this.border = border ;
+		this.size = size;
 		this.container = $el;
 		this.init(data_copy);
 
@@ -38,7 +39,7 @@ class STable {
 									</table>
 								</div>
 								
-								<div class="table-body-wrap " >
+								<div class="table-body-wrap ">
 									   <table  border="${tab_style}" class="tab-list table-body" frame="void">
 											${tabBody.join("")}
 
@@ -48,17 +49,41 @@ class STable {
 					`
 		this.container.html(str);
 
-		const wrap = this.container.find(".table-body-wrap");
+		console.log("33");
+
+		/*this.container.find(".table-body-wrap").niceScroll({
+            cursorcolor: "#ccc",//#CC0071 光标颜色
+            cursoropacitymax: 1, //改变不透明度非常光标处于活动状态（scrollabar“可见”状态），范围从1到0
+            touchbehavior: false, //使光标拖动滚动像在台式电脑触摸设备
+            cursorwidth: "10px", //像素光标的宽度
+            cursorborder: "0", // 	游标边框css定义
+            cursorborderradius: "8px",//以像素为光标边界半径
+            autohidemode: false //是否隐藏滚动条
+        });*/
+
+        const wrap = this.container.find(".table-body-wrap");
+
+        const maxH = Math.floor(totalH - this.container.find(".tab-head").height() - 26 - top_add -bottom_add);
+        const is_overflow = maxH - wrap.children("table").height() < 0 ;
+
+        if(is_overflow){
+			wrap.css("height", maxH);	
+			this.container.find(".gutter").show();		
+        }
+
+        
+
+		/*const wrap = this.container.find(".table-body-wrap");
 		const height = totalH-row_wd.length*50 ;
-		wrap.css("height", totalH - this.container.find(".tab-head").height() - 14 - top_add -bottom_add);		
+		wrap.css("height", totalH - this.container.find(".tab-head").height() - 26 - top_add -bottom_add);		
 
 		const is_overflow = wrap.height() - wrap.children("table").height() > 0 ;
 
 		!is_overflow && this.container.find(".gutter").show();
 		$(window).on("resize",()=>{
-				wrap.css("height", totalH - this.container.find(".tab-head").height()-20);
+				wrap.css("height", totalH - this.container.find(".tab-head").height()-26 - top_add -bottom_add);
 				!is_overflow && this.container.find(".gutter").show();
-  		 });
+  		 });*/
 	}
 
 	getRandom(max = 500) {

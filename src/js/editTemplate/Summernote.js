@@ -38,6 +38,7 @@ class Summernote {
 			};
 
 		} else {
+			 this.editFrame[0].contentWindow.$summernote.summernote("code", res);
 			return;
 		}
 	}

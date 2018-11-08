@@ -35,6 +35,14 @@ class API {
 				type:"post",
 			}));
 	}
+	getGraphInfo(obj){
+		return Promise.resolve($.ajax({
+				url:URL_V+"getGraphInfo",
+				data:JSON.stringify(obj),
+				contentType:"application/json",
+				type:"post",
+			}));
+	}
 	getAssembly(assembly_id){
 			return Promise.resolve($.get(URL_M+"getAssembly",{assembly_id}));
 	}

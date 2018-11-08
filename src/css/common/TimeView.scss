@@ -11,7 +11,7 @@
 .timeReal_main{
 	display: flex;
 	flex-wrap: wrap;
-	align-content: space-between;
+	//align-content: space-between;
 	color:#85F4FB;
 	justify-content: space-between;
 	
@@ -26,12 +26,11 @@
 		
 	}
 	@at-root{
-		.timeStyle1{
-			width: 16em;
-		//	margin:.5em 0;
+		.timeStyle2{
 			height: 6.5em;
 			background: #4490c175 ;
 			border-radius:4px;
+			margin:auto;
 			.real-zb{
 				text-align: center;
 				padding: 8px;
@@ -41,7 +40,7 @@
 				font-size: 20px;
 				padding:4px 18px;
 				display: flex;
-				
+			    justify-content: center;
 				.item-data{
 					position: relative;
 					padding:4px 8px;
@@ -49,18 +48,17 @@
 					width: 14px;
 				    height: 35px;
 				    line-height: 35px;
-				    background-size:cover;
+				    background-size:contain;
 				    overflow: hidden;
 				}
 			}
 			
 		}
-		.timeStyle2{
-			width: 33.5em;
-		//	margin:.3em 0;
+		.timeStyle1{
+			margin:auto;
 			height: 3em;
 			background: url("../../img/timeReal_line.png") center no-repeat;
-			background-size:cover;
+			background-size:contain;
 	//		border-radius:4px;
 			display: flex;
 			align-items: center;
@@ -74,7 +72,8 @@
 				width: 50%;
 				font-size: 20px;
 				padding:4px 18px;
-				display: flex;
+			  	display: flex;
+				 justify-content: center;
 				.item-data{
 					padding:4px 8px;
 					background:  url("../../img/timeReal_rect.png") center no-repeat;

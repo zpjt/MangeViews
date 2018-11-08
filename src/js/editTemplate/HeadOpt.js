@@ -4,6 +4,8 @@ import {
 import {
 	Border
 } from "js/ManageViews/view.js";
+
+import {Calendar}  from "js/common/calendar.js";
 /**
  * 头部组件
  */
@@ -18,7 +20,14 @@ class HeadOpt {
 
 	init() {
 
+		this.globalCalendar = new Calendar($("#globalCalendar"),null,{
+			hasInp:false,
+			style:2,
+		});
+		console.log(1);
 	}
+
+	
 
 	getSaveViewData() {
 
@@ -48,20 +57,9 @@ class HeadOpt {
 
 
 		return data;
-
-
-
 	}
 
-	async saveAllView(formData) {
-
-		const {
-			getTemplate,
-			templateMap: {
-				viewsMap
-			},
-			unit
-		} = this.config;
+	saveViews(viewsMap,unit){
 
 		const methodObj = {
 			table: "saveTableInfo",
@@ -97,7 +95,7 @@ class HeadOpt {
 				
 				let object = null ;
 				if(type !=="editView"){
-					object =    viewData[config[_type]];
+					object = viewData[config[_type]];
 				}else{
 					object = new FormData();	
 					object.set("assembly_data",viewData);
@@ -118,42 +116,49 @@ class HeadOpt {
 
 				total.push(req);
 			}
-
-
 			return total;
-
-
-
 		}, []);
 
-		
+		return promises;
+
+	}
+
+	async saveAllView(formData) {
+
+		const {
+			imgToUrl,
+			getTemplate,
+			templateMap: {
+				viewsMap
+			},
+			unit
+		} = this.config;
+
+		const imgStatus = await imgToUrl(viewsMap);
+
+		const promises = this.saveViews(viewsMap,unit);
 		const res = await Promise.all(promises);
 
+		this.delAllOld();
+
 		const status = res.every(val => val);
+
 		if (status) {
 
 			const formData = new FormData();
 			const layout_id = window.parent.menuID;
-
-			const {
-				htmlStr,
-				box
-			} = getTemplate();
+			const {htmlStr, box } = getTemplate();
 			const data = this.getSaveViewData();
 
 			formData.set("layout_id", layout_id);
 			formData.set("model", htmlStr);
 			formData.set("modelData", JSON.stringify(data));
 
-			console.log(JSON.stringify(data));
-
 			await api.saveLayout(formData).then(res => {
 
 				res ? unit.tipToast("视图保存成功！", 1) : unit.tipToast("保存失败,请稍后重新再保存！", 0);;
-
 				box.html(null);
 			});
-
 		} else {
 
 			await false;
@@ -161,6 +166,21 @@ class HeadOpt {
 	}
 	getViewData($dom) {
 		return this.config.templateMap.viewsMap.get($dom[0]);
+	}
+	delAllOld(){
+
+		const templateMap = this.config.templateMap;
+
+		let delArr = templateMap.getDelArr();
+
+		const promiseAll = delArr.map(val=>{
+
+			return  templateMap.delChart(val);
+		});
+
+		Promise.all(promiseAll).then(res=>{
+				delArr = [] ;
+		});
 	}
 
 	handle() {
@@ -171,18 +191,19 @@ class HeadOpt {
 		} = this.config;
 
 		const getViewData = this.getViewData;
-		let count = 0;
+
+		const globalFilter = $("#globalFilter");
 
 		$("#headOpt").on("click", ".head-btn", function() {
 			const type = $(this).attr("sign");
 			switch (type) {
 				case "filter":
+				!globalFilter.hasClass("active") ? modal.show(globalFilter, "active") : modal.close(globalFilter, "active");
 					break;
 				case "style":
 
 
-					count % 2 === 0 ? modal.show(_self.globalBox, "active") : modal.close(_self.globalBox, "active");
-					count++;
+					!_self.globalBox.hasClass("active") ? modal.show(_self.globalBox, "active") : modal.close(_self.globalBox, "active");
 
 					break;
 				case "pre":
@@ -222,7 +243,7 @@ class HeadOpt {
 			switch (index) {
 				case 0:
 					break;
-
+					
 				case 1:
 					modal.close(_self.globalBox, "active");
 					break;
@@ -239,35 +260,45 @@ class HeadOpt {
 
 		});
 
+		$("#filterFoot").on("click",".s-btn",function(){
+
+			const $this= $(this);
+
+			if($this.index() === 0){
+
+
+			}
+
+			modal.close($("#globalFilter"), "active");
+		})
+
+
 		$("#borderSelBox").on("click", ".border-item", function() {
 			const $this = $(this);
-			const borderStyle = $this.attr("echo-border").match(/\d+/g)[0];
+			const borderType = $this.attr("echo-border").match(/\d+/g)[0];
 
 			const bgSvgArr = $(".bgSvg");
 
 			$.map(bgSvgArr, function(val) {
 
 				const $border = $(val);
-
-				$border.attr("echo-type", borderStyle);
-
 				const viewDom = $border.parent(".view-item");
 
-				const view = getViewData(viewDom);
+				const view = _self.config.templateMap.viewsMap.get(viewDom[0]);
 
-				view.borderType = borderStyle;
+				view.attributeObj.borderType = borderType;
 
-				const {
-					id,
-					title,
-					object: {
-						chartName
-					}
-				} = view;
+				const size = view.attributeObj.size;
+				const type = view.attributeObj.type;
+				const id = view.attributeObj.viewID;
+				const title = type === "table" &&　view.viewData.tabInfo.chartName || view.viewData.graphInfo.chartName;
+
 
 				new Border($border, {
 					id,
-					title: chartName
+					title,
+					borderType,
+					size
 				});
 
 			});

@@ -5,8 +5,10 @@ class TimeView{
 
 	constructor(box,config,data){
 
+		const {border,size} = config;
+		this.border = border;
+		this.size = size;
 		this.numCount = 6 ;
-		this.borderType = config.borderType;
 		this.box = box ;
 		this.oldArr = Array.from({length:data.data.length-1},val=>"000000");
 		this.init(data);	
@@ -47,7 +49,9 @@ class TimeView{
 		const totalArr = [...total_str];
 		const old = this.oldArr[oIndex];
 		const oldArr = [...old];
-		const htmlStr = `<div class="timeItem timeStyle${style}">
+
+		const oWid = ( 1/(style*this.size[0]) )*100 - 2;
+		const htmlStr = `<div class="timeItem timeStyle${style}" style="width:${oWid}%">
 							<p class="real-zb">${zb}</p>
 							<ul class="reak-dataBox">
 								${this.renderData(totalArr,oldArr).join("")}
@@ -56,7 +60,7 @@ class TimeView{
 		return htmlStr ;
 	}
 
-	renderData(arr,oldArr){
+	renderData(arr,oldArr,width){
 
 
 		const leg = arr.length;
@@ -72,6 +76,8 @@ class TimeView{
 		    const flag = is_over ? val : old ;
 	
 			const className = val == old ? "" : is_over ? "real-down" : "real-up" ;
+
+			
 
 
 			return `<li class="item-data " >

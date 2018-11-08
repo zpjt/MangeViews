@@ -35,6 +35,15 @@ class API {
 				type:"post",
 			}));
 	}
+	
+	upload(obj){
+			return Promise.resolve($.ajax({
+				url: baseUrl + '/Expo/upload',
+				data:JSON.stringify(obj),
+				contentType:"application/json",
+				type:"post",
+	    	}));
+	}
 	addAssembly(formData){
 			return Promise.resolve($.ajax({
 				url: URL_L + 'addAssembly',
@@ -45,9 +54,6 @@ class API {
 				contentType: false,
 	    	}));
 	}
-	/*getAssembly(assembly_id){
-			return Promise.resolve($.get(URL_L+"getAssembly",{assembly_id}));
-	}*/
 
 	getGraphInfo(obj){
 		return Promise.resolve($.ajax({
@@ -94,6 +100,7 @@ class API {
 		return Promise.resolve($.post(URL_L+"showLayoutModel",{layout_id}));
 	}
 	deleteChart(CHART_ID){
+		console.log("删掉了...",CHART_ID);
 		return Promise.resolve($.post(URL_C+"deleteChart",{CHART_ID}));
 	}
 	

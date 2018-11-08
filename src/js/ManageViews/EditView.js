@@ -6,7 +6,6 @@ class EditView{
 		this.borderType = config.borderType;
 		this.box = box ;
 		this.init(data);	
-
 	}
 	
 	init(data){

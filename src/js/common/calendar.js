@@ -455,12 +455,13 @@ class Calendar{
 			style:1,
 			time:false,
 			hasInp:true,
+			callback:function(){},
 		};
 
 		const config = Object.assign({},defaultConfig,obj);
 
 
-		const {rotate,style,time,hasInp} = config ;
+		const {rotate,style,time,hasInp,callback} = config ;
 		this.rotate = rotate ; // 1:year,2:seraon,3:mons,4:day
 		this.style = style; // 1:单选 2:多选
 		this.time = time; // 1:单选 2:多选
@@ -471,6 +472,7 @@ class Calendar{
 		this.timeWatchArr = [[10,30],[12,50]];
 		this.container = $el;
 		this.inp=$inp;
+		this.callback = callback;
 		this.value = "" ;
 		this.init();
 		this.Handle();
@@ -693,6 +695,8 @@ class Calendar{
 	}
 	upInp(){
 
+		
+
 		if(!this.hasInp){
 			return ;
 		}
@@ -830,20 +834,15 @@ class Calendar{
 					 	let time_stamp_2 = self.value[1].join("/");
 					 	time_stamp_2 = self.rotate===2 &&  time_stamp_2.replace("S","") || time_stamp_2;
 					 		time_stamp_2 = new Date(time_stamp_2).getTime();
-						
 
 						if(time_stamp_1>time_stamp_2){
 							alert("傻逼吧！");
-
 							return ;
 						}
-
-
 					}
+					self.callback();
 					self.upInp();
 				}
-
-
 				self.container.hide();
 		});
 		
