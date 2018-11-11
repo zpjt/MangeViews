@@ -237,7 +237,7 @@ class SoketNews{
 
             	const str = data.map(val=>{
 
-            		return `<li echo-data="${val.id}">
+            		return `<li class="newItem" echo-data="${val.id}">
             					<p>
             					${val.name}
             					<b>${val.time}</b>
@@ -431,8 +431,25 @@ class Page{
 
 		/*标记所有消息*/
 		$("#j-allMark").click(function(){
+
+				const news = _self.news.messageEl.find(".newsItem");
+
+				if(!news.length){
+					return ;
+				}
+
+				const obj = $.map(news,function(val){
+					return {id:$(val).attr("echo-data")};
+				});
 				
-			console.log("333333");
+				 Promise.resolve(
+					$.ajax({
+						method:"post",
+						url:URL+"upAlarmSendStatus",
+						contentType:"application/json",
+						data:JSON.stringify(obj),
+					})
+				)
 		});
 
 	    $("#preToNews").click(function(){

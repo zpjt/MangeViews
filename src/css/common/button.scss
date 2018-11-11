@@ -4,18 +4,13 @@ $themeColor:#00a0e9;
 	min-height: 20px;
 	padding:6px 10px;
     border-radius: 4px;
+  //  box-sizing: content-box;
     outline: none;
 	font-size: 14px;
 	text-align: center;
 	color: #fff;
 	border: 0;
 	cursor: pointer;
-}
-.sure-btn{
-	//color:white;
-//	color:$themeColor;
-//	border:1px solid $themeColor;
-	background:$themeColor;
 }
 
 /* 字体图标按钮，hover图标从上滑下来 */
@@ -43,6 +38,7 @@ $themeColor:#00a0e9;
 		transform:translate3d(0,-110%,0);	
 		transition: transform .3s ease ;
 		line-height:30px;
+		border-radius:inherit;
     }
 }
 
@@ -69,6 +65,7 @@ $themeColor:#00a0e9;
 		background: #fff ;
 		transform:scale(0);
 		transition:transform .3s linear;
+		border-radius:inherit;
 	}
 	&:active{
 		transform:scale(1.2);
@@ -99,6 +96,7 @@ $themeColor:#00a0e9;
 		transform:scale(0.8);
 		transition:transform .3s linear; 
 		z-index:-1;
+		border-radius:inherit;
 	}
 	/* &:active{
 		&:before{
@@ -107,6 +105,169 @@ $themeColor:#00a0e9;
 	} */
 	
 }
+
+/* 内部往两边展开 */
+.s-spread{
+	position: relative;
+	background: none;
+	border: 1px solid $themeColor;
+	color:$themeColor;
+	transition: color .4s ease-out;
+	box-sizing: border-box;
+	&:before{
+		content:"";
+		position: absolute;
+		top:0;
+		left:0;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		background: $themeColor;
+		transition: transform .4s ,opacity .4s ;
+		transition-timing-function: cubic-bezier(.2,1,.3,1);
+		transform: scale3d(.7,1,1);
+		z-index:-1;
+		border-radius:inherit;
+	}
+
+	&:hover{
+		color: white;
+		&:before{
+			transform: scale3d(1,1,1);
+			opacity: 1;
+		}
+	}
+}
+
+/* 左侧滑动效果*/
+.s-Toslide{
+	position: relative;
+	transition: color .4s ease ;
+	&:before{
+		content:"";
+		position: absolute;
+		top:0;
+		left:0;
+		height: 100%;
+		width: 0;
+		background: white;
+		transition: width .4s ease ;
+		border-radius: inherit;
+		border-radius:inherit;
+	}
+	span{
+		position: relative;
+		z-index: 2;
+	}
+	&:hover{
+		color:$themeColor;
+		&:before{
+			width: 100%;
+		}
+	}
+}
+
+/* 边框从里面出来 */
+.s-borOut{
+	position: relative;
+	background: $themeColor;
+	color: white;
+	transition: color .4s ease,background .4s ease;
+	&:before{
+		content:"";
+		position: absolute;
+		border-radius: inherit;
+		top:0;
+		left: 0;
+		width:100%;
+		height: 100%;
+		border:1px solid $themeColor;
+		transition: transform .4s ,opacity .4s;
+		transition-timing-function: cubic-bezier(.75,0,.125,1);
+		transform: scale3d(.6,.6,1);
+		opacity: 0;
+	//	z-index: -1;
+		border-radius:inherit;
+	}
+	&:hover{
+		color:$themeColor;
+		background: white;
+		&:before{
+			
+			transform: scale3d(1,1,1);
+			opacity: 1;
+		}
+	}
+
+}
+
+/* 边框从外面进来 */
+.s-borIn{
+	position: relative;
+	background: $themeColor;
+	color: white;
+	transition: color .4s ease ,background .4s ease;
+	&:before{
+		content:"";
+		position: absolute;
+		border-radius: inherit;
+		top:0;
+		left: 0;
+		width:100%;
+		height: 100%;
+		border:1px solid $themeColor;
+		transition: transform .4s ,opacity .4s;
+		transition-timing-function: cubic-bezier(.75,0,.125,1);
+		transform: scale3d(1.2,1.2,1)  ;
+		opacity: 0;
+	//	z-index: -1;
+		border-radius:inherit;
+	}
+	&:hover{
+		color:$themeColor;
+		background: white;
+		&:before{
+			
+			transform: scale3d(1,1,1);
+			opacity: 1;
+		}
+	}
+
+}
+
+/* 图标从下面斜线上来出现 */
+.s-shikoba{
+	position: relative;
+	border: 1px solid $themeColor;
+	color:$themeColor;
+	background: none;
+	transition: color .4s ease-out ,background .4s ease-out;
+	overflow: hidden;
+	i{
+		position: absolute;
+		transition: transform .4s ;
+		transition-timing-function: cubic-bezier(.75,0,.125,1);
+		transform: translate3d(-50px,40px,0);
+	}
+	span{
+		display: inline-block;
+		transition: transform .4s;
+		transition-timing-function: cubic-bezier(.75,0,.125,1);
+	}
+
+	&:hover{
+		background: $themeColor;
+		color:white;
+		i{
+			transform: translate3d(-10px,4px,0);;
+		}
+		span{
+			transform: translateX(10px)  ;
+		}
+	}
+}
+
+
 
 @keyframes moema{
 	60% {
@@ -138,8 +299,10 @@ $themeColor:#00a0e9;
 		top: -100%;
 		left: 0;
 		z-index:-1;
+		border-radius:inherit;
 }
 .s-aylen{
+	background: $themeColor;
 	position: relative;
 	z-index:1;
 	overflow:hidden;
@@ -177,8 +340,11 @@ $themeColor:#00a0e9;
     border: solid 2px transparent;
     z-index: 3;
     box-sizing: border-box;
+	border-radius:inherit;
 }
 .s-dashBtn{
+	background: none;
+	color: $themeColor;
 	position: relative;
 	&:before{
 		@extend %position_1 ;
@@ -215,6 +381,9 @@ $themeColor:#00a0e9;
 .s-bevell{
 	position: relative;
 	overflow:hidden;
+	border: 1px solid $themeColor;
+	background: none;
+	color:$themeColor;
 	transition:color .2s linear .1s;
 	&:before{
 		content:"";
@@ -228,7 +397,11 @@ $themeColor:#00a0e9;
 		transform:rotate(-90deg);
 		transform-origin: 0 100%;
 		border-radius:inherit;
-		z-index: -1;
+
+	}
+	span{
+		position: relative;
+		z-index: 2;
 	}
 	&:hover{
 		color:white;

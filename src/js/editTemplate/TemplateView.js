@@ -454,7 +454,7 @@ class ChangeView{
 			
 			let chartName ;
 
-			const _type = ["line","pie","bar","scatter","radar"].includes(type) && "chart" || type;
+			const _type = ["line","pie","bar","scatter","rader"].includes(type) && "chart" || type;
 
 			switch(_type){
 				case "table":{
@@ -511,8 +511,7 @@ class TemplateView  extends ChangeView {
 	   this.gLayout =$("#g-layout");
 	   this.templateBox = $("#templateBox");
 	   this.templateContainer = $("#g-templateDom");
-
-
+		
 	   this.startPointX=null;
 	   this.startPointY=null;
 	   this.cellSize = null ;
@@ -702,7 +701,10 @@ class TemplateView  extends ChangeView {
 
 	init(e){
 
-		const layout_id = window.parent.menuID;
+	//	const layout_id = window.parent.menuID;
+	
+		const layout_id = this.config.viewDetail.layout_id;
+
 
 		const templateMap = this.config.templateMap;
 

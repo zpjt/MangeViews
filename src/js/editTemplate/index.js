@@ -21,12 +21,13 @@ class Page{
 		this.inp = new SInp();
 		this.unit = new Unit();
 		this.templateMap = new TemplateMap();
+		this.viewDetail = this.getSrcData();
 
 		const modal = this.modal ;
 		const unit = this.unit ;
 		const templateMap = this.templateMap;
 
-		$("#viewTitle").html(`<span>${window.parent.menuName}</span>`);
+		$("#viewTitle").html(`<span>${this.viewDetail.layout_name}</span>`);
 
 		this.viewSetModal = new ViewSetModal({
 			modal,
@@ -48,8 +49,6 @@ class Page{
 		});
 
 		this.viewComponet = new ViewComponet();
-		
-
 
 	    this.templateView = new TemplateView($("#templateBox"),{
 	   		upModalStatus:(type,$view)=>{
@@ -93,6 +92,7 @@ class Page{
 	   		},
 	   		unit,
 	   		templateMap,
+	   		viewDetail:this.viewDetail,
 	    });
 
  		new HeadOpt({
@@ -105,13 +105,27 @@ class Page{
 	    	getTemplate:()=>{
 	    		return this.templateView.getTemplate();
 	    	},
+	    	viewDetail:this.viewDetail,
 	    }); 
 		
-
+		
 		this.getData();
 	    this.handle();
 	}
 
+	getSrcData(){
+
+		const urlArr = window.location.search.split("&&");
+
+		const obj = {
+			layout_name:decodeURI(urlArr[2].split("=")[1]),
+			layout_id:urlArr[0].split("=")[1],
+			par_id:urlArr[1].split("=")[1],
+		};
+
+		return obj ;
+
+	}
 	getData(){
 		return Promise.all([api.dimtree(), api.kpitree(), api.orgtree()]).then((res) => {
 			

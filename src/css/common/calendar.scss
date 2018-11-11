@@ -56,7 +56,18 @@ $slectColor:#aee6ff;
 				}
 			}
 	}
-	
+
+	.calendar-opt:first-child{
+		background: white;
+	}	
+
+	.calendar-opt{
+		color: $themeColor;
+		&:hover{
+			color: white;
+			background: #0080bb;
+		}
+	}
 	
 	.showSel-box{
 		color:white;

@@ -5,45 +5,22 @@ const {baseUrl} = window.jsp_config;
 const control = "layout/";
 
 const URL= baseUrl+control;
+const MAIN= baseUrl+"main/";
 
 class API {
 
-	RecycleLayoutshow(){
-		return Promise.resolve($.get(URL+"RecycleLayoutshow"));
+	getPreams(role_id){
+		
+		return Promise.resolve($.post(MAIN+"getPreams",{role_id}));
 	}
 
-	RecycleChartshow(){
-		return Promise.resolve($.get(URL+"RecycleChartshow"));
-	}
-
-	delLayout(obj){
-		return Promise.resolve(
-			$.ajax({
-				method:"post",
-				url:URL+"delLayout",
-				contentType:"application/json",
-				data:JSON.stringify(obj),
-			})
-		);
-	}
-	delchart(obj){
-		return Promise.resolve(
-			$.ajax({
-				method:"post",
-				url:URL+"delchart",
-				contentType:"application/json",
-				data:JSON.stringify(obj),
-			})
-		);
-	}
-	getAllLayoutPar(keyword=""){
-		return Promise.resolve($.post(URL+"getAllLayoutPar",{keyword}));
-	}
-	checkName(data){
-		return Promise.resolve($.post(URL+"checkName",data));
-	}
-	RecycleLayout(data){
-		return Promise.resolve($.post(URL+"RecycleLayout",data));
+	savePreams(obj){
+		return Promise.resolve($.ajax({
+			url:MAIN+"savePreams",
+			data:JSON.stringify(obj),
+			contentType:"application/json",
+			type:"post",
+		}));
 	}
 
 }  

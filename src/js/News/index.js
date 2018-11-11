@@ -156,6 +156,46 @@ class Table extends EasyUITab{
     }
 }
 
+class DelModal{
+
+	static delArr = null;
+
+	constructor(unit){
+
+		this.unit = unit ;
+		this.confirmBtn = $("#confirmBtn");
+		this.confirmMd = $("#confirm-MView");
+		this.handle();
+	}
+
+
+	del(ids){
+
+		api.deleteAlarmHestory(ids).then(res=>{
+				if(res){
+					page.unit.tipToast("删去成功！",1);
+					page.getData();
+				}else{
+					page.unit.tipToast('删去失败！',0);
+				}
+				DelModal.delArr = null ;
+		});
+	}
+
+
+	handle(){
+		
+		const _self = this;
+		// 删除模态框确认按钮
+		this.confirmBtn.click(function(){
+
+			const obj = DelModal.delArr;
+			_self.del(obj);
+			page.modal.close(_self.confirmMd);
+		});
+	
+	}
+}
 
 
 /**
@@ -189,6 +229,8 @@ class Page{
 	];
 
 	constructor(){
+
+		this.btnBox = $("#btnBox");
 		
 		this.handle();
 		this.init();
@@ -213,6 +255,7 @@ class Page{
 
 		});
 		this.levDrop = "";
+		this.delModal = new DelModal(this.unit);
 		this.levDropInit();
 		this.getData();
 	}
@@ -279,16 +322,52 @@ class Page{
 		const _self = this ;
 		$("#j-readAll").click(function(){
 			
-			const ids =$.map($tableBox.find(".checkSingle"),val=>{
+			const ids =$.map($tableBox.find(".checkSingle:checked"),val=>{
 
 				return {id:val.value};
 			});
-			if(!ids.length){ return }
+			if(!ids.length){ 
+				_self.unit.tipToast("选择要标记的！",2);
+				return 
+			}
 
 			_self.table.upAlarmSendStatus(ids);
 			
 
 		});
+
+		this.btnBox.on("click",".s-btn",function(){
+
+			const $this = $(this);
+			const sign = $this.attr("sign");
+
+			switch(sign){
+				
+				case"addView":{
+				
+					break;
+				}
+				case"delCata":{
+					const ids =$.map($tableBox.find(".checkSingle:checked"),function(val){
+						return {id:val.value};
+							}) ;
+
+					if(!ids.length){
+						_self.unit.tipToast("选择要删除的！",2);
+						return ;
+					}
+					DelModal.delArr = ids ;
+					_self.modal.show(page.delModal.confirmMd);
+					break;
+				}
+				default:
+				break;
+
+			}
+			
+		
+
+		})
 
 		$("#delBtn").click(function(){
 			const ids =$.map($tableBox.find(".checkSingle:checked"),val=>{
@@ -297,18 +376,12 @@ class Page{
 			});
 
 			if(!ids.length){
-
+				_self.unit.tipToast("选择要删除的！",2);
 				return ;
 			}
 
-			api.deleteAlarmHestory(ids).then(res=>{
-				if(res){
-					page.unit.tipToast("删去成功！",1);
-					page.getData();
-				}else{
-					page.unit.tipToast('删去失败！',0);
-				}
-			})
+			DelModal.delArr = ids ;
+			_self.modal.show(page.delModal.confirmMd);
 
 		});
 

@@ -377,6 +377,18 @@ class TimeRealMd{
 		const _self = this ;
 		const $zbBox = _self.zbBox;
 		const $refreshTimeSel = this.$refreshTimeSel;
+
+
+		this.selBox.on("click",".del-zb",function(){
+			
+			 const $this = $(this);
+			 const id = $this.parent().attr("echo-id");
+			 _self.zbTree.box.find(`.tree-inp[value=${id}]`).click();
+ 			$this.closest(".zb-item-box").remove();
+
+			_self.sureBtnHandle();
+
+		});
 	    $("#realSelZb").click(function() {
 			
 			if ($zbBox.hasClass("active")) {

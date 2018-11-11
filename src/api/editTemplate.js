@@ -9,7 +9,12 @@ const URL_C= baseUrl+control_2;
 const URL_L= baseUrl+control_3;
 
 class API {
-
+	checkName(data){
+		return Promise.resolve($.post(URL_L+"checkName",data));
+	}
+	copyLayout(data){
+		return Promise.resolve($.post(URL_L+"copyLayout",data));
+	}
 	orgtree(){
 		return Promise.resolve($.get(URL_WD+"orgtree"));
 	}

@@ -1,11 +1,12 @@
 import {ZbComponent} from "./ZbComponent.js" ;
 import {api } from "api/editTemplate.js";
-import {SCombobox, SModal, Calendar, Tree, SComboTree ,RippleBtn} from "js/common/Unit.js";
+import {SCombobox, SModal, Calendar, Tree, SComboTree} from "js/common/Unit.js";
+
+console.log(1);
 
 /**
  * 模态框组件
  */
-new RippleBtn();
 class ViewSetModal {
 	static status = "create";
 	constructor(config) {

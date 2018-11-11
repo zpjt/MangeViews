@@ -5,7 +5,9 @@ import {
 	Border
 } from "js/ManageViews/view.js";
 
-import {Calendar}  from "js/common/calendar.js";
+import {SCombobox,Calendar,SComboTree} from "js/common/Unit.js";
+import {View } from "js/ManageViews/view.js";
+
 /**
  * 头部组件
  */
@@ -14,6 +16,7 @@ class HeadOpt {
 
 		this.config = config;
 		this.globalBox = $("#globalBox");
+
 		this.init();
 		this.handle();
 	}
@@ -24,7 +27,7 @@ class HeadOpt {
 			hasInp:false,
 			style:2,
 		});
-		console.log(1);
+
 	}
 
 	
@@ -91,7 +94,7 @@ class HeadOpt {
 					timeReal:"tabInfo"
 				}
 
-				const _type = ["line","bar","scatter","pie","radar"].includes(type) && "chart" || type;
+				const _type = ["line","bar","scatter","pie","rader"].includes(type) && "chart" || type;
 				
 				let object = null ;
 				if(type !=="editView"){
@@ -123,7 +126,7 @@ class HeadOpt {
 
 	}
 
-	async saveAllView(formData) {
+	async saveAllView() {
 
 		const {
 			imgToUrl,
@@ -139,29 +142,32 @@ class HeadOpt {
 		const promises = this.saveViews(viewsMap,unit);
 		const res = await Promise.all(promises);
 
-		this.delAllOld();
-
 		const status = res.every(val => val);
 
 		if (status) {
+
+			this.delAllOld();
 
 			const formData = new FormData();
 			const layout_id = window.parent.menuID;
 			const {htmlStr, box } = getTemplate();
 			const data = this.getSaveViewData();
 
-			formData.set("layout_id", layout_id);
+			formData.set("layout_id", this.config.viewDetail.layout_id);
 			formData.set("model", htmlStr);
 			formData.set("modelData", JSON.stringify(data));
 
-			await api.saveLayout(formData).then(res => {
+			return await api.saveLayout(formData).then(res => {
 
 				res ? unit.tipToast("视图保存成功！", 1) : unit.tipToast("保存失败,请稍后重新再保存！", 0);;
 				box.html(null);
+
+				return res ;
 			});
+
 		} else {
 
-			await false;
+			return await false;
 		}
 	}
 	getViewData($dom) {
@@ -187,12 +193,21 @@ class HeadOpt {
 		const _self = this;
 		const {
 			modal,
-			getTemplate
+			viewDetail,
+			unit,
 		} = this.config;
 
 		const getViewData = this.getViewData;
 
 		const globalFilter = $("#globalFilter");
+		const globalSave = $("#globalSave");
+
+
+		$("#glo-styleClose").click(function(){
+
+			 modal.close(_self.globalBox, "active");
+
+		});
 
 		$("#headOpt").on("click", ".head-btn", function() {
 			const type = $(this).attr("sign");
@@ -208,8 +223,11 @@ class HeadOpt {
 					break;
 				case "pre":
 					break;
-				case "save-as":
+				case "save-as":{
+
+					!globalSave.hasClass("active") ? modal.show(globalSave, "active") : modal.close(globalSave, "active");
 					break;
+				}
 				case "export":
 					break;
 				case "save":
@@ -236,17 +254,48 @@ class HeadOpt {
 			});
 		});
 
-		//全局样式设置
-		$("#globalOpt").on("click", ".s-btn", function() {
-			const index = $(this).index();
 
+		const viewName = $("#viewName");
+		//另存为
+		globalSave.on("click", ".s-btn", function() {
+			const index = $(this).index();
+	
 			switch (index) {
-				case 0:
+				case 0:{
+
+					const name = viewName.val().trim();
+					const {par_id,layout_id} = viewDetail;
+
+					const result = _self.saveAllView().then(res=>{
+
+						if(res){
+							
+							api.checkName({name,par_id}).then(res=>{
+								if(res){
+									api.copyLayout({layoutId:layout_id,layoutName:name}).then(res=>{
+
+										if(res){
+											unit.tipToast("另存成功！",1);
+											modal.close(globalSave, "active");
+										}else{
+											unit.tipToast("另存失败！",0);
+										}
+									})
+								}else{
+									unit.tipToast("该名称已经存在！",2);
+								}
+							})
+
+						}
+					});
+
+					console.log(result,"fsdfsfasfsa");
 					break;
-					
-				case 1:
-					modal.close(_self.globalBox, "active");
+				}
+				case 1:{
+					modal.close(globalSave, "active");
 					break;
+				}
 			}
 		});
 
@@ -265,7 +314,50 @@ class HeadOpt {
 			const $this= $(this);
 
 			if($this.index() === 0){
+				
+				const time = _self.globalCalendar.value; 
+				_self.config.templateMap.viewsMap.forEach((view,key)=>{
+				
+					const {attributeObj:{type,borderType,viewID,createId,size},viewData} = view ;
 
+					const viewType = ["line","bar","scatter","pie","rader"].includes(type) && "chart" || type;
+					const refreshArr=["chart","table"];
+					
+					if(!refreshArr.includes(viewType)){
+						return ;
+					}
+
+					if(view.timer){
+						clearInterval(view.timer);
+						view.timer = null;
+					}
+					
+					const method = viewType === "chart" && "getGraphInfo" || "getTableInfo"　;
+					const params = viewType === "chart" && viewData.graphInfo || viewData.tabInfo　;
+					const viewTitle = viewType === "chart" ? viewData.graphInfo.chartName : viewData.tabInfo.chartName　;
+					
+					/*params.startTime = time[0].join("");
+					params.endTime = time[1].join("");*/
+
+					params.time_id = time[0].join("");
+					params.time_start = time[1].join("");
+
+					api[method](params).then(res=>{
+
+						view.viewData = res;
+
+						 new View($(key), {
+							id:createId,
+							type:viewType,
+							index:createId,
+							viewTitle,
+							borderType,
+							size,
+						}, res, "2");
+
+
+					});
+				});
 
 			}
 

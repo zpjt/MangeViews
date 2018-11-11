@@ -97,15 +97,12 @@ $slectColor:#aee6ff;
 	@at-root{
 		$padding:28px 40px ;
 		.icon-box{
-			$footerH:50px;
+			$footerH:40px;
 			position: absolute;
 			visibility:hidden;
-			background: $themeBlendent1;
 			opacity:0;
 			display:none;
-			width:280px;
-			border:1px solid $themeColor;
-			border-right:none;
+			width:180px;
 			border-radius:8px   0 8px 8px;
 			right:0;
 			top: 40px;
@@ -114,54 +111,58 @@ $slectColor:#aee6ff;
 			transform:translateX(100%);
 			transition: all .3s cubic-bezier(.25,.5,.5,.9);
 			z-index:10;
+			@extend %shadow-space ;
 			.icon-content{
 				height: calc(100% - #{$footerH});
 				//overflow:auto;
 			}
 			.icons-footer{
 				height:$footerH;
-				border-top:1px solid $themeColor;
+				border-top:3px solid #ECECEC;
 				display:flex;
-				&>p{
+				box-sizing: border-box;
+				.icon-opt{
+					border: none;
 					width:50%;
 					text-align:center;
 					cursor: pointer;
-					line-height:$footerH;
+					line-height:26px;
 				}
-				&>p:first-child{
-					border-right:1px solid $themeColor;
+				.icon-opt:first-child{
+					border-right:3px solid #ECECEC;
 				}
 			}
 			.icon-sel{
-				border-radius:4px;
+				border-radius:100%;
 				color:$themeBlendent1;
-				background: saturate( $slectColor, 40%);
+				background:$themeColor; 
 				&:after{
 					content:"\f058";
 					font: normal normal normal 14px/1 FontAwesome;
 					position: absolute;
-					top:2px;
+					top:8px;
+					right: 10px;
 				}
 			}
 			.iconBox-item{
-				padding:10px;
+				padding:10px 16px;
 				display:flex;
 				flex-wrap:wrap;
 				span{
 					position: relative;
-					width:25%;
-					padding:15px 0;
+					width:46%;
+					padding:17px 0;
 					text-align:center;
 					cursor: pointer;
 					font:{
-						size:30px;
+						size:26px;
 					}
 					transition: all .3s ease;
 					&:hover{
-						background:$themeColor;
-						border-radius:4px;
+						background:$slectColor;
+						border-radius:100%;
 						color:white;
-						transform: scale(1.35);
+						transform: scale(1.25);
 					}
 				}
 			}
@@ -190,9 +191,6 @@ $slectColor:#aee6ff;
 			}
 			&:after{
 				@include triangle(-16px,30px,8px);
-			}
-			#fileOpts{
-				border-top:1px solid #E5E5E5;
 			}
 		}
 		.catalogueBox{

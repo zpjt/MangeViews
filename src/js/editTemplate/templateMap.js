@@ -105,7 +105,10 @@ class TemplateMap{
 				const {tabInfo:{ref_time , ref_frequency}} = viewMap.viewData ;
 						
 				if( ref_frequency !== "0"){
-					
+
+					const frequencyArr=["",1,60,60*60];
+
+					const delay = 1000*ref_time*frequencyArr[+ref_frequency];
 					viewMap.timer = setInterval(function(){
 
 						api.getTableInfo(viewMap.viewData.tabInfo).then(res=>{
@@ -113,7 +116,7 @@ class TemplateMap{
 							view.timeReal.init(res);
 						});
 			
-					},3000);
+					},delay);
 				}
 				break;
 			}

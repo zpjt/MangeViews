@@ -8,6 +8,10 @@ const URL= baseUrl+control;
 
 class API {
 
+	role_resource(data){
+		return Promise.resolve($.post(URL+"RecycleLayoutshow"));
+	}
+
 	RecycleLayoutshow(){
 		return Promise.resolve($.get(URL+"RecycleLayoutshow"));
 	}

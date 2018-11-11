@@ -114,6 +114,46 @@ class Table extends EasyUITab{
     }
 }
 
+class DelModal{
+
+	static delArr = null;
+
+	constructor(unit){
+
+		this.unit = unit ;
+		this.confirmBtn = $("#confirmBtn");
+		this.confirmMd = $("#confirm-MView");
+		this.handle();
+	}
+
+
+	del(ids){
+		
+		api.deleteAlarmHestory(ids).then(res=>{
+				if(res){
+					page.unit.tipToast("删去成功！",1);
+					page.getData();
+				}else{
+					page.unit.tipToast('删去失败！',0);
+				}
+				DelModal.delArr = null ;
+		});
+	}
+
+
+	handle(){
+		
+		const _self = this;
+		// 删除模态框确认按钮
+		this.confirmBtn.click(function(){
+
+			const obj = DelModal.delArr;
+			_self.del(obj);
+			page.modal.close(_self.confirmMd);
+		});
+	
+	}
+}
 
 
 /**
@@ -147,6 +187,8 @@ class Page{
 	];
 
 	constructor(){
+
+		this.btnBox = $("#btnBox");
 		
 		this.handle();
 		this.init();
@@ -170,6 +212,7 @@ class Page{
 			keyField:"kpi_name",
 
 		});
+		this.delModal = new DelModal(this.unit);
 		this.levDrop = "";
 		this.levDropInit();
 		this.getData();
@@ -235,12 +278,22 @@ class Page{
  
 
 	handle(){
-		$("#delBtn").click(function(){
+		const _self = this ;
+		this.btnBox.on("click","#delBtn",function(){
 			
-			
+			const ids =$.map($tableBox.find(".checkSingle:checked"),function(val){
+							return {id:val.value};
+					}) ;
 
+			if(!ids.length){
+				_self.unit.tipToast("选择要删除的！",2);
+				return ;
+			}
+			DelModal.delArr = ids ;
+			_self.modal.show(page.delModal.confirmMd);
 
-		});
+		})
+
 
 	}
 }

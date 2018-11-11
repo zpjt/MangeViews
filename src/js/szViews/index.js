@@ -10,7 +10,7 @@ import {api} from "api/szViews.js";
 
 
 
-const {user_id,catalogSrc} = window.jsp_config;
+const {user_id,role_id} = window.jsp_config;
 
 //工具类实例
 const UnitOption = new Unit();
@@ -56,13 +56,16 @@ class TableStyle extends EasyUITab{
 
 	tabConfig(idField){
 
+		console.log(Page.cataOpt.del);
+
 		return {
 			idField:idField,
 			tabId:"#tabBox",
 			frozenColumns: this.frozenColumns(idField,{
 				disableCheck:function(rowData){
 						return rowData.layout_type === 1  &&  rowData.sub.length ? true :false;
-				}
+				},
+				checkbox: Page.cataOpt.del === "1" ,
 			}),
 			columns: [
 				[{
@@ -72,7 +75,11 @@ class TableStyle extends EasyUITab{
 					formatter: function(val,rowData,index) {
 
 						const {layout_icon_name,layout_type} = rowData;
-						const arr = ["","node-catalogue","node-file"];
+
+						const arr = ["","node-catalogue",""];
+						arr[2] = Page.viewOpt.pre && "node-file" || "";
+
+
 						return `<div class="tab-node ${arr[+rowData.layout_type]}" echo-data="${index}"><i class="sicon ${layout_icon_name}">&nbsp;</i><span>${val}</span></div>` ;
 					}
 				}, 
@@ -102,49 +109,9 @@ class TableStyle extends EasyUITab{
 					width: "30%",
 					formatter: function(val, rowData,index) {
 						
-						let str="" ;
-						switch (rowData.layout_type){
+						const  str= rowData.layout_type === 1 ?Page.cataOpt.str 
+						: Page.viewOpt.str ;
 
-							case 1 ://目录
-							      str =`
-										<div class="tab-opt s-btn s-Naira" node-sign="icon">
-												<i class="sicon sicon-btn-3"></i>
-												<span>图标</span>	
-										</div>
-										<div class="tab-opt s-btn s-Naira" node-sign="rename">
-												<i class="sicon sicon-btn-4"></i>	
-												<span>重命名</span>	
-										</div>	
-							   		`;
-
-								break;
-							case 2 ://文件
-								 str =`
-								 		<div class="tab-opt s-btn s-Naira" node-sign="icon">
-												<i class="sicon sicon-btn-3"></i>	
-												<span>图标</span>
-										</div>
-										<div class="tab-opt s-btn s-Naira" node-sign="rename">
-												<i class="sicon sicon-btn-4"></i>	
-												<span>重命名</span>
-										</div>
-										<div class="tab-opt s-btn s-Naira" node-sign="pre">
-												<i class="fa fa-eye"></i>
-												<span>预览</span>		
-										</div>
-										<div class="tab-opt s-btn s-Naira" node-sign="issue">
-												<i class="fa fa-paper-plane-o"></i>	
-												<span>发布</span>
-										</div>
-										<div class="tab-opt s-btn s-Naira" node-sign="copy">
-												<i class="sicon sicon-btn-1"></i>	
-												<span>复制</span>
-										</div>
-										
-										
-							   		`;
-								break;
-						}
 
 						return `
 								<div class="tabBtnBox" echo-data='${index}' >
@@ -167,7 +134,7 @@ class TableStyle extends EasyUITab{
 		$treeTab.treegrid({
 				animate: true,
 				data: data,
-				checkbox: true,
+				checkbox: Page.cataOpt.del === "1" ,
 				fitColumns: true,
 				scrollbarSize: 0,
 				rownumbers: false,
@@ -191,7 +158,11 @@ class TableStyle extends EasyUITab{
 						"formatter": function(val, rowData) {
 
 							const {layout_icon_name,layout_type} = rowData;
-							const arr = ["","node-catalogue","node-file"];
+
+							const arr = ["","node-catalogue",""];
+
+							arr[2] = Page.viewOpt.pre && "node-file" || "";
+
 							return `<div class="tab-node ${arr[+rowData.layout_type]}" echo-data="${rowData.layout_id}"><i class="sicon ${layout_icon_name}">&nbsp;</i><span>${val}</span></div>` ;
 						}
 
@@ -219,49 +190,8 @@ class TableStyle extends EasyUITab{
 						width: "30%",
 						formatter: function(val,rowData) {
 							
-							let str="" ;
-							switch (rowData.layout_type){
-
-								case 1 ://目录
-								      str =`
-											<div class="tab-opt s-btn s-Naira" node-sign="icon">
-													<i class="sicon sicon-btn-3"></i>
-													<span>图标</span>	
-											</div>
-											<div class="tab-opt s-btn s-Naira" node-sign="rename">
-													<i class="sicon sicon-btn-4"></i>	
-													<span>重命名</span>	
-											</div>	
-								   		`;
-
-									break;
-								case 2 ://文件
-									 str =`
-									 		<div class="tab-opt s-btn s-Naira" node-sign="icon">
-													<i class="sicon sicon-btn-3"></i>	
-													<span>图标</span>
-											</div>
-											<div class="tab-opt s-btn s-Naira" node-sign="rename">
-													<i class="sicon sicon-btn-4"></i>	
-													<span>重命名</span>
-											</div>
-											<div class="tab-opt s-btn s-Naira" node-sign="pre">
-													<i class="fa fa-eye"></i>
-													<span>预览</span>		
-											</div>
-											<div class="tab-opt s-btn s-Naira" node-sign="issue">
-													<i class="fa fa-paper-plane-o"></i>	
-													<span>发布</span>
-											</div>
-											<div class="tab-opt s-btn s-Naira" node-sign="copy">
-													<i class="sicon sicon-btn-1"></i>	
-													<span>复制</span>
-											</div>
-											
-											
-								   		`;
-									break;
-							}
+							const  str= rowData.layout_type === 1 ?Page.cataOpt.str 
+						: Page.viewOpt.str ;
 
 							return `
 									<div class="tabBtnBox" echo-data='${rowData.layout_id}' >
@@ -321,7 +251,26 @@ class CatalogueStyle{
 
 	constructor(){
 
+		this.catalogueContentmenu = $("#catalogueContentmenu");
+		this.contentMenuInit();
 		this.handle();
+	}
+
+	contentMenuInit(){
+
+		const cataStr = Page.cataOpt.str.replace(/s-btn s-Naira/g,"");
+		const viewStr = Page.viewOpt.str.replace(/s-btn s-Naira/g,"");
+
+		const str = `
+						<div class="contentmenu-item">
+							${cataStr}
+						</div>
+						<div class="contentmenu-item">
+							${viewStr}
+						</div>
+					`
+
+		this.catalogueContentmenu.html(str);
 	}
 
 	catalogueInit(tabData){
@@ -394,6 +343,7 @@ class CatalogueStyle{
     handle(){
 
     	const _self = this ;
+    	const contentMenu = this.catalogueContentmenu;
 		$catalogueBox.on("dblclick",".view-catalogue",function(){
 			window.clearTimeout(timer);
 			const $this = $(this);
@@ -432,12 +382,11 @@ class CatalogueStyle{
 			const node = $catalogueBox.data("getData")[index];
 			const {layout_type} = node ;
 			e.stopPropagation();
-			$("#catalogueContentmenu").show();
-			$("#catalogueContentmenu").attr("echo-data",index);
-			$("#catalogueContentmenu").find("#fileOpts").attr("echo-data",index);
+			contentMenu.show();
+			contentMenu.attr("echo-data",index);
 
-			layout_type === 1 && $("#catalogueContentmenu").find("#fileOpts").hide() || $("#catalogueContentmenu").find("#fileOpts").show();
-			$("#catalogueContentmenu").css({"top":e.clientY-115,"left":e.clientX-40});
+			contentMenu.find(".contentmenu-item").eq(layout_type-1).show().siblings().hide();
+			contentMenu.css({"top":e.clientY-115,"left":e.clientX-40});
 
 			return false ;
 		});
@@ -466,8 +415,6 @@ class AddModal{
 		this.orgBoxInit();
 	}
 
-	
-
 	init(){
 
 		// 日历
@@ -475,15 +422,56 @@ class AddModal{
 			rotate:4,
 			style:2
 		});
+	}
 
-		/*// 目录选择下拉框
-		this.parCatalogSel = new SCombobox(this.parCatalogCombox,{
-			"textField":"layout_name",
-			"idField":"layout_id",
-			"validCombo":false,
-			"prompt":"请选择所属分类...",
-			"width":300,
-		});*/
+	initMD(type){
+
+		// 创建类型选择
+
+		$addMBtn.attr({"type":type,"method":"create"});
+		$inpName.val(null);
+
+		let curCatalogueArr = null;
+
+		// layout_type :0:根目录 1 目录 ，2：文件
+		let comboboxType = null ;
+
+		if(Page.style === 2){ // 树形表格
+
+			comboboxType = 2 ;
+
+			const _data =JSON.stringify( $treeTab.treegrid("getData"));
+			const copy_data = JSON.parse(_data);
+			const obj = page.getCatalogue(copy_data);
+			
+			  curCatalogueArr = type === "view" && obj || [{
+				"layout_name":"当前分类",
+				"layout_id":-2,
+				 children:obj,
+			}];
+
+		}else{
+
+			comboboxType = 1 ;
+
+			const _data = Page.style === 0 ? $tab.datagrid("getData").rows :
+					    $catalogueBox.data("getData");
+
+			curCatalogueArr = _data.reduce(function(total,curVal){
+				const {layout_name,layout_id,layout_type} = curVal;
+				layout_type === 1 && total.push({layout_name,layout_id});
+				 return total;
+			},[]);
+
+			const menuArr = $tabCard.data("menuArr");
+			const curId = menuArr[menuArr.length-1].layout_id;
+			curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
+		};
+
+		this.reloadParCatalogCombox(curCatalogueArr,comboboxType);
+				
+		$parName.parent().show();
+		page.modal.show($addMView);
 
 	}
 		
@@ -753,12 +741,9 @@ class DelModal{
 		this.handle();
 	}
 
-	handle(){
-		//删除
-		$("#delBtn").click(function(){
+	delHandle(){
 
-
-			let selArr = null;
+		let selArr = null;
 			
 			if(Page.style===0){
 
@@ -779,35 +764,45 @@ class DelModal{
 			}
 			
 			if(!selArr.length){
+				UnitOption.tipToast("选择要删去的！",2);
 				return ;
 			}
 			const id = selArr.join(",");
 			page.modal.show($confirmMView);
 			$confirmBtn.attr("delArr",id);
-			
-		});
-		// 删除模态框确认按钮
-		$confirmBtn.click(function(){
+	}
 
-			UnitOption.renderTipM($svg_statusBox,"#g-load");
-			const id = $(this).attr("delArr");
-			$tipText.html("");
-			api.updataRecycle({user_id,id}).then(res=>{
-				$svg_statusBox.addClass("g-status");
+	del(id){
+		
+		api.updataRecycle({user_id,id}).then(res=>{
+
+
 				if(res){
 					const menuIndexArr = $tabCard.data("menuArr").map(val=>{
 							  return  val.index ;
 					}) ;
-
 					const style = Page.style;
-
 					page.styleBoxrender(menuIndexArr,style);
-					UnitOption.renderTipM($svg_statusBox,"#g-success");
+					UnitOption.tipToast("删除成功！",1);
 				}else{
-					UnitOption.renderTipM($svg_statusBox,"#g-error");
+					UnitOption.tipToast("删除失败！",0);
 				}
 
+				page.modal.close($confirmMView);
+
 			});
+
+	}
+
+
+	handle(){
+		
+		const _self = this;
+		// 删除模态框确认按钮
+		$confirmBtn.click(function(){
+
+			const id = $(this).attr("delArr");
+			_self.del(id);
 
 		})
 	
@@ -908,19 +903,25 @@ class IconBox{
 
 }
 
+
 //初始化页面类
 class Page  {
 
-	static dropMenuConfig=[
-		{"icon":"fa fa-file-text",text:"创建视图",id:"view"},
-		{"icon":"fa fa-folder",text:"创建分类",id:"catalogue"},
-	];
-
 	static style = 0 ;
+	static cataOpt = {};
+	static viewOpt = {};
 
 	constructor(){
+
+		this.btnBox = $("#btnBox");
+
 		this.handle();
-		this.init();
+
+		this.getRoleRes().then(res=>{
+
+			this.init();
+		});
+		
 		this.searchTreeMd = $("#search-MView");
 	}
 
@@ -940,6 +941,129 @@ class Page  {
 				return val.layout_type === 1 ;
 			}
 		});
+	}
+
+	getRoleRes(){
+
+		const optBoxArr = ["addCata","addView","delCata"];
+		const catArr = ["modCataIcon","renameCata","delCata"];
+
+		const optBoxStr = [] ;
+		const viewBoxStr = [] ;
+		const cataBoxStr = [] ;
+
+		return 	api.roleResource().then(res=>{
+			
+				if(res){
+
+					res.btn.forEach(val=>{
+						const {btn_code,btn_flag} = val ;
+						if(optBoxArr.includes(btn_code)){
+
+							Page.cataOpt.del = btn_flag;
+
+							optBoxStr.push(val)
+
+						}else if(catArr.includes(btn_code)){
+
+							cataBoxStr.push(val)
+
+						}else{
+
+							if( btn_code=== "delView"){
+
+						
+							}else if( btn_code=== "modView"){
+								
+								Page.viewOpt.pre =  btn_flag;
+						
+							}else{
+
+								viewBoxStr.push(val);
+							}
+
+						}
+					});
+
+					this.initOptBox(optBoxStr);
+					Page.cataOpt.str = this.initCataBox(cataBoxStr).join("");
+					Page.viewOpt.str = this.initViewBox(viewBoxStr).join("");
+
+				}else{
+					page.unit.tipToast("获取功能权限出错！","0")
+				}
+
+		});
+	}
+
+	initOptBox(arr){
+
+		const config = {
+			addCata:["创建目录","sicon sicon-par-1","s-moema"],
+			addView:["创建视图","fa fa-plus","s-Toslide"],
+			delCata:["","fa fa-trash","s-sacnite"],
+		}
+
+		const str = arr.map(val=>{
+			const {btn_flag,btn_status,btn_code} = val;
+			const disable = btn_flag=== "0" && btn_status == "1"  && "disabled" || "";
+			const str = (btn_flag !== "0" && btn_status === "1") && `<button class="s-btn ${config[btn_code][2]} ${disable}" sign="${btn_code}">
+						<i class="${config[btn_code][1]}"></i>
+						<span>${config[btn_code][0]}</span>
+				</button>` || "";
+			return str ;
+		});
+
+		this.btnBox.html(str.join(""));
+		
+
+	}
+	initCataBox(arr){
+		
+		const config = {
+			modCataIcon:["图标","sicon sicon-btn-3"],
+			renameCata:["重命名","sicon sicon-btn-4"],
+		}
+
+		return  arr.map(val=>{
+
+					const {btn_flag,btn_status,btn_code} = val;
+					const disable = btn_flag=== "0" && btn_status == "1"  && "disabled" || "";
+
+					const str = (btn_flag !== "0" && btn_status === "1") && `<div class="tab-opt s-btn s-Naira ${disable}" node-sign="${btn_code}">
+								<i class="${config[btn_code][1]}"></i>	
+								<span>${config[btn_code][0]}</span>
+						</div>` || "";
+
+					return str ;
+		});
+		
+	}
+	initViewBox(arr){
+		
+		const config = {
+			modViewIcon:["图标","sicon sicon-btn-3"],
+			renameView:["重命名","sicon sicon-btn-4"],
+			preView:["预览","fa fa-eye"],
+			issueView:["发布","fa fa-paper-plane-o"],
+			copyView:["复制","sicon sicon-btn-1"],
+		}
+
+		return  arr.map(val=>{
+
+					const {btn_flag,btn_status,btn_code} = val;
+
+					
+					
+					const disable =btn_flag=== "0" && btn_status == "1"  && "disabled" || "";
+
+					const str = (btn_flag !== "0" && btn_status === "1") && `<div class="tab-opt s-btn s-Naira ${disable}" node-sign="${btn_code}">
+								<i class="${config[btn_code][1]}"></i>	
+								<span>${config[btn_code][0]}</span>
+						</div>` || "";
+						return str ;
+		});
+
 	}
 	
     init(){
@@ -968,92 +1092,13 @@ class Page  {
 			is_Arr:false,
 
 		});
-		this.dropMenu = new DropMenu($("#dropMenu"),{
-			buttonTxt:"新增",
-			itemCallback:function($this){
-
-				// 创建类型选择
-
-				const type =$this.attr("echo-data");
-				$addMBtn.attr({"type":type,"method":"create"});
-				$inpName.val(null);
-
-				let curCatalogueArr = null;
-
-				// layout_type :0:根目录 1 目录 ，2：文件
-				let comboboxType = null ;
-
-				if(Page.style === 2){
-
-					comboboxType = 2 ;
-
-					const _data =JSON.stringify( $treeTab.treegrid("getData"));
-					const copy_data = JSON.parse(_data);
-					const obj = _self.getCatalogue(copy_data);
-					
-					 curCatalogueArr = [{
-						"layout_name":"当前分类",
-						"layout_id":-2,
-						 children:obj,
-					}];
-
-				}else{
-
-					comboboxType = 1 ;
-
-					const _data = Page.style === 0 ? $tab.datagrid("getData").rows :
-							    $catalogueBox.data("getData");
-
-					curCatalogueArr = _data.reduce(function(total,curVal){
-						const {layout_name,layout_id,layout_type} = curVal;
-						layout_type === 1 && total.push({layout_name,layout_id});
-						 return total;
-					},[]);
-
-					const menuArr = $tabCard.data("menuArr");
-					const curId = menuArr[menuArr.length-1].layout_id;
-					curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
-				};
-
-				_self.addModal.reloadParCatalogCombox(curCatalogueArr,comboboxType);
-				
-				$parName.parent().show();
-				page.modal.show($addMView);
-
-			},
-			slideCallBack:()=>{
-				this.dropMenuCallback();
-			}
-		});
 
 		this.styleBoxrender();
 		this.tabCardInit([{layout_name:"我的创建",index:0,layout_id:-2}]);
 
  	}
-    dropMenuCallback(state){
 
-	    	let lev = $tabCard.data("menuArr").length;
-
-
-	    	if(Page.style === 2){
-				lev = 2 ;
-	    	}
-
-		
-			let dropMenuConfig = Page.dropMenuConfig.filter(val=>{
-
-				if(lev===1){
-					return val.id === "catalogue";
-				}else if(lev>3){
-					return val.id === "view";
-				}else{
-					return true ;
-				}
-
-			});
-			
-			this.dropMenu.reload(dropMenuConfig);
-    }
+   
     styleBoxrender(menuIndexArr=[0], type = 0){
 		api.getAllLayout().then(res=>{
 
@@ -1111,7 +1156,7 @@ class Page  {
 		const data = style === 1 ?  $catalogueBox.data("getData")[index] 
 		: style === 0 ? $tab.datagrid("getData").rows[index] : $treeTab.treegrid("find",index);
 		
-		const {layout_name,layout_id} = data ;
+		const {layout_name,layout_id,par_id} = data ;
 
 		const fatherWin = window.parent;
 			  fatherWin.menuID = layout_id;
@@ -1119,10 +1164,11 @@ class Page  {
 
 			  console.log(fatherWin.menuID);
 
+		const str = `?layout_id=${layout_id}&&par_id=${par_id}&&layout_name=${layout_name}`;
 		
 		$("#slide",fatherWin.document).animate({"width":0},500,function(){
 			$("#content",window.parent.document).addClass("no-head");
-			window.location.href="./editTemplate.html";
+			window.location.href="./editTemplate.html" + str ;;
 		});
     }
 
@@ -1232,8 +1278,10 @@ class Page  {
 
 		//操作按钮
 		$ViewContainer.on("click",".tab-opt",function(e){
+
+
 			const type = $(this).attr("node-sign");
-			const index = $(this).parent().attr("echo-data");
+			const index =Page.style === 1 ? $(this).parent().parent().attr("echo-data") : $(this).parent().attr("echo-data");
 
 			const style = Page.style;
 
@@ -1246,7 +1294,7 @@ class Page  {
 
 			switch(type){
 
-				case "pre":
+				case "preView":
 
 				    const fatherWin = window.parent ;
 				
@@ -1258,7 +1306,7 @@ class Page  {
 
 
 					break;
-				case "issue":
+				case "issueView":
 					
 					  	api.showReleaseLayout(layout_id).then(res=>{
 							if(res){
@@ -1305,20 +1353,22 @@ class Page  {
 							}
 						});
 					break;
-				case "copy":
+				case "copyView":
 
 					page.modal.show($addMView);
 					$parName.parent().hide();
 					$addMBtn.attr({"method":"copy"});
 					break;
-				case "rename":
+				case "renameCata":
+				case "renameView":
 					page.modal.show($addMView);
 					$parName.parent().hide();
 					$addMBtn.attr({"method":"modify"});
 					 $inpName.val(layout_name);
 				//	 $inpName.parent().addClass("inp-fill");
 					break;
-				case "icon":
+				case "modViewIcon":
+				case "modCataIcon":
 					e.stopPropagation();
 					const $parContainer = $iconBox.parent();
 					const status = $parContainer.hasClass("icon-active");
@@ -1337,6 +1387,37 @@ class Page  {
 			$ViewContainer.attr("curId",layout_id);
 
 		});
+		
+		_self.btnBox.on("click",".s-btn",function(){
+
+			const $this = $(this);
+			const sign = $this.attr("sign");
+
+			switch(sign){
+				
+				case"addView":{
+					let lev = $tabCard.data("menuArr").length;
+			    	if(lev === 1 && Page.style !==2){
+						UnitOption.tipToast("第一层只能创建目录!",2);
+						return ;
+			    	}
+					_self.addModal.initMD("view");
+					break;
+				}
+				case"delCata":{
+					_self.delModal.delHandle();
+					break;
+				}
+				case"addCata":{
+					_self.addModal.initMD("catalogue");
+					break;
+				}
+				default:
+				break;
+
+			}
+		});
+
     }
 }
 

@@ -19,6 +19,9 @@ $border:#E9E9E9;
 					margin-right:0px;
 				}
 			}
+			&>button.s-btn{
+				margin-left:20px;
+			}
 		}
 	}
 }
@@ -172,19 +175,17 @@ $border:#E9E9E9;
 .btnBox{
 	$h:34px;
 	.s-btn{
-		height:$h;
+	//	height:$h;
 	    background:$themeColor;
 	}
 }
 
 /* 返回按鈕 */
-.m-back{
-	$h:34px;
+/* .m-back{
 	.s-btn{
-		height:$h;
 	    background:$themeColor;
 	}
-}
+} */
 
 
 
@@ -335,5 +336,11 @@ $border:#E9E9E9;
 	height:36px;
 	overflow:hidden;
 
+}
+/* 禁用 */
+.disabled{
+	pointer-events: none;
+   // color: gray;
+   // border-color: gray;
 }
 

@@ -21,12 +21,15 @@
                 </div>
                 <div class="opt-box">
                     <!--  <span echo-text="预览" sign="pre" class="head-btn"><i class="sicon sicon-pre"></i></span>  -->
-                    <span echo-text="保存" sign="save" class="head-btn"><i class="sicon sicon-save"></i></span>
-                     <span echo-text="另存为" sign="save-as" class="head-btn"><i class="sicon sicon-save-as"></i></span>
+                     <span echo-text="另存为" sign="save-as" class="head-btn"><i class="sicon sicon-save-as"></i></span> 
+                     <span echo-text="保存" sign="save" class="head-btn"><i class="sicon sicon-save"></i></span>
                   <!--  <span echo-text="导出" sign="export" class="head-btn" id="testObject"><i class="sicon sicon-export"></i></span>  -->
                 </div>
             </div>
             <div class="global-box global-style" id="globalBox">
+                <span class="global-style-close" id="glo-styleClose">
+                    <i  class="fa fa-times-circle fa-lg"></i>
+                </span>
                 <ul class="cate-content">
                     <li>
                         <p class="cate-title" style="border-top:none;">背景样式:</p>
@@ -52,16 +55,36 @@
                     </li>
                 </ul>
             </div>
-             <div class="global-box global-filter" id="globalFilter" >
+            <div class="global-box global-filter" id="globalFilter" >
                 <div class="content">
                     <div class="dataTime" id="globalCalendar"></div>
                 </div>
                 <div class="footer" id="filterFoot">
-                    <button class="s-btn">确定</button>
-                    <button class="s-btn">关闭</button>
+                    <button class="s-btn s-borIn ">
+                         <span class="fa fa-check">&nbsp;确 定</span>
+                    </button>
+                    <button class="s-btn s-bevell">
+                         <span class="fa fa-times-circle">&nbsp;关 闭</span>
+                    </button>
+                </div>
+            </div>
+             <div class="global-box global-save" id="globalSave" >
+                <div class="content">
+                    <p class="title">视图名称:</p>
+                    <div class="s-inp-box">
+                        <input type="text" id="viewName" class="s-inp normal-inp s-valid no-fill" placeholder="填写组件名称...">
+                    </div>
+                </div>
+                <div class="footer" id="saveAs">
+                    <button class="s-btn s-borIn ">
+                         <span class="fa fa-check">&nbsp;确 定</span>
+                    </button>
+                    <button class="s-btn s-bevell">
+                         <span class="fa fa-times-circle ">&nbsp;关 闭</span>
+                    </button>
                 </div>
 
-             </div>
+            </div>
 
             <div id="viewTitle" class="view-title">
               
@@ -198,13 +221,17 @@
                         <div class="sel-item">
                             <p class="s-title " style="width:100px">选择监测指标:</p>
                             <div style="position: relative;">
-                                <button class="s-btn  m-rippleBtn" id="selZb"><span class="fa fa-plus">&nbsp;</span>添加（多选）</button>
+                                <button class="s-btn  s-spread" id="selZb"><span class="fa fa-plus">&nbsp;</span>添加（多选）</button>
                                 <div class="zb-box" id="zbTreeBox">
                                     <p class="cate-title">指标选择</p>
                                     <div id="zbTree"></div>
                                     <div id="zbOpt" class="zb-opt">
-                                        <button class="s-btn s-bevell">确定</button>
-                                        <button class="s-btn  ">取消</button>
+                                        <button class="s-btn s-borIn ">
+                                             <span class="fa fa-check">&nbsp;确 定</span>
+                                        </button>
+                                        <button class="s-btn s-bevell">
+                                             <span class="fa fa-times-circle">&nbsp;关 闭</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -291,7 +318,7 @@
                 </div>
             </div>
             <div class="m-foot">
-                <button class="s-btn sure-btn" id="viewSure">预 览</button>
+                <button class="s-btn s-borIn" id="viewSure">预 览</button>
                 <span>&nbsp;&nbsp;&nbsp;</span>
                 <button class="s-btn s-dashBtn m-close">关 闭</button>
             </div>
@@ -318,7 +345,7 @@
 
             </div>
             <div class="m-foot">
-                <button class="s-btn sure-btn" id="editPre">预 览</button>
+                <button class="s-btn s-spread" id="editPre">预 览</button>
                 <span>&nbsp;&nbsp;&nbsp;</span>
                 <button class="s-btn s-dashBtn m-close">关 闭</button>
             </div>
@@ -346,13 +373,18 @@
                       <div class="sel-item">
                             <p class="s-title " style="width:100px">选择监测指标:</p>
                             <div style="position: relative;">
-                                <button class="s-btn  m-rippleBtn" id="realSelZb"><span class="fa fa-plus">&nbsp;</span>添加（多选）</button>
+                                <button class="s-btn s-spread" id="realSelZb"><i class="fa fa-plus">&nbsp;</i>添加（多选）</button>
                                 <div class="zb-box" id="realTreeBox">
                                     <p class="cate-title">指标选择</p>
                                     <div id="realTree"></div>
                                     <div id="realZbOpt" class="zb-opt">
-                                        <button class="s-btn s-bevell" >确定</button>
-                                        <button class="s-btn  ">取消</button>
+                                        
+                                        <button class="s-btn s-borIn ">
+                                             <span class="fa fa-check">&nbsp;确 定</span>
+                                        </button>
+                                        <button class="s-btn s-bevell">
+                                             <span class="fa fa-times-circle">&nbsp;关 闭</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -419,7 +451,6 @@
                                         <div class="g-realStyle">
                                             <span><input type="radio" class="real-style s-radio " checked="checked" id="real-style1" value="1" name="real-style"><label for="real-style1" class="m-real1 ">1</label></span>
                                             <span><input type="radio"  class="real-style s-radio " id="real-style2" value="2" name="real-style"><label for="real-style2" class="m-real2 ">2</label></span>
-                                            <span><input type="radio" class="real-style s-radio " id="real-style3" value="3" name="real-style"><label for="real-style3" class="m-real3">3</label></span>
                                         </div>
                                     </div>
                                 </div>
@@ -427,7 +458,7 @@
                  </div>
             </div>
             <div class="m-foot">
-                <button class="s-btn sure-btn" id="realPre" >预 览</button>
+                <button class="s-btn s-aylen" id="realPre" >预 览</button>
                 <span>&nbsp;&nbsp;&nbsp;</span>
                 <button class="s-btn s-dashBtn m-close">关 闭</button>
             </div>

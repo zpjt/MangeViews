@@ -32,6 +32,7 @@ $themeColor:#00a0e9;
 		background:white;
 		transition: all .4s ease-out;
 		z-index:2;
+		box-sizing: border-box;
 		&:hover .search-icon{
 			transform:rotate(-45deg);
 		}

@@ -545,7 +545,7 @@ class Calendar{
 					<div class="showSel-box">
 						${this.renderTimeStr().join("")}
 					</div>
-					${this.hasInp?`<div> <button class="s-btn calendar-opt sure-btn">确定</button> <button class="s-btn calendar-opt cancel-btn">取消</button> </div>`:""}
+					${this.hasInp?`<div> <button class="s-btn calendar-opt">确定</button> <button class="s-btn calendar-opt">取消</button> </div>`:""}
 					
 				</div>
 
@@ -836,7 +836,7 @@ class Calendar{
 					 		time_stamp_2 = new Date(time_stamp_2).getTime();
 
 						if(time_stamp_1>time_stamp_2){
-							alert("傻逼吧！");
+							alert("结束时间要大于开始时间！");
 							return ;
 						}
 					}

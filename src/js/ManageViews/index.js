@@ -110,6 +110,9 @@ class App{
 					const {tabInfo:{ref_time , ref_frequency}} = viewData ;
 						
 				if( ref_frequency !== "0"){
+
+					const frequencyArr=["",1,60,60*60];
+					const delay = 1000*ref_time*frequencyArr[+ref_frequency];
 					
 					view[type].timer = setInterval(function(){
 
@@ -117,7 +120,7 @@ class App{
 							view.timeReal.init(res);
 						});
 			
-					},3000);
+					},delay);
 				}
 				break;
 			}
@@ -421,6 +424,8 @@ class App{
 		this.apiData.map((val,index)=>{
 			const view = this.items[index];
 			const {viewType,params} = val ;
+
+			const refreshArr=["chart","table"];
 			
 			if(!refreshArr.includes(viewType)){
 				return ;

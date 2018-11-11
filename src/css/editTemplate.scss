@@ -12,8 +12,8 @@ $border:#E9E9E9;
 	
 }
 .s-btn{
-		color:black;
-	}
+	color:black;
+}
 @mixin shadow-space($radius:4px) {
 	background-color: #ffffff;
 	box-shadow: 2px 3px 18px 0px rgba(0, 0, 0, 0.26);
@@ -416,9 +416,7 @@ $border:#E9E9E9;
 			}	
 		}
 		@at-root{
-			#selZb{
-				background:lighten($themeColor,20%);
-			}
+			
 			.zb-box{
 				top:30px;
 				z-index:2;
@@ -576,6 +574,30 @@ $border:#E9E9E9;
 	.dim-item[dim-id="2"]{
 		border-bottom:1px solid ;
 	}
+	.m-real1{
+		background-image:url("../img/view_icon.png");
+		background-repeat:no-repeat;
+		display:inline-block;
+		width: 20px;
+		height: 14px;
+		transition:transform .2s ease-out;
+		cursor: pointer;
+		&:hover{
+			transform:scale(1.2);
+		}
+	}
+	.m-real2{
+		background-image:url("../img/view_icon.png");
+		background-repeat:no-repeat;
+		display:inline-block;
+		width: 20px;
+		height: 14px;
+		transition:transform .2s ease-out;
+		cursor: pointer;
+		&:hover{
+			transform:scale(1.2);
+		}
+	}
 }
 
 
@@ -614,9 +636,43 @@ $border:#E9E9E9;
 		border-bottom-color: $themeColor;
 	}
 }
+.global-save{
+	right: 10px;
+	width: 370px;
+	.title{
+		margin:10px 0;
+	}
+	.content{
+		padding: 10px;
+	}
+	.s-inp{
+		width: 100%;
+	}
+	.footer{
+		border-top:2px solid $themeColor;
+		text-align:right;
+		padding:8px 20px;
+	}
+	&:before{
+		left: auto;
+		right:90px;
+	}
+
+}
 .global-style{
 	left: 168px;
 	width:320px;
+	.global-style-close{
+		position: absolute;
+		right: 12px;
+		top:6px;
+		cursor: pointer;
+		z-index: 2;
+		&:hover{
+			color:red;
+		}
+
+	}
 	.theme-container{
 		width:90%;
 		margin:10px auto;

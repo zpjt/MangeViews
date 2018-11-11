@@ -111,7 +111,7 @@ class Table extends EasyUITab{
 				case "del":{
 
 					const obj = {ids:[id]} ;
-					page.del(obj);
+					page.delModal.del(obj);
 
 					break;
 					}
@@ -126,7 +126,77 @@ class Table extends EasyUITab{
 
 }
 
+class DelModal{
 
+	static delArr = [];
+
+	constructor(unit){
+
+		this.unit = unit ;
+		this.confirmBtn = $("#confirmBtn");
+		this.confirmMd = $("#confirm-MView");
+		this.handle();
+	}
+
+	delHandle(){
+
+		let selArr = null;
+			
+			if(Page.style===0){
+
+				 selArr = $.map($tabContainer.find(".checkSingle:checked"),function(val){
+						return val.value;
+				});
+
+			}else if(Page.style===1){
+
+				 selArr = $.map($catalogueBox.find(".catalogue-chec-inp:checked"),function(val){
+						return val.value;
+				 });
+
+			}else{
+				
+				 selArr = $treeTab.treegrid("getCheckedNodes").map(val=>val.layout_id);
+
+			}
+			
+			if(!selArr.length){
+				UnitOption.tipToast("选择要删去的！",2);
+				return ;
+			}
+			const id = selArr.join(",");
+			page.modal.show($confirmMView);
+			$confirmBtn.attr("delArr",id);
+	}
+
+	del(obj){
+
+		const  method = Page.state === "layout" && "delLayout" || "delchart";
+		api[method](obj).then(res=>{
+			if(!res){
+				this.unit.tipToast("删除失败！",0);
+			}else{
+				this.unit.tipToast("删除成功！",1);
+				page.getData();
+			}
+			DelModal.delArr = null ;
+		});
+	}
+
+
+	handle(){
+		
+		const _self = this;
+		// 删除模态框确认按钮
+		this.confirmBtn.click(function(){
+
+			const obj = {ids:DelModal.delArr};
+			_self.del(obj);
+			page.modal.close(_self.confirmMd);
+		})
+	
+	}
+}
 
 class RestModal{
 
@@ -226,6 +296,7 @@ class Page{
 	static state = "layout" ;
 
 	constructor(){
+		this.btnBox = $("#btnBox")
 		this.unit = new Unit();
 		this.handle();
 		this.init();
@@ -239,6 +310,7 @@ class Page{
 		
 		this.modal = new SModal();
 		this.restModal = new RestModal(unit);
+		this.delModal = new DelModal(unit);
 		this.inp = new SInp();
 		this.search = new Search($("#u-search"),{
 			serachCallback:(result)=>{
@@ -270,24 +342,12 @@ class Page{
 		});
 	}
 
-	del(obj){
-
-		const  method = Page.state === "layout" && "delLayout" || "delchart";
-
-		api[method](obj).then(res=>{
-			if(!res){
-				this.unit.tipToast("删除失败！",0);
-			}else{
-				this.unit.tipToast("删除成功！",1);
-				this.getData();
-			}
-		});
-	}
 
 	handle(){
 		const _self = this ;
+
 		// 切换 视图与图表
-		$("#j-tab").on("click",".m-tab-item",function(){
+		/*$("#j-tab").on("click",".m-tab-item",function(){
 			const $this = $(this);
 			const type = $this.index();
 
@@ -299,7 +359,8 @@ class Page{
 			Page.state = type === 0 ? "layout" : "chart" ;
 			_self.getData();
 
-		});
+		});*/
+
 		//批量删去
 		$("#delBtn").click(function(){
 
@@ -308,12 +369,42 @@ class Page{
 			}) ;
 
 			if(!ids.length){
+
+				_self.unit.tipToast("请选择要删除的！",2);
 				return ;
 			}
 
-			_self.del({ids});
+			DelModal.delArr = ids ;
 
 		});
+
+		this.btnBox.on("click",".s-btn",function(){
+
+			const $this = $(this);
+			const sign = $this.attr("sign");
+
+			switch(sign){
+				case"delCata":{
+					const ids =$.map($tableBox.find(".checkSingle:checked"),function(val){
+						return +val.value;
+					}) ;
+
+					if(!ids.length){
+
+						_self.unit.tipToast("请选择要删除的！",2);
+						return ;
+					}
+
+					DelModal.delArr = ids ;
+					_self.modal.show(_self.delModal.confirmMd);
+					break;
+				}
+				default:
+				break;
+			}
+		});
+
+
 	}
 }
 

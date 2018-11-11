@@ -1,5 +1,5 @@
 $themeColor:#00a0e9;
-$height:40px;
+$height:46px;
 $active:#BDE4F4;
 $duration:.3s;
 
@@ -26,12 +26,13 @@ $duration:.3s;
 	left:50%;
 	visibility:hidden;
 	display:none;
-	transform: translate(-50%,-50%);
-    z-index:110;
+
+	//transform: translate(-50%,-50%);
+	transform: translate3d(-50%,-51%,0); // 用translate3d 可以解决字体抖动的问题
+    z-index:10;
   
 	.m-content{
 		min-width:300px;
-		min-height:200px;
 		border-radius:6px;
 		background: #fff;
 	    /* border: 2px solid transparent;
@@ -73,6 +74,7 @@ $duration:.3s;
 	
 	.m-action{
 		padding:12px;
+		min-height: 80px;
 	}
 	.tip-txt{
 		padding:10px;
@@ -81,6 +83,9 @@ $duration:.3s;
 			size:16px;
 			weight:bolder;
 
+		}
+		i{
+			color:red;
 		}
 	}
 	.m-foot{
