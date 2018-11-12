@@ -9,6 +9,9 @@ const URL_C= baseUrl+control_2;
 const URL_L= baseUrl+control_3;
 
 class API {
+	getAllLayoutPar(keyword=""){
+		return Promise.resolve($.post(URL_L+"getAllLayoutPar",{keyword}));
+	}
 	checkName(data){
 		return Promise.resolve($.post(URL_L+"checkName",data));
 	}

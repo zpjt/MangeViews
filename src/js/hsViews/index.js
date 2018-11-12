@@ -29,7 +29,9 @@ class Table extends EasyUITab{
 		return {
 			idField:idField,
 			tabId:"#tabBox",
-			frozenColumns: this.frozenColumns(idField),
+			frozenColumns: this.frozenColumns(idField,{
+				checkbox: Page.tabOptDel,
+			}),
 			columns: [
 				[{
 					field: 'layout_name',
@@ -54,16 +56,7 @@ class Table extends EasyUITab{
 					width: "20%",
 					formatter: function(val, rowData,index) {
 						
-						let str = `
-										<div class="tab-opt s-btn s-Naira" node-sign="rest">
-												<i class="fa fa-edit"></i>
-												<span>还原</span>	
-										</div>
-										<div class="tab-opt s-btn s-Naira" node-sign="del">
-												<i class="fa fa-trash"></i>	
-												<span>删除</span>	
-										</div>	
-							   		`;
+						let str = Page.tabOptStr;
 
 						return `
 								<div class="tabBtnBox" echo-data='${rowData.layout_id}' >
@@ -136,37 +129,6 @@ class DelModal{
 		this.confirmBtn = $("#confirmBtn");
 		this.confirmMd = $("#confirm-MView");
 		this.handle();
-	}
-
-	delHandle(){
-
-		let selArr = null;
-			
-			if(Page.style===0){
-
-				 selArr = $.map($tabContainer.find(".checkSingle:checked"),function(val){
-						return val.value;
-				});
-
-			}else if(Page.style===1){
-
-				 selArr = $.map($catalogueBox.find(".catalogue-chec-inp:checked"),function(val){
-						return val.value;
-				 });
-
-			}else{
-				
-				 selArr = $treeTab.treegrid("getCheckedNodes").map(val=>val.layout_id);
-
-			}
-			
-			if(!selArr.length){
-				UnitOption.tipToast("选择要删去的！",2);
-				return ;
-			}
-			const id = selArr.join(",");
-			page.modal.show($confirmMView);
-			$confirmBtn.attr("delArr",id);
 	}
 
 	del(obj){
@@ -294,13 +256,21 @@ class RestModal{
 class Page{
 
 	static state = "layout" ;
+	static tabOptStr = null ;
+	static tabOptDel = null ;
 
 	constructor(){
 		this.btnBox = $("#btnBox")
 		this.unit = new Unit();
 		this.handle();
-		this.init();
 
+		this.getRoleRes().then(res=>{
+
+			if(res){
+				this.init();
+			}
+
+		});
 	}
 
 	init(){
@@ -326,7 +296,50 @@ class Page{
 		});
 		this.getData();
 	}
+	getRoleRes(){
 
+		return 	api.roleResource().then(res=>{
+			
+				if(res){
+
+					const config = {
+						rest:["fa fa-edit","还原"],
+						del:["fa fa-trash","删除"]
+					};
+
+					const strArr = res.btn.map(val=>{
+
+						const {btn_code,btn_flag} = val ;
+
+						if(btn_code === "del"){ 
+							Page.tabOptDel = btn_flag === "1";
+							
+							const str = btn_flag === "1" && `<button class="s-btn s-sacnite "  sign="${btn_code}">
+												<i class="fa fa-trash"></i>
+										</button>` || "";
+							this.btnBox.html(str);
+
+						 };
+
+						return btn_flag === "1" && `<div class="tab-opt s-btn s-Naira" node-sign="${btn_code}">
+											<i class="${config[btn_code][0]}"></i>
+												<span>${config[btn_code][1]}</span>	
+								</div>` || "";
+					});
+
+					Page.tabOptStr = strArr.join("");
+
+
+					return true ;
+			
+				}else{
+					page.unit.tipToast("获取功能权限出错！","0");
+
+					return false ;
+				}
+
+		});
+	}
 	getData(){
 
 		const  method = Page.state === "layout" && "RecycleLayoutshow" || "RecycleChartshow";
@@ -361,22 +374,7 @@ class Page{
 
 		});*/
 
-		//批量删去
-		$("#delBtn").click(function(){
-
-			const ids =$.map($tableBox.find(".checkSingle:checked"),function(val){
-					return +val.value;
-			}) ;
-
-			if(!ids.length){
-
-				_self.unit.tipToast("请选择要删除的！",2);
-				return ;
-			}
-
-			DelModal.delArr = ids ;
-
-		});
+		
 
 		this.btnBox.on("click",".s-btn",function(){
 
@@ -384,13 +382,12 @@ class Page{
 			const sign = $this.attr("sign");
 
 			switch(sign){
-				case"delCata":{
+				case"del":{
 					const ids =$.map($tableBox.find(".checkSingle:checked"),function(val){
 						return +val.value;
 					}) ;
 
 					if(!ids.length){
-
 						_self.unit.tipToast("请选择要删除的！",2);
 						return ;
 					}

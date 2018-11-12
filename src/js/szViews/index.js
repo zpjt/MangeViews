@@ -277,7 +277,7 @@ class CatalogueStyle{
 		
 		const str = tabData.map((val,index)=>{
 			const {layout_icon_name,layout_name,layout_id,layout_type,sub} = val ;
-			const type = layout_type ===1 && "view-catalogue" || "view-file";
+			const type = layout_type ===1 ? "view-catalogue" : (Page.viewOpt.pre && "view-file" || "");
 			const is_disCheck = sub.length === 0 ;
 
 			return `
@@ -410,6 +410,7 @@ class AddModal{
 	constructor(){
 
 		this.parCatalogCombox = $("#parName") ;
+		this.modalTit = $("#addTit");
 		this.handle();
 		this.init();
 		this.orgBoxInit();
@@ -422,72 +423,35 @@ class AddModal{
 			rotate:4,
 			style:2
 		});
+
 	}
 
-	initMD(type){
+	initMD(type,method="create"){
 
-		// 创建类型选择
-
-		$addMBtn.attr({"type":type,"method":"create"});
-		$inpName.val(null);
-
-		let curCatalogueArr = null;
-
-		// layout_type :0:根目录 1 目录 ，2：文件
-		let comboboxType = null ;
-
-		if(Page.style === 2){ // 树形表格
-
-			comboboxType = 2 ;
-
-			const _data =JSON.stringify( $treeTab.treegrid("getData"));
-			const copy_data = JSON.parse(_data);
-			const obj = page.getCatalogue(copy_data);
-			
-			  curCatalogueArr = type === "view" && obj || [{
-				"layout_name":"当前分类",
-				"layout_id":-2,
-				 children:obj,
-			}];
-
-		}else{
-
-			comboboxType = 1 ;
-
-			const _data = Page.style === 0 ? $tab.datagrid("getData").rows :
-					    $catalogueBox.data("getData");
-
-			curCatalogueArr = _data.reduce(function(total,curVal){
-				const {layout_name,layout_id,layout_type} = curVal;
-				layout_type === 1 && total.push({layout_name,layout_id});
-				 return total;
-			},[]);
-
+		$addMBtn.attr({"type":type,method});
+		$inpName.addClass("no-fill").val(null);
+	
+		if(Page.style !== 2){
 			const menuArr = $tabCard.data("menuArr");
 			const curId = menuArr[menuArr.length-1].layout_id;
-			curCatalogueArr.unshift({"layout_name":"当前分类","layout_id":curId});	
-		};
+			this.parCatalogSel.setValue(curId);
+		}else{
+			this.parCatalogSel.clearValue();
+		}
 
-		this.reloadParCatalogCombox(curCatalogueArr,comboboxType);
-				
+		type==="view" && this.rootCataDom.hide() || this.rootCataDom.show();
 		$parName.parent().show();
+
+		const tit =method ==="create" ? type === "view" ?  "创建视图" : "创建分类" :"复制视图";
+
+		this.modalTit.html(tit);
 		page.modal.show($addMView);
 
 	}
 		
-	reloadParCatalogCombox(data,style){
+	reloadParCatalogCombox(data){
 
-		this.parCatalogSel = null ;
-		this.parCatalogCombox.unbind();	
-
-		this.parCatalogSel = style == 1 ? new SCombobox(this.parCatalogCombox,{
-			 data:data,
-			"textField":"layout_name",
-			"idField":"layout_id",
-			"validCombo":false,
-			"prompt":"请选择所属分类...",
-			"width":300,
-		}) : new SComboTree(this.parCatalogCombox,{
+		this.parCatalogSel = new SComboTree(this.parCatalogCombox,{
 				width:300,
 				treeConfig:{
 					 data:data,
@@ -498,7 +462,9 @@ class AddModal{
 				}
 		});
 
-		const  curId =data[0].layout_id ;
+		this.rootCataDom = this.parCatalogSel.box.find(".menuItem[echo-id=-2]");
+
+		const  curId = data[0].layout_id ;
 
 		this.parCatalogSel.setValue(curId);
 
@@ -591,8 +557,22 @@ class AddModal{
 			const type = $(this).attr("type");
 			const method = $(this).attr("method");
 			const name = $inpName.val().trim();
-			if(!name){return ; }
-			const par_id = method==="create" ? _self.parCatalogSel.box.find(".combo-value").val() : $ViewContainer.attr("curid");
+
+			const par_id = _self.parCatalogSel.box.find(".combo-value").val();
+
+			if($addMView.find("no-fill").length){
+				
+			 }
+
+			 if(!name || !par_id){
+				UnitOption.tipToast("请填写完整！",2);
+				return ;
+			 }
+
+
+
+			const cur_id =  $ViewContainer.attr("curid");
+		
 			const style = Page.style;
 
 			switch(method){
@@ -603,11 +583,11 @@ class AddModal{
 				case "copy":{
 
 					const tabCardArr = $tabCard.data("menuArr");
-					api.checkName({par_id:tabCardArr[tabCardArr.length-1].layout_id,name})
+					api.checkName({par_id,name})
 					.then(res=>{
 
 						if(res){
-							api.copyLayout(par_id,name).then(res=>{
+							api.copyLayout(par_id,cur_id,name).then(res=>{
 								
 									if(res){
 										const menuIndexArr = tabCardArr.map(val=>{
@@ -960,7 +940,7 @@ class Page  {
 						const {btn_code,btn_flag} = val ;
 						if(optBoxArr.includes(btn_code)){
 
-							Page.cataOpt.del = btn_flag;
+							if(btn_code=== "delCata"){Page.cataOpt.del = btn_flag;}
 
 							optBoxStr.push(val)
 
@@ -970,12 +950,9 @@ class Page  {
 
 						}else{
 
-							if( btn_code=== "delView"){
-
-						
-							}else if( btn_code=== "modView"){
+							if( btn_code=== "modView"){
 								
-								Page.viewOpt.pre =  btn_flag;
+								Page.viewOpt.pre =  btn_flag==="1";
 						
 							}else{
 
@@ -1006,8 +983,9 @@ class Page  {
 
 		const str = arr.map(val=>{
 			const {btn_flag,btn_status,btn_code} = val;
-			const disable = btn_flag=== "0" && btn_status == "1"  && "disabled" || "";
-			const str = (btn_flag !== "0" && btn_status === "1") && `<button class="s-btn ${config[btn_code][2]} ${disable}" sign="${btn_code}">
+		
+			const disable = "";
+			const str = btn_flag === "1"  && `<button class="s-btn ${config[btn_code][2]} ${disable}" sign="${btn_code}">
 						<i class="${config[btn_code][1]}"></i>
 						<span>${config[btn_code][0]}</span>
 				</button>` || "";
@@ -1028,9 +1006,9 @@ class Page  {
 		return  arr.map(val=>{
 
 					const {btn_flag,btn_status,btn_code} = val;
-					const disable = btn_flag=== "0" && btn_status == "1"  && "disabled" || "";
+					const disable =  "";
 
-					const str = (btn_flag !== "0" && btn_status === "1") && `<div class="tab-opt s-btn s-Naira ${disable}" node-sign="${btn_code}">
+					const str = btn_flag === "1"  && `<div class="tab-opt s-btn s-Naira ${disable}" node-sign="${btn_code}">
 								<i class="${config[btn_code][1]}"></i>	
 								<span>${config[btn_code][0]}</span>
 						</div>` || "";
@@ -1055,9 +1033,9 @@ class Page  {
 
 					
 					
-					const disable =btn_flag=== "0" && btn_status == "1"  && "disabled" || "";
+					const disable =  "";
 
-					const str = (btn_flag !== "0" && btn_status === "1") && `<div class="tab-opt s-btn s-Naira ${disable}" node-sign="${btn_code}">
+					const str = btn_flag === "1"  && `<div class="tab-opt s-btn s-Naira ${disable}" node-sign="${btn_code}">
 								<i class="${config[btn_code][1]}"></i>	
 								<span>${config[btn_code][0]}</span>
 						</div>` || "";
@@ -1104,9 +1082,18 @@ class Page  {
 
 			if(res){
 				
-				const copy_data= JSON.parse(JSON.stringify(res.sub).replace(/sub/g,"children"));
+				const copy_dataStr= JSON.stringify(res.sub).replace(/sub/g,"children");
+				const copy_data= JSON.parse(copy_dataStr);
 
 				this.search.data = copy_data ;
+
+				const catalogueArr = page.getCatalogue(JSON.parse(copy_dataStr));
+
+				this.addModal.reloadParCatalogCombox([{
+						"layout_name":"当前分类",
+						"layout_id":-2,
+						 children:catalogueArr,
+				}]);
 
 				
 				const  allData = [res] ;
@@ -1355,17 +1342,16 @@ class Page  {
 					break;
 				case "copyView":
 
-					page.modal.show($addMView);
-					$parName.parent().hide();
-					$addMBtn.attr({"method":"copy"});
+					
+					_self.addModal.initMD("view","copy");
+
 					break;
 				case "renameCata":
 				case "renameView":
 					page.modal.show($addMView);
 					$parName.parent().hide();
 					$addMBtn.attr({"method":"modify"});
-					 $inpName.val(layout_name);
-				//	 $inpName.parent().addClass("inp-fill");
+					 $inpName.removeClass("no-fill").val(layout_name);
 					break;
 				case "modViewIcon":
 				case "modCataIcon":

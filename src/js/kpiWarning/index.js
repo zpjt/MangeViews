@@ -41,6 +41,7 @@ class Table extends EasyUITab{
 			tabId:"#tabBox",
 			frozenColumns: this.frozenColumns(idField,{
 				order:true,
+				checkbox:Page.tabOptDel
 			}),
 			columns: [
 				[{
@@ -112,16 +113,7 @@ class Table extends EasyUITab{
 					width: "12%",
 					formatter: function(val, rowData,index) {
 						
-						let str = `
-										<div class="tab-opt s-btn s-Naira" node-sign="set">
-												<i class="fa fa-sliders"></i>
-												<span>设置</span>	
-										</div>
-										<div class="tab-opt s-btn s-Naira" node-sign="pre">
-												<i class="fa fa-eye"></i>	
-												<span>查看</span>	
-										</div>	
-							   		`;
+						let str = Page.tabOptStr;
 
 						return `
 								<div class="tabBtnBox" echo-data='${index}' >
@@ -153,7 +145,7 @@ class Table extends EasyUITab{
 
 			
 			switch(type){
-				case "set":{
+				case "mod":{
 
 					const node = $table.datagrid("getData").rows[index];
 					page.addModal.setValue(node);
@@ -763,13 +755,74 @@ class AddModal{
  */
 class Page{
 
+	static tabOptStr = null ;
+	static tabOptDel = null ;
+
 	constructor(){
 
 		this.btnBox = $("#btnBox");
 		
 		this.handle();
-		this.init();
+		this.getRoleRes().then(res=>{
 
+			if(res){
+				this.init();
+			}
+		})
+	}
+
+	getRoleRes(){
+
+		return 	api.roleResource().then(res=>{
+			
+				if(res){
+
+					const config = {
+						add:["fa fa-plus","添加指标预警","s-moema"],
+						del:["fa fa-trash","","s-sacnite"],
+						mod:["fa fa-sliders","设置"],
+					};
+
+					const strArr = res.btn.map(val=>{
+
+						const {btn_code,btn_flag} = val ;
+
+						if(btn_code === "mod"){ 
+
+							Page.tabOptDel = btn_flag === "1";
+							
+							const str = btn_flag === "1" && `<div class="tab-opt s-btn s-Naira" node-sign="${btn_code}">
+																	<i class="${config[btn_code][0]}"></i>
+																	<span>${config[btn_code][1]}</span>	
+															</div>` || "";
+							
+							Page.tabOptStr = str;
+
+							return "";
+						 }else{
+
+							return btn_flag === "1" && `<button class="s-btn  ${config[btn_code][2]}" sign="${btn_code}">
+															<i class="${config[btn_code][0]}"></i>
+															<span>${config[btn_code][1]}</span>
+														</button>` || "";
+
+						 };
+
+						
+					});
+
+					
+					this.btnBox.html(strArr.join(""));
+
+					return true ;
+			
+				}else{
+					page.unit.tipToast("获取功能权限出错！","0");
+
+					return false ;
+				}
+
+		});
 	}
 
 	init(){
@@ -812,26 +865,6 @@ class Page{
 
 	handle(){
 		const _self = this ;
-		$("#j-addBtn").on("click",function(){
-
-			_self.addModal.initRender();
-
-		});
-		//批量删去
-		$("#delBtn").click(function(){
-
-			const ids =$.map($tableBox.find(".checkSingle:checked"),function(val){
-					return {id:val.value};
-			}) ;
-
-			if(!ids.length){
-				_self.unit.tipToast("选择要删除的！",2);
-				return ;
-			}
-			DelModal.delArr = ids ;
-			_self.modal.show(page.delModal.confirmMd);
-
-		});
 
 		_self.btnBox.on("click",".s-btn",function(){
 
@@ -840,11 +873,11 @@ class Page{
 
 			switch(sign){
 				
-				case"addView":{
-					
+				case"add":{
+					_self.addModal.initRender();
 					break;
 				}
-				case"delCata":{
+				case"del":{
 						const ids =$.map($tableBox.find(".checkSingle:checked"),function(val){
 								return {id:val.value};
 						}) ;

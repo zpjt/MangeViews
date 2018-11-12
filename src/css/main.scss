@@ -414,3 +414,92 @@
 		}
 	}
 }
+
+
+/* 重置密码 */
+$color:#00a0e9;
+#confirm-MView{
+	.m-action{
+		padding: 18px;
+		margin-bottom:20px;
+	}
+}
+.g-inpBox{
+	svg:not(:root) {
+	    overflow: hidden;
+	}
+	.warn{
+		font-size: 12px;
+	}
+	.m-item{
+		margin-bottom: 10px;
+	}
+}
+.g-input{
+	$h:32px;
+	width:100%;
+	display:inline-block;
+	position: relative;
+	height:2 * $h;
+	overflow:hidden;
+	display:flex;
+	.inp-field{
+		width:100%;
+		height:$h;
+		border:none;
+		outline:none;
+		text-indent:.4rem;
+		background:none;
+		position: absolute;
+		bottom:0;
+		font-size:16px;
+	}
+
+	.inp-label{
+		position: absolute;
+		height:$h;
+		bottom:0;
+		line-height:$h;
+	    transition: transform .2s .15s,color 1s;
+		transition-timing-function: ease-out;
+		font-weight:bolder;
+		color:rgba($color,.5);
+		
+	}
+
+	.inp-field:focus{
+		& ~ .inp-label{
+			color:$color;
+
+			transform:translateY(-80%) scale(0.8);
+		}
+		& ~ .graphic{
+		
+		    -webkit-transform: translate3d(-66.6%,0,0);
+		    transform: translate3d(-66.6%,0,0);
+		}
+	}
+	.graphic{
+		position: absolute;
+	    top: 0;
+	    left: 0;
+	    fill: none;
+	    stroke: $color;
+	    stroke-width: 3px;
+
+	    pointer-events: none;
+	    transition: transform .7s,stroke .7s;
+	    transition-timing-function: cubic-bezier(0,.25,.5,1);
+	}
+
+}
+.s-filled{
+	.inp-label{
+		color:$color;
+		transform:translateY(-80%) scale(0.8);
+	}
+	.graphic{
+		stroke: $color;
+	    transform: translate3d(-66.6%,0,0);
+	}
+}

@@ -24,9 +24,10 @@ class Table {
 
     }
 
-   async roleSelArr(role_id){
 
-   	const obj = this.data ;
+    async roleSelArr(role_id){
+ 
+   	    const obj = this.data ;
 
     	const selArr = await api.getPreams(role_id);	
     	if(!selArr.data){
@@ -40,15 +41,20 @@ class Table {
 
 		 	const inpStatus ='checked="checked"';
 
-		 	const total = val.children.length ;
+		 	const total = val.operations.length ;
 
 		 	let count = 0 ;
 				
-		 	const funItemsStr = val.children.map(val=>{
+		 	const funItemsStr = val.operations.map(val=>{
+
 					const index = data.findIndex(oVal=>oVal.id === val.id);
-					data.splice(index,1);
+				
 					
-					index>-1 &&　count ++ ;	
+
+					if(index>-1){
+						data.splice(index,1);
+						count ++ ;	
+					}
 
 
 		 			return `
@@ -69,7 +75,7 @@ class Table {
 								<span class="s-checkbox">
 										<input type="checkbox" ${count === total && inpStatus||"" } class="par-checkbox" ><label class="fa fa-square-o ${parStatus}"></label>
 								</span>
-								<b>${val.text}</b>
+								<b>${val.title}</b>
 							</p>
 						</td>
 						<td width="70%">
@@ -87,178 +93,16 @@ class Table {
 
     renderTemplate(){
 
-		const obj =[
-	    	 {
-	    	 	text:" 视图管理",
-	    	 	children:[
-							{
-					            "id": 103,
-					            "btn_Code": "addView",
-					            "btn_Name": "创建视图",
-					            "btn_title": "创建视图",
-					            "menu_id": 9020,
-					            "type": 2,
-					            "status": 1
-					        },
-					        {
-					            "id": 98,
-					            "btn_Code": "modView",
-					            "btn_Name": "视图编辑",
-					            "btn_title": "视图编辑",
-					            "menu_id": 9020,
-					            "type": 2,
-					            "status": 1
-					        },
-					         {
-					            "id": 102,
-					            "btn_Code": "preView",
-					            "btn_Name": "预览视图",
-					            "btn_title": "预览视图",
-					            "menu_id": 9020,
-					            "type": 2,
-					            "status": 1
-					        },
-					        {
-					            "id": 101,
-					            "btn_Code": "copyView",
-					            "btn_Name": "复制视图",
-					            "btn_title": "复制视图",
-					            "menu_id": 9020,
-					            "type": 2,
-					            "status": 1
-					        },
-					        {
-					            "id": 99,
-					            "btn_Code": "renameView",
-					            "btn_Name": "重命名视图",
-					            "btn_title": "重命名视图",
-					            "menu_id": 9020,
-					            "type": 2,
-					            "status": 1
-					        },
-					        {
-					            "id": 110,
-					            "btn_Code": "addCata",
-					            "btn_Name": "创建分类",
-					            "btn_title": "创建分类",
-					            "menu_id": 9020,
-					            "type": 1,
-					            "status": 1
-					        },
-					        {
-					            "id": 106,
-					            "btn_Code": "delCata",
-					            "btn_Name": "删除分类",
-					            "btn_title": "删除分类",
-					            "menu_id": 9020,
-					            "type": 2,
-					            "status": 1
-					        },
-					        {
-					            "id": 111,
-					            "btn_Code": "issueView",
-					            "btn_Name": "发布视图",
-					            "btn_title": "发布视图",
-					            "menu_id": 9020,
-					            "type": 2,
-					            "status": 1
-					        },
-					        {
-					            "id": 100,
-					            "btn_Code": "modViewIcon",
-					            "btn_Name": "修改视图图标",
-					            "btn_title": "修改视图图标",
-					            "menu_id": 9020,
-					            "type": 2,
-					            "status": 1
-					        },
-					         {   "id": 95,
-					            "btn_Code": "modCataIcon",
-					            "btn_Name": "修改分类图标",
-					            "btn_title": "修改分类图标",
-					            "menu_id": 9020,
-					            "type": 2,
-					            "status": 1
-					        },
-					        {
-					            "id": 104,
-					            "btn_Code": "delView",
-					            "btn_Name": "删除视图",
-					            "btn_title": "删除视图",
-					            "menu_id": 9020,
-					            "type": 1,
-					            "status": 1
-					        },
-					        {
-					            "id": 105,
-					            "btn_Code": "renameCata",
-					            "btn_Name": "重命名分类",
-					            "btn_title": "重命名分类",
-					            "menu_id": 9020,
-					            "type": 2,
-					            "status": 1
-					        },
-		    			]
-	    	 },
-	    	 {
-	    	 	text:"视图回收站",
-	    	 	children:[
-							{
-					            "id": 109,
-					            "btn_Code": "del",
-					            "btn_Name": "删除",
-					            "btn_title": "删除",
-					            "menu_id": 9030,
-					            "type": 2,
-					            "status": 1
-					        },
-					        
-					        {
-					            "id": 97,
-					            "btn_Code": "rest",
-					            "btn_Name": "还原",
-					            "btn_title": "还原",
-					            "menu_id": 9030,
-					            "type": 2,
-					            "status": 1
-					        },
-		    			]
-	    	 },
-	    	 {
-	    	 	text:"预警设置",
-	    	 	children:[
-							{
-					            "id": 107,
-					            "btn_Code": "mod",
-					            "btn_Name": "设置预警",
-					            "btn_title": "新增预警",
-					            "menu_id": 9070,
-					            "type": 2,
-					            "status": 1
-					        },
-					        {
-					            "id": 108,
-					            "btn_Code": "add",
-					            "btn_Name": "新增预警",
-					            "btn_title": "新增预警",
-					            "menu_id": 9070,
-					            "type": 2,
-					            "status": 1
-					        },
-							 {
-					            "id": 109,
-					            "btn_Code": "del",
-					            "btn_Name": "删除预警",
-					            "btn_title": "删除预警",
-					            "menu_id": 9070,
-					            "type": 2,
-					            "status": 1
-					        }
-		    			]
-	    	 },
-		];
-		this.data = obj ;
-		this.roleSelArr(window.jsp_config.role_id);
+    	api.getAllPreams().then(res=>{
+
+    		if(res.data){
+		
+				this.data = res.data[0].sub;
+				this.roleSelArr(window.jsp_config.role_id);
+    		}else{
+    			this.unit.tipToast("获取功能按钮出错！",0);
+    		}
+    	});
     }
 
     handle(){
@@ -318,41 +162,46 @@ class Page{
 		this.table = new Table({
 			unit
 		});
-		const data = [
-			{
-				id:"70000",
-				text:"系统管理员"
-			},
-			{
-				id:"2",
-				text:"部门管理员"
-			},
-			{
-				id:"3",
-				text:"质能科室"
-			},
-		]
+		
+		this.getAllRole();
 
-		const _me = this;
-
-		this.roleCombo = new SCombobox($("#roleCombo"),{
-			data:data,
-			defaultVal:data[0].id,
-			clickCallback:function(node){
-				_me.table.roleSelArr(node.id);
-			}
-		});
 	}
+
+	  getAllRole(){
+
+    	api.sel_role().then(res=>{
+
+    		const data = res.data;
+
+    		console.log(data);
+
+    		if(data){
+				const _me = this;
+
+				this.roleCombo = new SCombobox($("#roleCombo"),{
+					data:data,
+					defaultVal:[data[0].id],
+					textField:"role_name",
+					clickCallback:function(node){
+						_me.table.roleSelArr(node.id);
+					}
+				});
+				
+    		}else{
+    			this.unit.tipToast("获取角色出错！",0);
+    		}
+    	})
+    }
 
 	setLimt(){
 
-		const s = $.map(this.table.tabBox.find(".child-checkbox:checked"),function(val){
+		const menu_id = $.map(this.table.tabBox.find(".child-checkbox:checked"),function(val){
 			return val.value;
-		}).join(",");
+		});
 
-		const role_id = this.roleCombo.getValue();
+		const id = this.roleCombo.getValue();
 
-		api.savePreams({s,role_id}).then(res=>{
+		api.savePreams({menu_id,id}).then(res=>{
 
 			let str = "" ,
 				status = "";

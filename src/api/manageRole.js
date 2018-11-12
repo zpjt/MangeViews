@@ -22,7 +22,13 @@ class API {
 			type:"post",
 		}));
 	}
+	getAllPreams(){
+		return Promise.resolve($.get(MAIN+"getAllPreams"));
+	}
 
+	sel_role(){
+		return Promise.resolve($.get(MAIN+"sel_role"));
+	}
 }  
 
 const api = new API();

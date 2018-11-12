@@ -3,6 +3,8 @@ import {api } from "api/editTemplate.js";
 /**
  * 指标树组件
  */
+
+console.log(3);
 class ZbComponent {
 	// 注意 表格 id:3 是指标，图形id：3是维度
 	static wd_arr_common = [

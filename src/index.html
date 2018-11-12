@@ -88,7 +88,66 @@
 			</div>
 		</div>
 	</div>
-	
+	<!-- 提示modal -->
+	<div class="s-modal s-tip s-effect-1" id="confirm-MView" style="width: 400px">
+		<div class="m-content" >
+			<div class="m-title">
+				<span class="m-txt">修改账号</span>
+				<span class="m-close m-close-icon" >
+					<i  class="fa fa-times fa-lg"></i>
+				</span>
+			</div>
+			<div class="m-action">
+				<div class="g-inpBox">
+					<p>用户名：<b id="userName">demo</b></p>
+					<div class="m-item">
+						<span class="g-input">
+							<input class="inp-field pwd-inp" type="text" id="oldPwd">
+							<label class="inp-label" for="oldPwd">
+								<span class="lab-content ">旧密码</span>
+							</label>
+							<svg class="graphic" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+								<path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
+							</svg>
+						</span>
+						<p class="warn" ></p>
+					</div>
+					<div class="m-item">
+						<span class="g-input">
+							<input class="inp-field pwd-inp" type="password" id="pwd">
+							<label class="inp-label " for="pwd">
+								<span class="lab-content ">新密码</span>
+							</label>
+							<svg class="graphic " width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+								<path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
+							</svg>
+						</span>
+						<p class="warn"></p>
+					</div>
+						<div class="m-item">
+						<span class="g-input">
+							<input class="inp-field pwd-inp" type="password" id="pwdSure">
+							<label class="inp-label " for="pwdSure">
+								<span class="lab-content ">密码确认</span>
+							</label>
+							<svg class="graphic " width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+								<path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
+							</svg>
+						</span>
+						<p class="warn"></p>
+					</div>
+				</div>
+			</div>
+			<div class="m-foot">
+				<button class="s-btn s-spread" id="confirmBtn">确定</button>
+				<span>&nbsp;&nbsp;&nbsp;</span>
+				<button class="s-btn  s-dashBtn m-close" >取消</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="s-md-overlay"></div>
+	<div class="g-tip-toast" id="tipToast"></div>	
 	<script type="text/javascript">
      window.jsp_config={
 				baseUrl:'/ManageViews/',
@@ -99,5 +158,6 @@
 		};
     </script>
 	<script src="assert/js/jquery.min.js"></script>
+	<script src="assert/js/md5.js"></script>
 </body>
 </html>

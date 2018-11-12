@@ -309,6 +309,12 @@ class TimeRealMd{
 	
 		const values = this.selZbArr ;
 
+		if(!values || !values.length){
+			
+			this.unit.tipToast("请选择指标！",2)
+			return ;
+		}
+
 		const kpis = [] ;
 		const kpi_infos = [] ;
 

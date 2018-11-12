@@ -25,7 +25,7 @@ $slectColor:#aee6ff;
 .g-limitTab	{
 	width: 100%;
 	thead{
-		background:#AEE6FF;
+		border-bottom:2px solid $themeColor;
 	}
 	th{
 		height: 40px;
@@ -35,7 +35,7 @@ $slectColor:#aee6ff;
 		padding: 8px 20px;
 	}
 	tr:nth-child(2n){
-		background: #f1ece2;
+		background: #AEE6FF;
 	}
 	.funBtn{
 		margin:10px;

@@ -16,7 +16,7 @@ class HeadOpt {
 
 		this.config = config;
 		this.globalBox = $("#globalBox");
-
+		this.parCatalogCombox = $("#parCatalogCombox");
 		this.init();
 		this.handle();
 	}
@@ -28,7 +28,41 @@ class HeadOpt {
 			style:2,
 		});
 
+		api.getAllLayoutPar().then(res=>{
+
+			if(res.sub){
+				const {viewDetail:{par_id}} = this.config;
+				this.parCatalogSel = new SComboTree(this.parCatalogCombox,{
+									width:350,
+									treeConfig:{
+										 data:res.sub,
+										"textField":"layout_name",
+										"idField":"layout_id",
+										"childIcon":"fa fa-folder-open-o",
+										"childrenField":"sub",
+										"parClick":true,
+										"judgeRelation":(val)=>{//自定义判断是目录还是文件的函数
+												return val["sub"].length > 0 ;
+										 }
+									}
+				});
+				this.parCatalogSel.setValue(par_id);
+
+			}else{
+
+				this.config.unit.tipToast("获取目录出错！", 0);
+
+			}
+
+			
+		})
+
+		
+
+
 	}
+
+
 
 	
 
@@ -264,7 +298,12 @@ class HeadOpt {
 				case 0:{
 
 					const name = viewName.val().trim();
-					const {par_id,layout_id} = viewDetail;
+					const {layout_id} = viewDetail;
+				    const par_id =	_self.parCatalogSel.getValue()[0].layout_id;
+
+					if(!name || !par_id){
+						return ;
+					}
 
 					const result = _self.saveAllView().then(res=>{
 
@@ -272,7 +311,7 @@ class HeadOpt {
 							
 							api.checkName({name,par_id}).then(res=>{
 								if(res){
-									api.copyLayout({layoutId:layout_id,layoutName:name}).then(res=>{
+									api.copyLayout({par_id,layoutId:layout_id,layoutName:name}).then(res=>{
 
 										if(res){
 											unit.tipToast("另存成功！",1);
@@ -289,7 +328,6 @@ class HeadOpt {
 						}
 					});
 
-					console.log(result,"fsdfsfasfsa");
 					break;
 				}
 				case 1:{
