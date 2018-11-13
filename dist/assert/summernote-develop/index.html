@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Summernote</title>
+  <link href="bootstrap.min.css" rel="stylesheet">
+  <link href="summernote.css" rel="stylesheet">
+  <link href="codemirror.css" rel="stylesheet">
+</head>
+<body>
+  <div id="summernote"><p>Hello Summernote ,<b>Hello jQuery插件库</b></p></div>
+  <script src="jquery.min.js"></script>
+  <script src="bootstrap.min.js"></script> 
+   <script src="codemirror.js"></script>
+  <script src="summernote.js"></script>
+  <script>
+
+    window.$summernote = $('#summernote');
+
+    $(document).ready(function() {
+       const edit = $summernote.summernote({
+        height:400,
+        minHeight:300,
+        focus:true,
+       });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name='viewport' content="width=device-width, initial-scale=1.0">
+	<meta http-equiv = "X-UA-Compatible" content = "IE=edge,chrome=1" />
+	<title>智能预警</title>
+	<script src="assert/js/modernizr.custom.63321.js"></script>
+	<link rel="stylesheet" href="assert/css/normalize.css">
+	<link rel="stylesheet" href="assert/font/css/font-awesome.min.css">
+	<link rel="stylesheet" href="assert/sekin-font/style.css">
+	<link rel="stylesheet" href="assert/css/easyui.css">
+	
+<link href="css/kpiWarning.css" rel="stylesheet"></head>
+<body>
+	<div class="page">
+		
+		<div class="optBox">
+			<div class="search-box">
+				<div class="search-wrap" id="u-search">
+
+				</div>
+			</div>
+			<div class="btnBox" id="btnBox">
+				
+			</div>
+		</div>
+		<section class="easy-tabBox" style="width:100%;" id="tabBox">
+				<table id="tab" class="easy-tab" style="width:100%;height:100%"></table>
+		</section>
+	</div>
+	<!-- modal -->
+	<div class="s-modal s-effect-1" id="addModal">
+		<div class="m-content">
+			<div class="m-title">
+				<span id="s-Mtitle" class="m-txt">添加指标预警</span>
+				<span class="m-close m-close-icon" >
+					<i  class="fa fa-times fa-lg"></i>
+				</span>
+			</div>
+			<div class="m-action">
+
+				<div class="m-set">
+					<div class="sel-item">
+						<p class="s-title">智能预警:</p>
+						<label class="s-switch-2">
+								<input type="checkbox" class="warn-switch" checked="checked" name="warning">
+								<span class="switch-ball"></span>
+								    	</label>
+					</div>
+					<div class="sel-item">
+						<p class="s-title"><b class="inp-tip">*</b>指标名称:</p>
+						<div class="s-comboBox" id="zbTree">
+						
+						</div>
+					</div>
+					<div class="sel-item">
+						<div class="sel-item">
+							<p class="s-title"><b class="inp-tip">*</b>机构维度:</p>
+							<div class="s-comboBox" id="orgTree">
+							
+							</div>
+						</div>
+						<div class="sel-item " id="j-dimBox">
+							
+						</div>
+					</div>
+					<div class="sel-item g-calendar">
+						<p class="s-title">时间范围:</p>
+						<div >
+							<span class="time-inpbox calendar-time">
+								<span class="calendar-inp-icon"><i class="fa fa-calendar">&nbsp;</i></span>
+								<input type="text" id="viewShowTime"  read="read"  class="calendar-inpTxt s-inp" readonly="readonly" >
+							</span>
+							<div class="dataTime" id="dataTime"></div>
+						</div>
+					</div>
+					<div class="sel-item set-condition">
+						<p class="s-title">触发条件:</p>
+						<span>指标数据&nbsp;&nbsp;</span>
+						<div >
+							<select name="warnCon" id="warnCon" class="m-select">
+								<option value="1" selected="selected">高于</option>
+								<option value="2">低于</option>
+							</select>
+						</div>
+						<div style="padding-left: 12px;">
+							<input type="text" placeholder="指标值.." value="" required="required" class="s-inp num-valid no-fill" id="warnVal" pattern="^0\.[0-9]+|^[1-9]\d*\.?\d*">
+						</div>
+						<span>&nbsp;&nbsp;预警提醒！</span>
+					</div>
+					<div class="sel-item">
+						<p class="s-title">预警级别:</p>
+					    <div>
+					        <span><input type="radio" class="warnlev s-radio" name="warnlev" checked="checked" value="1"><label>一级</label></span>
+					        <span><input type="radio" class="warnlev s-radio" name="warnlev" value="2"><label>二级</label></span>
+					        <span><input type="radio" class="warnlev s-radio" name="warnlev" value="3"><label>三级</label></span>
+					    </div>
+					</div>
+					<div class="sel-item">
+						<div class="sel-item">
+							<p class="s-title">预警方式:</p>
+							  <div>
+						        <span><input type="radio" class="s-radio warnType" name="warnType" checked="checked" value="1"><label>短信提醒</label></span>
+						        <span><input type="radio" class="s-radio warnType" name="warnType" value="2"><label>平台提醒</label></span>
+						    </div>
+						</div>
+						<div class="sel-item" >
+							<p class="s-title"><b class="inp-tip">*</b>收件人:</p>
+							<div class="s-comboBox u-drop-up" id="userTreeCombobox">
+							
+							</div>
+						</div>
+					</div>
+					<div class="sel-item" >
+						<p class="s-title"><b class="inp-tip">*</b>提醒内容:</p>
+						<div class="s-comboBox u-drop-up" id="messageCombox">
+						
+						</div>
+						<p id="j-mesageTemp" class="j-mesageTemp"><b>自定义短信模板</b></p>
+					</div>
+				</div>
+				<div class="m-set g-message" id="g-message">
+					<div class="optBox">
+						<div class="m-back">
+							<button class="s-btn s-spread" id="j-back">
+									<i class="fa fa-undo "></i>
+									<span>返回</span>
+								</button>
+						</div>
+						<div class="btnBox">
+								<button class="s-btn s-borIn j-handle" sign="j-add">
+									<i class="fa fa-commenting-o "></i>
+									<span> 新 增 </span>
+								</button>
+							<button class="s-btn s-sacnite j-handle" sign="j-del"><i class="fa fa-trash fa-lg"></i></button>
+						</div>
+					</div>
+					<div class="easy-tabBox" style="width:100%;height:360px" id="g-tabMessageBox">
+							<table id="g-tabMessage" class="easy-tab" style="width:100%;height:100%"></table>
+					</div>
+				</div>
+				
+				
+			</div>
+			<div class="m-foot">
+				<button class="s-btn s-borOut" id="addMBtn">确 定</button>
+				<span>&nbsp;&nbsp;&nbsp;</span>
+				<button class="s-btn  m-close s-dashBtn" >取 消</button>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 提示modal -->
+	<div class="s-modal s-tip s-effect-1" id="confirm-MView" >
+		<div class="m-content" >
+			<div class="m-title">
+				<span class="m-txt">提示</span>
+				<span class="m-close m-close-icon" >
+					<i  class="fa fa-times fa-lg"></i>
+				</span>
+			</div>
+			<div class="m-action">
+				<p class="tip-txt" id="tipText">
+				<i class="fa fa-question-circle-o fa-lg">&nbsp;&nbsp;</i>
+				<span> 确认删除吗？ </span>
+				</p>
+			</div>
+			<div class="m-foot">
+				<button class="s-btn s-spread" id="confirmBtn">确定</button>
+				<span>&nbsp;&nbsp;&nbsp;</span>
+				<button class="s-btn  s-dashBtn m-close" >取消</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="s-md-overlay"></div>
+	<div class="g-tip-toast" id="tipToast"></div>
+	
+	<script src="assert/js/jquery.min.js"></script>
+	<script src="assert/js/jquery.easyui.min.js"></script>
+	<script type="text/javascript">
+     	 window.jsp_config = window.parent.jsp_config;
+    </script>
+<script type="text/javascript" src="js/manifest.min.js"></script><script type="text/javascript" src="js/vendor.chunk.js"></script><script type="text/javascript" src="js/kpiWarning.chunk.js"></script></body>
+</html>
