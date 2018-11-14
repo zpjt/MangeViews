@@ -77,11 +77,14 @@ class View {
 
 	renderViewOpt1(){
 
-		const poitionClass = this.borderType === "2" ? "border3-opt" : "";	
+		const poitionClass = "";	
+	//	const poitionClass = this.borderType === "2" ? "border3-opt" : "";	
 
 		const refreshArr = ["table","chart"];
 
 		const str =  refreshArr.includes(this.viewType) && `<span class="fa fa-file-excel-o view-btn" sign="excel" title="导出excel"></span><span class="fa fa-filter view-btn" sign="filter" title="筛选"></span><span class="fa fa-refresh view-btn" sign="refresh" title="刷新"></span>` || "" ;
+
+		const imgstr = this.viewType ==="chart" && `<span class="fa fa-file-image-o view-btn" sign="image" title="导出图片"></span>` || "";
 		
 		const filterStr = this.viewType!=="editView" && `` || "" ;
 
@@ -91,7 +94,7 @@ class View {
 					</div>
 	        		<div class="view-btns" echo-id="${this.id}" echo-index="${this.index}">
 						<span class="fa fa-expand view-btn" sign="expand" title="最大化"></span>
-						<span class="fa fa-file-image-o view-btn" sign="image" title="导出图片"></span>
+						${imgstr}
 						${str}
 					</div>
 	        	</div>`;
@@ -101,7 +104,9 @@ class View {
 	renderViewOpt2(){
 
 		const refreshArr = ["table","chart"];
-		const poitionClass = this.borderType === "2" ? "border3-opt" : "";	
+	
+		const poitionClass =  "";	
+	
 		const filterStr = refreshArr.includes(this.viewType) && `<span class="fa fa-filter view-btn" sign="filter" title="筛选"></span>` || "" ;
 
 

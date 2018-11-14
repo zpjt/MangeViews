@@ -190,8 +190,6 @@ class  Border{
 									<desc>大菱形右</desc>
 									<rect x="${205+(this.w-1)*100}" y="0" width="30" height="10" />
 							    </g>
-									<image xlink:href="./img/view_bg1.png" ></image>
-									
 							</defs>
 
 							<g transform="translate(10 10)" >
@@ -201,7 +199,7 @@ class  Border{
 									<polygon id="shape"  fill="#d2ebf0" class="shade" stroke="" points="${this.getPath().join(" , ")}"  />
 								</g>
 
-									<polygon   fill="none" filter="url(#blur${id})" stroke-width="4" stroke="#d2ebf0" points="${this.getPath().join(" , ")}"  />
+									<polygon   fill="#5c90b275" filter="url(#blur${id})" stroke-width="4" stroke="#d2ebf0" points="${this.getPath().join(" , ")}"  />
 
 								<g fill="#95d3df">
 									<use xlink:href="#angle${id}"/>
@@ -234,13 +232,13 @@ class  Border{
 					                  <stop offset="1" stop-color="#3fbccf"/>
 					              	</linearGradient>
 					              	<g id="border${id}">
-										<polygon   points="${this.getPath().join(" , ")}"  
+										<polygon  fill="" points="${this.getPath().join(" , ")}"  
 										/>
 					              	</g>
 							</defs>
 
 							<g transform="translate(10 10)" stroke="url(#line${id})" stroke-width="5" >
-									<use xlink:href="#border${id}" fill="none"/>
+									<use xlink:href="#border${id}" fill="#5c90b275"/>
 									<defc>三角形</defc>
 									<path  fill="none" d="M 0 0 L 50 0 L 0 50 Z"  />
 									<defc>斜线</defc>
@@ -282,7 +280,7 @@ class  Border{
 							</defs>
 
 							<g transform="translate(10 10)" stroke="url(#line${id})" stroke-width="3" fill="none">
-									<use xlink:href="#border${id}" />
+									<use xlink:href="#border${id}" fill="#5c90b275"/>
 									<defc>标题</defc>
 									<use xlink:href="#title${id}" />
 									<use xlink:href="#radius${id}"  />

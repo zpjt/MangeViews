@@ -4,7 +4,6 @@ import {api } from "api/editTemplate.js";
  * 指标树组件
  */
 
-console.log(3);
 class ZbComponent {
 	// 注意 表格 id:3 是指标，图形id：3是维度
 	static wd_arr_common = [
@@ -73,6 +72,40 @@ class ZbComponent {
 		}
 		return node;
 	}
+
+	/**
+	 * [重新加载XY轴，注意饼图只有X选择]
+	 * @return {[type]} [description]
+	 */
+	relaodXYCombo(viewSetModal,specialWd,yAxisData,commonObj){
+
+		viewSetModal.wd_arr = specialWd; // 用于在 viewSetModal类里使用
+		
+		if(commonObj){//是修改回填
+						
+		
+			let yData ,xData ;
+			if(viewSetModal.viewType !== "pie"){
+				const {xAxis,yAxis} = commonObj ;
+				yData = yAxisData.filter(val=>!xAxis.includes(val.id));
+				xData = viewSetModal.wd_arr.filter(val=>!yAxis.includes(val.id))
+		
+			}else{
+				yData = yAxisData;
+				xData = viewSetModal.wd_arr;
+			}
+
+			viewSetModal.yAxis.loadData(yData);
+			viewSetModal.xAxis.loadData(xData);
+			this.setCommonVal(commonObj,viewSetModal);
+	
+		}else{//是新建
+
+			viewSetModal.yAxis.loadData(yAxisData);
+			viewSetModal.xAxis.loadData(viewSetModal.wd_arr);
+		}
+
+	}
 	/**
 	 * [classifyZb description]
 	 * @param  {[type]} kpi          [选择的指标id]
@@ -84,6 +117,7 @@ class ZbComponent {
 				time_id：开始时间,}，orgs:科室，主题维度下拉框值：pubDimValue]
 	 * @return {[type]}              [description]
 	 */
+	
 	classifyZb(kpi, values,viewSetModal,dimVals=[],commonObj) {
 
 		api.GroupKpiByDim({
@@ -96,144 +130,77 @@ class ZbComponent {
 
 				const dimArr = Object.keys(res);
 				const excelDim_2 = [];
+
 				const publicDim = dimArr.length === 1 && dimArr[0] !== "dim_2" && true || false;
+
+				console.log({publicDim});
+
 
 				this.publicDim = publicDim;
 				this.publicDimArr = dimArr;
 				this.isOneZb = kpi.length > 1;
 
-				//获取分类好了的指标数组
-				const zbObj = !publicDim && dimArr.map((key) => {
-					const dimId = key.split("_")[1];
-					const zbArr = values.filter(node => {
-						return res[key].includes(node.kpi_id);
-					});
-
-					let dimName = null;
-
-					if (dimId != "2") {
-						const dimWd = this.findDimData(dimId);
-						dimName = dimWd.dim_name;
-					}
-
-					const dimItem = zbArr.map(val => this.renderZb(val, {
-						key,
-						dimName
-					}));
-
-					return `<div class="dim-item" dim-id="${dimId}" dim-name="${dimName}">
-										${dimItem.join("")}
-							  </div>`;
-				}) || values.map(val => this.renderZb(val, {
-					key: "dim_2",
-					dimName: ""
-				}));
-
-
-				const htmlStr = !publicDim ? zbObj.join("") : `<div class="publicDim dim-item" >${zbObj.join("")}</div>`;
-
 				// 只有table 类型的x轴维度才可以选择指标
-				
 				const specialWd = viewSetModal.viewType === "table" ?
-				   
-				     [...wd_arr_common, {
-											"id": "3",
-											"text": "指标"
-										}, {
-											"id": "4",
-											"text": "维度值"
-										}] :
-				     [...wd_arr_common, {
-											"id": "3",
-											"text": "维度值"
-										}];
-
-
-				// 公共维度下拉框
-				if (publicDim) {
+				     [...wd_arr_common, {"id": "3", "text": "指标"}, {"id": "4", "text": "维度值"}] :
+				     [...wd_arr_common, { "id": "3", "text": "维度值" }];
 				
+				let yAxisData = viewSetModal.viewType !== "table" ?
+					 this.isOneZb ? [{"id":"4","text":"指标"}] : [...specialWd,{"id":"4","text":"指标"}]
+					 : specialWd;
+
+				//获取分类好了的指标数组
+				let htmlStr;
+				
+				if(!publicDim){
+					const zbObj = dimArr.map((key) => {
+					
+								const dimId = key.split("_")[1];
+								const zbArr = values.filter(node => {
+									return res[key].includes(node.kpi_id);
+								});
+
+								let dimName = null;
+
+								if (dimId != "2") {
+									const dimWd = this.findDimData(dimId);
+									dimName = dimWd.dim_name;
+								}
+
+								const dimItem = zbArr.map(val => this.renderZb(val, {key, dimName}));
+
+								return `<div class="dim-item" dim-id="${dimId}" dim-name="${dimName}">
+													${dimItem.join("")}
+										  </div>`;
+					});
+					 htmlStr = zbObj.join("") ;
+
+				 	 this.publicDimEl.hide();
+					 specialWd.pop();//去掉维度值选项
+					 this.relaodXYCombo(viewSetModal,specialWd,yAxisData,commonObj);//重新加载下拉框
+				
+				}else{
+					const zbObj = values.map(val => this.renderZb(val,{key:"dim_2", dimName: ""}));
+					 htmlStr = `<div class="publicDim dim-item" >${zbObj.join("")}</div>`;
+
 					const dimId = dimArr[0].split("_")[1];
 					const dImNode = this.findDimData(dimId);
 					viewSetModal.dimWd.loadData(dImNode.sub);
 					viewSetModal.dimWd.clearValue();
-					viewSetModal.wd_arr = specialWd; // 用于在 viewSetModal类里使用
 
-					let yAxisData = viewSetModal.viewType !== "table" ?
-					 this.isOneZb ? [{"id":"4","text":"指标"}] : [...specialWd,{"id":"4","text":"指标"}]
-					 : specialWd;
-
-					
-					/*viewSetModal.yAxis.loadData(yAxisData);
-					viewSetModal.xAxis.loadData(viewSetModal.wd_arr);*/
-				
-
-					if(commonObj){
-
-						const {xAxis,yAxis} = commonObj ;
-						const yData = yAxisData.filter(val=>!xAxis.includes(val.id));
-						const xData = viewSetModal.wd_arr.filter(val=>!yAxis.includes(val.id))
-
-						viewSetModal.yAxis.loadData(yData);
-						viewSetModal.xAxis.loadData(xData);
-					
-					
-						this.setCommonVal(commonObj,viewSetModal);
-					}else{
-
-						viewSetModal.yAxis.loadData(yAxisData);
-						viewSetModal.xAxis.loadData(viewSetModal.wd_arr);
-							//viewSetModal.yAxis.clearValue();
-							//viewSetModal.xAxis.clearValue();
-							
-					}
+					this.relaodXYCombo(viewSetModal,specialWd,yAxisData,commonObj);//重新加载下拉框
 
 					this.publicDimEl.show();
 					this.publicDimEl.attr("dim-id",dimId);
 					this.publicDimEl.attr("dim-name",dImNode.dim_name);
 
-				} else {
-					this.publicDimEl.hide();
-
-					specialWd.pop();
-					const AxisData = specialWd;
-
-					let yAxisData =viewSetModal.viewType !== "table" ? 
-					this.isOneZb  ? [{"id":"4","text":"指标"}] : [...specialWd,{"id":"4","text":"指标"}]
-					 : specialWd;
-
-					viewSetModal.wd_arr = AxisData;
-				
-
-					/*viewSetModal.yAxis.loadData(yAxisData);
-					viewSetModal.xAxis.loadData( AxisData);*/
-				
-
-					if(commonObj){
-
-						const {xAxis,yAxis} = commonObj ;
-						const yData = yAxisData.filter(val=>!xAxis.includes(val.id));
-						const xData = viewSetModal.wd_arr.filter(val=>!yAxis.includes(val.id))
-
-						viewSetModal.yAxis.loadData(yData);
-						viewSetModal.xAxis.loadData(xData);
-					
-						this.setCommonVal(commonObj,viewSetModal);
-					}else{
-
-						viewSetModal.yAxis.loadData(yAxisData);
-						viewSetModal.xAxis.loadData( AxisData);
-				
-						//viewSetModal.yAxis.clearValue();
-				     	//	viewSetModal.xAxis.clearValue();
-					}
-					
 				}
+				
 
 				//渲染分类
 				this.selZbs.html(htmlStr);
-				
 				// 渲染每个有主题维度的指标下拉框
-				 this.renderDimBox(dimVals,dimArr);
+				this.renderDimBox(dimVals,dimArr);
 
 			} else {
 
@@ -244,6 +211,11 @@ class ZbComponent {
 
 		})
 	}
+	/**
+	 * [设置属性值，下拉框的]
+	 * @param {[type]} commonObj    [description]
+	 * @param {[type]} viewSetModal [description]
+	 */
 	setCommonVal(commonObj,viewSetModal){
 
 		const {xAxis,yAxis,orgs,time_start,time_id,pubDimValue} = commonObj;
@@ -255,58 +227,56 @@ class ZbComponent {
 
 			viewSetModal.yAxis.setValue(yAxis);
 			viewSetModal.xAxis.setValue(xAxis);
-
 			 sel_arr = xAxis.concat(yAxis);
-
 			 arr = ["1","2","3","4"].filter(val=>!sel_arr.includes(val));
 	
 		}else{
-
 			viewSetModal.yAxis.setValue(yAxis);
 			viewSetModal.xAxis.setValue(xAxis);
 
-			sel_arr = [xAxis,yAxis];
-
-
+			sel_arr = viewSetModal.viewType==="pie" && [xAxis] || [xAxis,yAxis];
 			 arr = ["1","2","3","4"].filter(val=>!sel_arr.includes(val));
 		}
 
 
 		const wd_id = viewSetModal.viewType === "table" ? "4" : "3" ;
-
-			arr.map(val=>{
-
-					switch (val) {
-						case "1": // 日历
-							viewSetModal.calendar.setTime([time_id]);
-							break;
-						case "2": //科室
-					//		viewSetModal.orgWd.selArr = []
-							viewSetModal.orgWd.setValue(orgs[0]);
-							break;
-						case wd_id:{ // 维度值
-							 pubDimValue.length && viewSetModal.dimWd.setValue(pubDimValue);
-							}
-							break;
-					}
-			});
-
-			sel_arr.map(val=>{
+		/**
+		 * arr：没有选择的维度 ，sel_arr：已经选择的维度
+		 * @param  {Array} arr [没有选的就是单选]
+		 * @return {[Array]} ，sel_arr    [选了的就是多选]
+		 */	
+		arr.forEach(val=>{
 
 				switch (val) {
 					case "1": // 日历
-						viewSetModal.calendar.changeStyle(2,[time_id,time_start]);
+						viewSetModal.calendar.setTime([time_id]);
 						break;
 					case "2": //科室
-						viewSetModal.orgWd.changeType(true,orgs);
+						viewSetModal.orgWd.setValue(orgs[0]);
 						break;
 					case wd_id:{ // 维度值
-					   	 viewSetModal.dimWd.config.multiply = true;
-						 viewSetModal.dimWd.setValue(pubDimValue);
+						 pubDimValue.length && viewSetModal.dimWd.setValue(pubDimValue);
 						}
 						break;
 				}
-		})
+		});
+	
+		sel_arr.forEach(val=>{
+
+			switch (val) {
+				case "1": // 日历
+					viewSetModal.calendar.changeStyle(2,[time_id,time_start]);
+					break;
+				case "2": //科室
+					viewSetModal.orgWd.changeType(true,orgs);
+					break;
+				case wd_id:{ // 维度值
+				   	 viewSetModal.dimWd.config.multiply = true;
+					 viewSetModal.dimWd.setValue(pubDimValue);
+					}
+					break;
+			}
+		});
 	}
 	
 	renderDimBox(dimVals,dimArr){
@@ -438,12 +408,9 @@ class ZbComponent {
 				yAxis:contrastDim,
 				pubDimValue:pubDimValue.map(val=>val.id)
 			};
-
-
-		}
-
+		};
+		// 设置指标树选中的
 		selID && this.zbTree.setValue(selID);
-
 
 		return {commonObj,dim_vals};
 	}
@@ -481,20 +448,28 @@ class ZbComponent {
 			self.modal.show($zbBox, "active");
 		});
 
+		/**
+		 * [删除已经选择的指标]
+		 */
+		this.selZbs.on("click", ".del-zb", function() {
+			const $this = $(this);
+			const zb = $this.closest(".zb-item-box");
+			const id = $this.parent().attr("echo-id");
+			self.zbTree.box.find(`.child-checkinp[value=${id}]`).click();
+			zb.remove();
+			self.sureBtnHandle(viewSetModal);
+		});
+
 
 		/**
 		 * [指标模态框操作]
 		 */
-		$("#zbOpt").on("click", "button", function() {
+		$("#zbOpt").on("click", ".s-btn", function() {
 
 			const index = $(this).index();
-
 			switch (index) {
-
 				case 0: //确定
-
 					self.sureBtnHandle(viewSetModal);
-
 					break;
 				case 1: // 取消
 					self.modal.close(self.zbBox, "active");

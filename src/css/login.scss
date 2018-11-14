@@ -57,7 +57,6 @@
 			}
 			.g-input{
 				$h:32px;
-				;
 				width:100%;
 				display:inline-block;
 				position: relative;
@@ -338,10 +337,12 @@ $screemMap:(
 
 .roate-container{
 	position: relative;
+	//margin-top: 8%;
 	/* margin: 0 auto; */
 	width: 559px;
 	height: 623px;
 	background: url(../img/roate-bg.png) no-repeat;
+    background-size: contain;
 	.screen-bg{
 		position: absolute;
 		left: 70px;
@@ -349,6 +350,7 @@ $screemMap:(
 		width: 462px;
 		height: 374px;
 		background-repeat: no-repeat;
+	    background-size: contain;
 		/*background-image: url(../img/screen-bg.png);*/
 		z-index: 99;
 	}
@@ -361,6 +363,7 @@ $screemMap:(
 		border-radius: 4px;
 		font-size: 0;
 		background: url(../img/icon-item.png) no-repeat;
+		background-size: contain;
 		z-index: 9;
 	}
 	.icon-roate-1,.icon-roate-2,.icon-roate-3,.icon-roate-4{

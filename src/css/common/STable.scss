@@ -1,7 +1,6 @@
 .s-tableBox{
 	position: relative;
 	color:white;
-	width:95%;
 	margin:auto;
 	height: 100%;
 	.s-table-title{
@@ -9,12 +8,13 @@
 		text-align: center;	
 	}
 	.tab-head{
-		//background:#2E4289;
 		background:#3996a7a1;
 		border-radius:4px 4px 0  0;
 	}
 	.table-body-wrap {
 		border-radius:0 0 8px  8px;
+		height: 100%;
+
 		tr:hover{
 			background:#72e9e2eb;
 		}

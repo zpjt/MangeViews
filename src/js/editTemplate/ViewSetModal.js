@@ -191,8 +191,8 @@ class ViewSetModal {
 	    this.viewStyleBoxTnit();
 	    this.upComboxStatus();
 		this.modal.show(this.setMd);
-		this.zbComponent.sureBtnHandle(this);
-	
+		this.zbComponent.zbTree.setValue([]);	
+		this.zbComponent.selZbs.html("");
 			
 	}
 
@@ -429,7 +429,7 @@ class ViewSetModal {
 								  <div>
 								        <span><input type="radio" ${roseTypeArr[0]} class="s-radio u-radio-sel" name="pie-style"  value="1"><label class="m-radio-icon u-pie-lab1"></label></span>
 								        <span><input type="radio" ${roseTypeArr[1]}  class="s-radio u-radio-sel" name="pie-style" value="2"><label class="m-radio-icon u-pie-lab2"></label></span>
-								         <span><input type="radio" ${roseTypeArr[2]} class="s-radio u-radio-sel" name="pie-style"  value="3"><label class="m-radio-icon u-pie-lab3"></label></span>
+								         <span><input type="radio" ${roseTypeArr[2]} class="s-radio u-radio-sel" checked="checked" name="pie-style"  value="3"><label class="m-radio-icon u-pie-lab3"></label></span>
 								        <span><input type="radio"  ${roseTypeArr[3]} class="s-radio u-radio-sel" name="pie-style" value="4"><label class="m-radio-icon u-pie-lab4"></label></span>
 								  </div>
 							</div>
@@ -739,12 +739,12 @@ class ViewSetModal {
 		let chartType = "",
 		    flagObj = null ,
 		    legend= $(".legend-place:checked").val(),
-		    isPubDimX = this.zbComponent.publicDimArr.length==1;
+		    isPubDimX = this.zbComponent.publicDimArr.length == 1;
 
 	    const style = $(".u-radio-sel:checked").val();
 
-
-    	const dimId = this.zbComponent.publicDimArr[0]!=="dim_2";
+    	// const dimId = this.zbComponent.publicDimArr[0]!=="dim_2";
+    	const dimId = this.zbComponent.publicDimArr.length === 1 ;
 
 	    const common = this.getCommonValue("chart",dimId);
 
@@ -879,6 +879,11 @@ class ViewSetModal {
 		// 模态框确定按钮操作
 		self.$viewSure.click(function() {
 
+			if(self.zbComponent.zbTree.selArr.length===0){
+				unit.tipToast("请选择指标！",2);
+				return ;
+			}
+
 			const noFill = $setMd.find(".no-fill:visible");
 			if(noFill.length){
 				unit.tipToast("请填完必填项！",2);
@@ -893,18 +898,6 @@ class ViewSetModal {
 				 $comboDrop.parent().removeClass("active");
 				 $comboDrop.hide();
 		    });
-		});
-
-		/**
-		 * [删除已经选择的指标]
-		 */
-		$setMd.on("click", ".del-zb", function() {
-
-			const $this = $(this);
-			const zb = $this.closest(".zb-item-box");
-			const id = $this.parent().attr("echo-id");
-			self.zbComponent.zbTree.box.find(`.child-checkinp[value=${id}]`).click();
-			zb.remove();
 		});
 	}
 }

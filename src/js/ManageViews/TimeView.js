@@ -39,8 +39,7 @@ class TimeView{
 	getItem(style,data,oIndex,newArr){
 		const zb = data[0];
 		const total = data.slice(1).reduce((total,cur)=>{
-			//const val = ~~cur;
-			const val = this.getRandom();
+			const val = ~~cur;
 			return total + val ;
 		},0);	
 		const num = this.numCount;

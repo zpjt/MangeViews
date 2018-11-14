@@ -369,42 +369,36 @@ class App{
 	}
 
 	Toimage(view){
-
 		const {viewTitle:title} = view ;
 
 		const $maxWindow = this.maxWindow ;
 
 		const is_max = !$maxWindow.is(":hidden");
 
-		 if(view.border){
-			
-			const $border = is_max && $maxWindow.find(".bgSvg") ||  view.border.box;
+
 			const $canvas = is_max && $maxWindow.find("canvas") || $(view.chart.Box).find("canvas");
-		  	const svgXml = $border.html();
-
-		  	const img1 = new Image();
-		  	const img2 = new Image();
 		  	const img3 = new Image();
-
-			
-		  	img1.src=`data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgXml)))}`;
-
-		   	img2.src=`./img/view_bg1.png`;
-		  
 		  	img3.src=$canvas[0].toDataURL('png');
 
+		  	const oWid = view.container.width();
+		  	const oHei = view.container.height();
 
-		  	const canvas = document.createElement("canvas");
-				  canvas.width=$border.width();
-				  canvas.height=$border.height();
-
-			const  context = canvas.getContext('2d');  //取得画布的2d绘图上下文
+			const canvas = document.createElement("canvas");
+				  canvas.width = oWid;
+				  canvas.height = oHei;
+			const context = canvas.getContext('2d');  //取得画布的2d绘图上下文
+		//		  context.fillRect(0,0,oWid,oHei);
+		if(view.border){
+			
+			const $border = is_max && $maxWindow.find(".bgSvg") ||  view.border.box;
+		  	const svgXml = $border.html();
+		  	const img1 = new Image();
+		  	img1.src=`data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgXml)))}`;
 
 			img1.onload=function(){
 				setTimeout(function(){
-					context.drawImage(img2, 0, 0);
 					context.drawImage(img1, 0, 0);
-					context.drawImage(img3, 0, $border.height()*0.05);
+					context.drawImage(img3, 0, oHei*0.05);
 				
 					const a = document.createElement('a');
 					document.body.appendChild(a);
@@ -415,6 +409,16 @@ class App{
 				
 				},1000);
 			};
+		}else{
+			setTimeout(function(){
+				context.drawImage(img3, 0, oHei*0.05);
+				const a = document.createElement('a');
+				document.body.appendChild(a);
+				a.href = canvas.toDataURL('image/png');  //将画布内的信息导出为png图片数据
+				a.download = title+".png";  //设定下载名称
+				a.click(); //点击触发下载
+				$(a).remove();
+			});
 		}
 
 	}
@@ -607,7 +611,6 @@ class App{
 					case "compress":
 
 						if(page.maxTimer){
-							console.log("qiangc");
 							clearInterval(page.maxTimer);
 						}
 				     	 

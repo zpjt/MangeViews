@@ -25,11 +25,14 @@ class STable {
 
 		const border = this.border;
 
-		const titleStr = border === "0" ? `<p class="s-table-title">${ chartName || ""}</p>` : "" ;
-		const top_add = border === "0" ? 0 :　30 ;
-		const bottom_add = border === "0" ? 10 :　0 ;
+		const titleStr = border === "0" && chartName ? `<p class="s-table-title">${chartName}</p>` : "" ;
+		const top_add = border === "0" && chartName ? 30 :　0 ;
+		const style = border === "0" ? "" : 'padding:35px 20px 30px;';
+		const bottom_add = border === "0" ? "" : 50;
+
+
 		const str =  `
-						<div  class="s-tableBox fix-tab ${tab_style !=="0" && "border-box"|| ""}" style="margin-top: ${top_add}px;">
+						<div  class="s-tableBox fix-tab ${tab_style !=="0" && "border-box"|| ""}" style="${style}">
 								${titleStr}
 								<div class="tab-head">
 									<table class="tab-list ">
@@ -49,21 +52,10 @@ class STable {
 					`
 		this.container.html(str);
 
-		console.log("33");
-
-		/*this.container.find(".table-body-wrap").niceScroll({
-            cursorcolor: "#ccc",//#CC0071 光标颜色
-            cursoropacitymax: 1, //改变不透明度非常光标处于活动状态（scrollabar“可见”状态），范围从1到0
-            touchbehavior: false, //使光标拖动滚动像在台式电脑触摸设备
-            cursorwidth: "10px", //像素光标的宽度
-            cursorborder: "0", // 	游标边框css定义
-            cursorborderradius: "8px",//以像素为光标边界半径
-            autohidemode: false //是否隐藏滚动条
-        });*/
 
         const wrap = this.container.find(".table-body-wrap");
 
-        const maxH = Math.floor(totalH - this.container.find(".tab-head").height() - 26 - top_add -bottom_add);
+        const maxH = Math.floor(totalH - this.container.find(".tab-head").height() - top_add - bottom_add);
         const is_overflow = maxH - wrap.children("table").height() < 0 ;
 
         if(is_overflow){
@@ -167,9 +159,7 @@ class STable {
 			
 			}else{
 
-				const _val = this.getRandom();
-
-				total.push(`<td>${_val}</td>`)	;	
+				total.push(`<td>${val}</td>`)	;	
 			}
 			return total ;
 

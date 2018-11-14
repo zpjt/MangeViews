@@ -416,7 +416,7 @@ class TimeRealMd{
 		/**
 		 * [指标模态框操作]
 		 */
-		$("#realZbOpt").on("click", "button", function() {
+		$("#realZbOpt").on("click", ".s-btn", function() {
 
 			const index = $(this).index();
 

@@ -79,34 +79,31 @@ class Chart {
 
 	pieConfig(res) {
 
-		console.log(res);
-
-		const {rowData,legend ,roseType} = res[0] ;
+		const {rowData,legend ,rowDataUnit,roseType} = res[0] ;
 
 		const data = rowData.map((val, index) => {
-
+		
+			const value = val != "--" && val || 0;
+			const unit = rowDataUnit[index];
+		
 			return {
 				"name": res[0].rowDimName[index],
-				//"value": val != "--" && val || 0,
-				value:this.getRandom(),
+				value,
+				unit,
 				selected: roseType % 2 !== 0 ,
 			}
 		});
 
 
+	   const startColor = ['#c487ee', '#05acff','#deb140', '#8171ff', '#05ffff','#49dff0',  '#6f81da', '#00ffb4'];
+		const endColor = ['#1296FB', '#09c1ff','#0088CC', '#05fcfb', '#ffa597','#00c4a5','#05ffff', '#ff6584'];
 
-
-		const startColor = ['#c487ee', '#deb140', '#49dff0', '#034079', '#6f81da', '#00ffb4'];
-		const endColor = ['#1296FB', '#0088CC', '#00c4a5', '#ea2e41','#05ffff', '#ff6584'];
-
-		//  color: ['#c487ee', '#deb140', '#49dff0', '#034079', '#6f81da', '#00ffb4'],
-
-		const borderStartColor = ['#05acff', '#ee36ff', '#05fcfb', '#ffa597'];
-		const borderEndColor = ['#09c1ff', '#8171ff', '#05ffff', '#ff6584'];
-
-
+		const colorleg = startColor.length - 1;
 
 		const RealData = data.map((val, index) => {
+
+			const oIndex = index % colorleg ;
+
 
 			const itemStyle = {
 				normal: {
@@ -118,10 +115,10 @@ class Chart {
 						y2: 1,
 						colorStops: [{
 							offset: 0,
-							color: startColor[index] // 0% 处的颜色
+							color: startColor[oIndex] // 0% 处的颜色
 						}, {
 							offset: 1,
-							color: endColor[index] // 100% 处的颜色
+							color: endColor[oIndex] // 100% 处的颜色
 						}],
 						globalCoord: true // 缺省为 false
 					},
@@ -130,30 +127,6 @@ class Chart {
 			return Object.assign({}, val, {
 				itemStyle
 			});
-		});
-
-		const borderData = data.map((val, index) => {
-
-			const itemStyle = {
-				normal: {
-					color: {
-						type: 'linear',
-						x: 0,
-						y: 0,
-						x2: 0,
-						y2: 1,
-						colorStops: [{
-							offset: 0,
-							color: borderStartColor[index] // 0% 处的颜色
-						}, {
-							offset: 1,
-							color: borderEndColor[index] // 100% 处的颜色
-						}],
-						globalCoord: false // 缺省为 false
-					},
-				}
-			};
-			return Object.assign({}, val, itemStyle);
 		});
 
 		const config = this.getLegendPosition(legend);
@@ -166,9 +139,6 @@ class Chart {
 			icon: 'circle', //形状
 			data: data,
 		});
-
-
-
 
 		const radius = roseType  < 3 &&  ["10%","60%"] || ['30%', '60%'] ;
 		const roseTypeStr = roseType % 2 === 0  ? true : false ;
@@ -200,100 +170,36 @@ class Chart {
 		                show: true,
 		                position: 'outside',
 		                color: '#ddd',
-		                formatter: function(params) {
-		                    var percent = 0;
-		                    var total = 0;
-		                    for (var i = 0; i < data.length; i++) {
-		                        total += data[i].value;
-		                    }
-		                    percent = ((params.value / total) * 100).toFixed(0);
-		                    if(params.name !== '') {
-		                        return params.name + '\n{white|' + '占比' + percent + '%}';
-		                    }else {
-		                        return '';
-		                    }
+		               formatter: function(params) {
+
+	                        return params.name + '\n{white|' + '占比:' +params.percent + '%}';
 		                },
 		                rich: rich
 		            },
 		            labelLine: {
 		             //   length:30,
-		            //    length2:100,
+		              //  length2:60,
 		                show: true,
+		                smooth:true,
 		                color:'#ffff'
 		            },
 					name: "",
 					data: RealData,
 					tooltip: {
-						formatter: "{b}: {c}"
+						formatter: function(item){
+
+							const {name,value,percent,data:{unit}} = item ;
+							let _unit  = unit !== "--" && unit || "" ;
+
+							return `<span>${name}：${value}</span>&nbsp;${_unit}`;
+						}
 					}
 				},
-				// 边框的设置
-				/*{
-					radius: ['31%', '36%'],
-					center: ['50%', '50%'],
-					type: 'pie',
-					label: {
-						normal: {
-							show: false
-						},
-						emphasis: {
-							show: false
-						}
-					},
-					labelLine: {
-						normal: {
-							show: false
-						},
-						emphasis: {
-							show: false
-						}
-					},
-					animation: false,
-					tooltip: {
-						show: false
-					},
-					data: borderData
-				},*/
-				// 中心的圆圈
-				/*{
-					radius: ['26%', '31%'],
-					center: ['50%', '50%'],
-					type: 'pie',
-					label: {
-						normal: {
-							show: false
-						},
-						emphasis: {
-							show: false
-						}
-					},
-					labelLine: {
-						normal: {
-							show: false
-						},
-						emphasis: {
-							show: false
-						}
-					},
-					tooltip: {
-						show: false
-					},
-					data: [{
-						value: 100,
-						name:'',
-						itemStyle: {
-							normal: {
-								color: '#0FC8FE',
-							}
-						}
-					}],
-					animation: false
-				}*/
 			]
 		};
 	}
 
-	getRandom(max = 1000) {
+	getRandom(max = 500) {
 
 		return Math.floor(Math.random() * (max - 80 + 1) + 80);
 
@@ -327,7 +233,7 @@ class Chart {
 						top: grid_top_add + 20 + "%",
 						left: left_add + 10 +"%",
 						right: "10%",
-						bottom: "16%",
+						bottom: "18%",
 						containLabel: false,
             			//width:"70%",
 					};
@@ -379,7 +285,7 @@ class Chart {
 						left: left_add + 30 +"%",
 						top: grid_top_add + 12 + "%",
 						right: "10%",
-						bottom: "16%",
+						bottom: "18%",
 						containLabel: false,
 					};
 
@@ -405,7 +311,7 @@ class Chart {
 						top: grid_top_add + 14 + "%",
 						right: "26%",
 						left: left_add + 10 +"%",
-						bottom: "14%",
+						bottom: "18%",
 						containLabel: false,
 					};
 
@@ -428,7 +334,7 @@ class Chart {
 						left: left_add + 10 +"%",
 						right: "10%",
 						top: grid_top_add + 12 + "%",
-						bottom: "14%",
+						bottom: "18%",
 						containLabel: false,
 					};
 
@@ -445,7 +351,6 @@ class Chart {
 			default:
 				break;
 		}
-
 
 	}
 
@@ -481,7 +386,7 @@ class Chart {
 		
 		const series = res.map((val, index) => {
 
-			const {contrastDimName, rowData } = val;
+			const {contrastDimName, rowData ,rowDataUnit} = val;
 
 			legendArr[index] = contrastDimName;
 		
@@ -500,10 +405,10 @@ class Chart {
 	            }
 			} || null;
 
-			/*const data = rowData.map(val=>{
+			const data = rowData.map(val=>{
 				return val != "--" && val || null ;
-			});*/
-			const data = rowData.map(val => this.getRandom());
+			});
+			
 
 			return {
 				name: contrastDimName,
@@ -618,10 +523,10 @@ class Chart {
 			legendArr[index] = contrastDimName;
 		
 			
-				/*const data = rowData.map(val=>{
+				const data = rowData.map(val=>{
 					return val != "--" && val || null ;
-				});*/
-				const data = rowData.map(val => this.getRandom());
+				});
+			
 
 				return {
 					name: contrastDimName,
@@ -753,9 +658,8 @@ class Chart {
 				contrastDimName
 			} = val;
 			legendArr[index] = contrastDimName;
-
 			return {
-				value: rowData.map(item=>this.getRandom()),
+				value: rowData.map(item=> item !="--" && item || ""),
 				name: contrastDimName
 			}
 		});
@@ -783,7 +687,7 @@ class Chart {
 			radar: [{
 				indicator: radar,
 				center: config.center,
-				radius: '55%',
+				radius: '60%',
 				shape: area === "1" && "polygon" ||"circle",
 				name: {
 					textStyle: {

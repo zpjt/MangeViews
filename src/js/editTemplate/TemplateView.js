@@ -527,7 +527,14 @@ class TemplateView  extends ChangeView {
 
 		if(!imgElArr.length){return true;}
 		const baseArr = Array.from(imgElArr).map(function(val){
-			return  val.src.split(",")[1];
+			
+			if(val.src.includes("data:image")){
+					return  val.src.split(",")[1];
+			}else{
+				return "";
+			}
+
+			
 		});
 
 		return  api.upload(baseArr).then(res=>{
@@ -536,7 +543,7 @@ class TemplateView  extends ChangeView {
 					Object.entries(res).forEach(item=>{
 						const [index,url] = item ;
 					
-						imgElArr.eq(+index).prop("src",url).addClass("has_url")
+						url && imgElArr.eq(+index).prop("src",url).addClass("has_url");
 					});
 
 					viewsMap.forEach((value,key)=>{
@@ -545,7 +552,7 @@ class TemplateView  extends ChangeView {
 						if(type === "editView"){
 							value.viewData = $(key).find(".editView_main").html();
 						}
-					})
+					});
 
 				}
 				return !!res ;
