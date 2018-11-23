@@ -157,6 +157,7 @@ class Chart {
 			tooltip: {
 				show: true,
 				trigger: 'item',
+				confine:true,
 			},
 			roseType:roseTypeStr,
 			legend:legendObj,
@@ -490,6 +491,7 @@ class Chart {
 			color:['#1a9bfc', '#99da69','#01babc',"#5c8d89"],
 			tooltip: {
 				trigger: 'axis',
+				confine:true,
 				axisPointer: {
 					lineStyle: {
 						color: '#ddd'
@@ -575,6 +577,7 @@ class Chart {
 			grid:gridObj,
 			tooltip: {
 				padding: 10,
+				confine:true,
 				backgroundColor: '#222',
 				borderColor: '#777',
 				borderWidth: 1,
@@ -681,7 +684,8 @@ class Chart {
 		return {
 			color: ["#1296FB", "#8FD6FA", "#0088CC", "#06B76A", "#CBC450", "#FD8D1D"],
 			tooltip: {
-				trigger: 'axis'
+				trigger: 'axis',
+				confine:true,
 			},
 			legend:legendObj,
 			radar: [{

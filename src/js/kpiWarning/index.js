@@ -109,7 +109,7 @@ class Table extends EasyUITab{
 				{
 					field: 'optBtn',
 					title: '操作',
-					align:"center",
+					align:"left",
 					width: "12%",
 					formatter: function(val, rowData,index) {
 						
@@ -222,6 +222,7 @@ class MessageTab extends EasyUITab{
     }
 
 	tabConfig(idField){
+		const $messageTab = this.tab; 
 		return {
 			idField:idField,
 			tabId:"#g-tabMessageBox",
@@ -230,8 +231,8 @@ class MessageTab extends EasyUITab{
 			}),
 		    onAfterEdit:function(rowIndex, rowData, changes){
 
+		    	
 		    	const has_change = Object.keys(changes);
-
 		    	if(!has_change.length){
 					return ;
 		    	}
@@ -250,14 +251,14 @@ class MessageTab extends EasyUITab{
 				[{
 					field: 'model_name',
 					title: '模板名称',
-					editor:"textbox",
+					editor:"text",
 					width: "25%",
 				}, 
 				{
 					field: 'model_text',
 					title: '模板内容',
 					width: "55%",
-					editor:"textbox",
+					editor:"textarea",
 					formatter:function(val,rowData){
 						
 						return `<b>${val}</b>`;
@@ -314,16 +315,9 @@ class MessageTab extends EasyUITab{
 
 					break;
 				}
-				case "pre":{
-
-
-					break;
-					}
 				default:
 					break;
 			}
-
-
 
 		});
     }
@@ -379,14 +373,14 @@ class AddModal{
 
 		 $(".warnlev").eq(+alarm_level - 1).prop("checked",true);
 		 $(".warnType").eq(+alarm_type - 1).prop("checked",true);
-
-		 this.messageCombox.setValue(model_id);
 		 
 		 const ids = senduser.map(val=>val.send_user_id);
-		 this.userTreeCombo.setValue(ids);
 
 		 $addModal.find(".no-fill").removeClass("no-fill");
 
+ 		 model_id !== "null" ? this.messageCombox.setValue(model_id) : this.messageCombox.clearValue();
+
+ 		  this.userTreeCombo.setValue(ids);
 		 page.modal.show($addModal);
 	}
 
@@ -693,12 +687,17 @@ class AddModal{
 
 			switch(sign){
 				case 'j-add':{
-					
+
+					if(_self.messageTab.tabBox.find("textarea").length){
+						page.unit.tipToast("请提交正在编辑的模板，再创建！",2);
+						return ;
+					}
+
 					const count = $messageTab.datagrid("getRows").length;
 
 					 $messageTab.datagrid("appendRow", {
 						  "model_name": "模板X",
-        				  "model_text": "XXXXX",
+        				  "model_text": "",
         				  "id":"",
 					 })
  					 .datagrid('selectRow', count)
@@ -707,18 +706,29 @@ class AddModal{
 				}
 				break;
 				case 'j-del':{
+					
+					
 					const ids =$.map($gMessage.find(".checkSingle:checked"),function(val){
 						return {id:val.value};
-					}) ;
+					});
+
+					if(!ids[ids.length-1].id){
+						ids.pop();
+						const last = $messageTab.datagrid("getRows").length-1;
+						$messageTab.datagrid("deleteRow", last);
+					};
+
+
+
 					if(!ids.length){ return };
 					api.deleteAlarmModel(ids).then(res=>{
-											if(res){
-												page.unit.tipToast("删去成功！",1);
-												_self.getAllAlarmModel();
-											}else{
-												page.unit.tipToast("删去失败！",0);
-											}
-										});
+								if(res){
+									page.unit.tipToast("删去成功！",1);
+									_self.getAllAlarmModel();
+								}else{
+									page.unit.tipToast("删去失败！",0);
+								}
+					});
 				}
 				break;
 				case 'j-edit':{
@@ -733,10 +743,17 @@ class AddModal{
 				  
 				   }else{
 
+				     	const editorText = $messageTab.datagrid("getEditor", {index,field:"model_text"});
+				     	const editorName = $messageTab.datagrid("getEditor", {index,field:"model_name"});
+				     
+				     	if(!editorText.actions.getValue(editorText.target).trim() || !editorName.actions.getValue(editorName.target).trim()){
+				     		page.unit.tipToast("填写的内容不能为空！",0);
+				     		return ;
+				     	}
+
 				    	sEditStr =`<i class="fa fa-edit"></i><span>编辑</span>`;
 						$this.removeClass("s-editing");
 						$messageTab.datagrid("endEdit", index);
-							
 				    }
 				   
 				    $this.html(sEditStr);

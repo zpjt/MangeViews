@@ -8,6 +8,8 @@ import {
 import {SCombobox,Calendar,SComboTree} from "js/common/Unit.js";
 import {View } from "js/ManageViews/view.js";
 
+const ENV_SRC = window.jsp_config.resourse  ? "index/lists/" : "./" ;
+
 /**
  * 头部组件
  */
@@ -146,7 +148,9 @@ class HeadOpt {
 					if (state) {
 						val.attributeObj.viewID = id;
 					} else {
-						unit.tipToast(object.chartName + "保存失败,请稍后重新再保存！", 0);
+
+						const title = object.chartName && ('“' +object.chartName+'”') || "" ;
+						unit.tipToast(    title + "保存失败,请稍后重新再保存！", 0);
 					}
 					return state;
 				});
@@ -283,7 +287,10 @@ class HeadOpt {
 			$slide.animate({
 				"width": width
 			}, 500, function() {
-				window.history.back();
+				const layout_id = _self.config.viewDetail.layout_id;
+				const src = ENV_SRC + "szViews.html?layout_id="+layout_id;
+				//window.location.href=src ;
+				$("#routerConter",window.parent.document).html(`<iframe frameborder="0" id="router" name="myFrameName" src="${src}"></iframe>`);
 				$head.removeClass("no-head");
 			});
 		});

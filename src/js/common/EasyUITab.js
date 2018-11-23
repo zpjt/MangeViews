@@ -29,6 +29,7 @@ class EasyUITab {
 			obj.onAfterEdit = tabObj.onAfterEdit;
 		}
 
+
 		$el.datagrid(obj);
 	}
 	checkAll(events,tabId){
@@ -77,7 +78,7 @@ class EasyUITab {
 								const  status = disableCheck && disableCheck(rowData) ? "dis-check" :"checkSingle" ;
 
 								const disable = status === "dis-check" && "disabled" || "" ;
-								const tip = status === "dis-check" && "禁止选择" || "" ;
+								const tip = status === "dis-check" && "禁止删除,该文件夹里包含内容！" || "" ;
 
 
 								return  `<div class="tab-checkbox">

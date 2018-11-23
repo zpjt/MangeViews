@@ -133,7 +133,6 @@ class ZbComponent {
 
 				const publicDim = dimArr.length === 1 && dimArr[0] !== "dim_2" && true || false;
 
-				console.log({publicDim});
 
 
 				this.publicDim = publicDim;

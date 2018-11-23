@@ -173,6 +173,7 @@ $borderWidth:1px;
 	$radisu:22px;
 	position: relative;
 	cursor: pointer;
+	height: 30px;
 	input{
 		display:none;
 	}
@@ -251,33 +252,39 @@ $borderWidth:1px;
 }
 
 /* 动画radio */
-.s-radio{
-	appearance:none;
-	border: 2px solid #4caf50;
-	width: 20px;
-	height: 20px;
-	border-radius:50%;
-	position: relative;
-    vertical-align: -0.7rem;
-    cursor: pointer;
-    display: inline-block;
-    margin: .4rem;
-    outline: none;
-    &:after{
-    	content: "";
-	    display: block;
-	    width: 10px;
-	    height: 10px;
-	    border-radius: 50%;
-	    transform:  scale(0) ;
-	    margin:3px;
-	    transition: all ease-out 250ms;
-    }
-    &:checked:after{
-    	transform: scale(1);
-    	background: #4caf50;
-    }
+.s-radio-box{
+	display: inline-flex;
+    align-items: center;
+	 margin-right: 10px;
+	.s-radio{
+		appearance:none;
+		border: 2px solid #4caf50;
+		width: 20px;
+		height: 20px;
+		border-radius:50%;
+		position: relative;
+	    cursor: pointer;
+	    display: inline-block;
+	    margin-right: 8px;
+	    outline: none;
+	    &:after{
+	    	content: "";
+		    display: block;
+		    width: 10px;
+		    height: 10px;
+		    border-radius: 50%;
+		    transform:  scale(0) ;
+		    margin:3px;
+		    transition: all ease-out 250ms;
+	    }
+	    &:checked:after{
+	    	transform: scale(1);
+	    	background: #4caf50;
+	    }
+	}
+
 }
+
 
 /* 下拉框 */
 .s-comboBox{

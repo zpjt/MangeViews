@@ -14,15 +14,17 @@ class App{
 
 	constructor(){
 
-		const fatherWin = window.parent ;
-		this.layout_id = fatherWin.menuID;
-		this.layoutName = fatherWin.menuName;
+		
+		this.layout_id = "";
+		this.layoutName = "";
 		this.app = $("#app");
 		this.maxWindow = $("#maxWindow");
 		this.timeBox = $("#g-timeContent");
 
 		this.maxTimer = null ;
 		this.maxView = null ;
+
+		this.getPre();
 
 		this.unit = new  Unit();
 
@@ -34,7 +36,7 @@ class App{
 
 
 	init(){
-		this.getPre();
+		
 		this.renderModal();
 		this.initHead();
 		this.initCalarder();
@@ -97,10 +99,14 @@ class App{
 	}
 
 	getPre(){
-		
-		 window.location.search.includes("pre") && this.app.append(`<span class="backManage" id="back"><i class="fa fa-chevron-circle-left " ></i></span>`);
 
-				
+		const data = window.location.search.split("&");
+		this.layout_id = data[0].split("=")[1] ;
+		this.layoutName = decodeURI(data[1].split("=")[1]);
+
+		if(data[2]){
+			this.app.append(`<span class="backManage" id="back"><i class="fa fa-chevron-circle-left " ></i></span>`);
+		}
 	}
 
 	IntervalreFresh(type,view,viewData){
@@ -180,18 +186,13 @@ class App{
 
 				
 				if(res.modelData){
-					const model = res.model.replace(/draggable="true"/,"");
+					const model = res.model.replace(/draggable="true"/g,"");
 					$("#viewsContent").html(model);
-
-
-					
 					
 					const url = $("#viewTemplate").css("backgroundImage");
 					this.maxWindow.css("backgroundImage",url);
 
-
 					const modelData = JSON.parse(res.modelData);
-
 					modelData.filter(val=>val.viewID).map((val,index)=>{
 
 						(function(item,_val){
@@ -203,9 +204,7 @@ class App{
 						})(index,val);
 					});
 				}else{
-
-					console.log("该视图已经不存在！");
-				
+					this.unit.tipToast("该视图模板已经不存在！",2);
 				}
 		});
 	}
@@ -213,23 +212,25 @@ class App{
 	MaxView(config){
 
 		const {borderType,option,index,viewTitle,viewType,id} = config;
-		const poitionClass = borderType == "2" ? "border3-opt" : "";	
 
 		const $maxWindow = this.maxWindow ;
 		const borderStr = borderType === "0" ? "" : ` <div class="bgSvg"></div>` ;
+		const arr = ["table","chart"];
+		const funBtnStr = arr.includes(viewType) &&  `<span class="fa fa-file-excel-o view-btn" sign="excel" title="导出excel"></span><span class="fa fa-file-image-o view-btn" sign="image" title="导出图片"></span>` || "";
+
 		const templateStr=`
 							<div class="view-item" echo-id="max" style="width:100%;height:100%;">
 						       ${borderStr}
 						        <div class="view-content" >
-						        	<div class="view-optBox ${poitionClass}" >
+						        	<div class="view-optBox" >
 						        		<div class="btn-handle">
 											<span class="fa fa-bars" ></span>
 										</div>
 						        		<div class="view-btns" echo-id="${id}" echo-index="${index}">
 											<span class="fa fa-compress view-btn" sign="compress" title="最小化"></span>
-											<span class="fa fa-file-excel-o view-btn" sign="excel" title="导出excel"></span>
-											<span class="fa fa-file-image-o view-btn" sign="image" title="导出图片"></span>
+											${funBtnStr}
 										</div>
+										
 						        	</div>
 						            <div class="view_main ${viewType}_main"></div>
 						        </div>
@@ -370,57 +371,39 @@ class App{
 
 	Toimage(view){
 		const {viewTitle:title} = view ;
-
 		const $maxWindow = this.maxWindow ;
-
 		const is_max = !$maxWindow.is(":hidden");
 
+		const echartsDom = is_max && $maxWindow.find(".chart_main")[0] || view.chart.Box;
 
-			const $canvas = is_max && $maxWindow.find("canvas") || $(view.chart.Box).find("canvas");
-		  	const img3 = new Image();
-		  	img3.src=$canvas[0].toDataURL('png');
+		const echartInstance = echarts.getInstanceByDom(echartsDom);
 
-		  	const oWid = view.container.width();
-		  	const oHei = view.container.height();
+		const options = echartInstance.getOption();
 
-			const canvas = document.createElement("canvas");
-				  canvas.width = oWid;
-				  canvas.height = oHei;
-			const context = canvas.getContext('2d');  //取得画布的2d绘图上下文
-		//		  context.fillRect(0,0,oWid,oHei);
-		if(view.border){
-			
-			const $border = is_max && $maxWindow.find(".bgSvg") ||  view.border.box;
-		  	const svgXml = $border.html();
-		  	const img1 = new Image();
-		  	img1.src=`data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgXml)))}`;
+		const configArr = ["4","7"];
 
-			img1.onload=function(){
-				setTimeout(function(){
-					context.drawImage(img1, 0, 0);
-					context.drawImage(img3, 0, oHei*0.05);
-				
-					const a = document.createElement('a');
-					document.body.appendChild(a);
-					a.href = canvas.toDataURL('image/png');  //将画布内的信息导出为png图片数据
-					a.download = title+".png";  //设定下载名称
-					a.click(); //点击触发下载
-					$(a).remove();
-				
-				},1000);
-			};
-		}else{
-			setTimeout(function(){
-				context.drawImage(img3, 0, oHei*0.05);
-				const a = document.createElement('a');
-				document.body.appendChild(a);
-				a.href = canvas.toDataURL('image/png');  //将画布内的信息导出为png图片数据
-				a.download = title+".png";  //设定下载名称
-				a.click(); //点击触发下载
-				$(a).remove();
+		if(configArr.includes(view.chart.type)){
+			options.series.forEach(val=>{
+				val.label.show = true;
+				val.label.position = "top";
+				val.label.color = "#fff";
+			});
+			echartInstance.setOption(options,{
+				notMerge:true
 			});
 		}
+		
+		let imgData = echartInstance.getDataURL({
+			type:"png",
+		    backgroundColor: "#4490c175" ,
+		}) ;
 
+		const a = document.createElement('a');
+		document.body.appendChild(a);
+		a.href = imgData;  
+		a.download = title+".png";  //设定下载名称
+		a.click(); //点击触发下载
+		$(a).remove();
 	}
 
 	filterAll(){
@@ -472,6 +455,7 @@ class App{
 	handle(){
 
 		   const $maxWindow = this.maxWindow ;
+		   const _self = this ;
 
 			const timeBox = $(".time-content-item");
 			$("#g-timeContent").on("click",".m-tab-item",function(){
@@ -528,7 +512,7 @@ class App{
 				$slide.animate({
 					"width": width
 				}, 500, function() {
-					window.history.back();
+					window.location.href="./szViews.html?layout_id="+_self.layout_id;
 					$head.removeClass("no-head");
 				});
 

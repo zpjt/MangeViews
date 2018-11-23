@@ -52,7 +52,7 @@ class Table extends EasyUITab{
 				{
 					field: 'optBtn',
 					title: '操作',
-					align:"center",
+					align:"left",
 					width: "20%",
 					formatter: function(val, rowData,index) {
 						

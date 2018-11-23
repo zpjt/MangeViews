@@ -23,16 +23,14 @@ $duration:.3s;
 .s-modal{
 	position: absolute;
 	top:50%;
-	left:50%;
+	left:50%; 
+	min-width: 450px;
+	min-height: 250px;
 	visibility:hidden;
 	display:none;
-
-	//transform: translate(-50%,-50%);
-	transform: translate3d(-50%,-51%,0); // 用translate3d 可以解决字体抖动的问题
+	transform: translate3d(-50%,-50%,0); // 用translate3d 可以解决字体抖动的问题
     z-index:10;
-  
 	.m-content{
-		min-width:300px;
 		border-radius:6px;
 		background: #fff;
 	    /* border: 2px solid transparent;
@@ -103,7 +101,7 @@ $duration:.3s;
 .s-modal.m-show{
 	visibility:visible;
 	.m-content{
-		transform:translateX(0);
+		transform:translate3d(0,0,0);
 		opacity:1;
 	}
 }

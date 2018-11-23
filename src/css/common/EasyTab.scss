@@ -67,6 +67,14 @@ $themeColor:#00a0e9;
     border-radius:0 0 8px  8px ;
     //background-color: #ebece6;
 }
+.easy-tabBox{
+  textarea{
+      text-indent: 2em;
+      line-height: 1.5em;
+      resize:vertical;
+  }
+}
+
 
 .datagrid-header td,
 .datagrid-body td,
@@ -87,7 +95,7 @@ $themeColor:#00a0e9;
     width:380px;
     margin:auto;
     &>div{
-      margin:0 8px;
+      margin-right:10px;
     }
 
 }

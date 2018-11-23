@@ -7,7 +7,7 @@ const {baseUrl} = window.jsp_config;
 
 const imgUrl = window.jsp_config.resourse && window.jsp_config.resourse || "../";
 
-
+console.log(33);
 
 class Login{
 

@@ -567,8 +567,11 @@ class SCombobox {
 	   const $drop = $el.children(".combo-drop").children("ul");
 
 	   if(this.config.multiply){
+
 	   	 	$drop.html(this.renderDrop(values));
+	 
 	   }else{
+	
 			$drop.children(`li[echo-id=${values}]`).addClass("active").siblings().removeClass("active");
 	   }
 
@@ -756,7 +759,7 @@ class SModal{
 	}
 
 	init(){
-
+		
 	}
 
 	close($el,className="m-show"){
@@ -1121,7 +1124,7 @@ class Tree{
 
 		const idField = this.config.idField;
 
-		if(!type){
+		if(!type){//文件
 
 				if(status){
 					this.selArr.push(node);
@@ -1129,11 +1132,11 @@ class Tree{
 					const delIndex = this.selArr.findIndex(val=>val[idField] == node[idField])
 					this.selArr.splice(delIndex,1);
 				}
-		}else{
+		}else{// 目录
 
 				
 
-				if(!this.searchStatus){
+				if(!this.searchStatus){//不是搜索状态的树
 
 					const _selArr = $.map(this.box.find(".child-checkinp:checked"),val=>{
 							const id = val.value ;	

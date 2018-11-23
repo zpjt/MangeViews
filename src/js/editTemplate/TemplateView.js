@@ -442,7 +442,7 @@ class ChangeView{
 
 			const _type = (type === "table" || type === "timeReal" ) && "tabInfo" || "graphInfo";
 
-			const viewTitle = viewData[_type].chartName ;
+			const viewTitle = type !== "editView"? viewData[_type].chartName : "";
 
 			const attr = {borderType,type,viewTitle,viewID,createId}
 
@@ -478,7 +478,6 @@ class ChangeView{
 				}
 				break;
 				default:
-				console.log(_type);
 				break;
 			}
 			

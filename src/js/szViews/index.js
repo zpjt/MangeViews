@@ -1,6 +1,5 @@
 import "css/szViews.scss";
 import "css/common/dropMenu.scss";
-import "css/common/Svg.scss";
 
 
 import { EasyUITab } from "js/common/EasyUITab.js";
@@ -9,8 +8,8 @@ import {api} from "api/szViews.js";
 
 
 
-
-const {user_id,role_id} = window.jsp_config;
+const {user_id,role_id,resourse} = window.jsp_config;
+const ENV_SRC = resourse ? "index/lists/" : "./" ;
 
 //工具类实例
 const UnitOption = new Unit();
@@ -29,7 +28,6 @@ const $tab = $("#tab"),
 	  $iconBox = $("#iconBox"),
 	  $tabCard=$("#tabCard");
 
-//
 const $menuBox=$("#menuBox"),
 	  $addMBtn=$("#addMBtn"),
 	  $confirmBtn=$("#confirmBtn"),
@@ -86,16 +84,26 @@ class TableStyle extends EasyUITab{
 				{
 					field: 'layout_type',
 					title: '类型',
-					width: "10%",
+					width: "8%",
 					formatter: function(val,rowData,index) {
 
-						return `<span class="${val===2 ? "tab-type" : null }">${val===1 ? "分类" :"视图"}</span>`;
+						return `<span class="${val === 2 ? "tab-type" : "" }">${val===1 ? "分类" :"视图"}</span>`;
 					}
 				}, 
 				{
 					field: 'create_user_name',
 					title: '创建人',
-					width: "14%",
+					width: "10%",
+					
+				},
+				{
+					field: 'released',
+					title: '发布状态',
+					width: "80",
+					formatter: function(val,rowData,index) {
+
+						return  rowData.layout_type === 2 && `<span class="${val=== 1 ? "tab-type" : "" }">${val===1 ? "已发布" :"未发布"}</span>` || "无";
+					}
 				},
 				
 				 {
@@ -105,7 +113,7 @@ class TableStyle extends EasyUITab{
 				},{
 					field: 'optBtn',
 					title: '操作',
-					align:"center",
+					align:"left",
 					width: "30%",
 					formatter: function(val, rowData,index) {
 						
@@ -154,7 +162,7 @@ class TableStyle extends EasyUITab{
 						"field": "layout_name",
 						"title": "视图名称",
 						"align": "left",
-						"width": "34%",
+						"width": "29%",
 						"formatter": function(val, rowData) {
 
 							const {layout_icon_name,layout_type} = rowData;
@@ -174,7 +182,15 @@ class TableStyle extends EasyUITab{
 
 							return `<span class="${val===2 ? "tab-type" : null }">${val===1 ? "分类" :"视图"}</span>`;
 						}
-					},  {
+					}, {
+						field: 'released',
+						title: '发布状态',
+						width: "80",
+						formatter: function(val,rowData,index) {
+
+							return  rowData.layout_type === 2 && `<span class="${val=== 1 ? "tab-type" : "" }">${val===1 ? "已发布" :"未发布"}</span>` || "";
+						}
+					},{
 						field: 'create_user_name',
 						title: '创建人',
 						width: 100,
@@ -186,7 +202,7 @@ class TableStyle extends EasyUITab{
 					},{
 						field: 'optBtn',
 						title: '操作',
-						align:"center",
+						align:"left",
 						width: "30%",
 						formatter: function(val,rowData) {
 							
@@ -286,8 +302,8 @@ class CatalogueStyle{
 							<p><i class="sicon ${layout_icon_name}"></i></p>
 							<p class="catalogue-name"><span>${layout_name}</span></p>
 							<span class="s-checkbox catalogue-chec ${!is_disCheck && "dis-check" || ""}">
-									${is_disCheck && '<input type="checkbox"  class="catalogue-chec-inp" value="'+layout_id+'">' || ""}
-									<label class="fa fa-square-o"></label>
+									${is_disCheck && '<input type="checkbox"    class="catalogue-chec-inp" value="'+layout_id+'">' || ""}
+									<label class="fa fa-square-o" title="${(!is_disCheck && "禁止删除,该文件夹里包含内容！" || "")}"></label>
 							</span>
 						</div>
 						
@@ -312,19 +328,26 @@ class CatalogueStyle{
     }
     cataFooterRender(data){
 
-    	const {layout_type,create_user_name,layout_name,updata_time,layout_icon_name} =data;
+    	const {layout_type,create_user_name,layout_name,updata_time,layout_icon_name,released} =data;
 		
 		var str = `
 					<div class="cata-info footer-item">
 						<span class="sicon ${layout_icon_name.trim()}"></span>
 						<span>
-						   <span><b>文件名：</b>${layout_name}</span><br><span><b>包含对象：</b>${data.sub.length}个</span>
+						   <span><b>文件名：</b>${layout_name}</span><br><span>
+						   <b>包含对象：</b> ${layout_type === 1 ? data.sub.length+"个" : "无" } </span>
+
 						  </span>
 					</div>
 					<div class="footer-item" style="width:25%">
 						<b>创建时间：</b>
 						<br />
 						<span style="padding-left:5em">${updata_time}</span>
+					</div>
+					<div class="footer-item" style="width:15%">
+						<b>发布状态：</b>
+						<br />
+						<span class="${released === 1 && "tab-type" || ""}" style="padding-left:5em">${layout_type === 2 ? (released === 1 && "已发布" || "未发布") : "无"}</span>
 					</div>
 					<div class="footer-item" style="width:15%">
 						<b>创建人：</b>
@@ -334,7 +357,7 @@ class CatalogueStyle{
 					<div class="footer-item" style="width:15%">
 						<b>文件类型：</b>
 							<br />
-						<span style="padding-left:5em">${layout_type===1?"分类文件夹":"视图文件"}</span>
+						<span style="padding-left:5em" class="${layout_type === 2 && "tab-type" || ""}">${layout_type===1?"分类文件夹":"视图文件"}</span>
 					</div>
 					`
 		$catalogueBox.siblings(".cata-footer").html(str);
@@ -612,7 +635,7 @@ class AddModal{
 					break;
 				case "modify":{
 
-					api.updataName({name,id:par_id}).then(res=>{
+					api.updataName({name,id:cur_id}).then(res=>{
 							if(res){
 									const menuIndexArr = $tabCard.data("menuArr").map(val=>{
 										  return  val.index ;
@@ -894,7 +917,7 @@ class Page  {
 	constructor(){
 
 		this.btnBox = $("#btnBox");
-
+		
 		this.handle();
 
 		this.getRoleRes().then(res=>{
@@ -1071,54 +1094,120 @@ class Page  {
 
 		});
 
-		this.styleBoxrender();
-		this.tabCardInit([{layout_name:"我的创建",index:0,layout_id:-2}]);
+		this.getUrlSearch();
+	
 
  	}
 
-   
+ 	
+
+ 	getUrlSearch(){
+
+		let layoutId =  window.location.search.split("=")[1];
+
+		console.log(layoutId,"12233");
+
+		const record = [];
+		const recordData = [];
+
+		function findLayout(arr,lev){
+
+			lev ++ ;
+
+			return arr.find((val,index)=>{
+				
+				const {sub} = val ;
+				if(sub.length){
+				
+					const result = findLayout(sub,lev);
+					if(result){
+						const {layout_name,layout_id} = val ;
+						record[lev -1] = index;
+						recordData[lev -1] = {layout_name,layout_id,index};
+					}
+					return 	result	;
+				}else{
+
+					const is_exit = val.layout_id === layoutId ;
+					if(is_exit){
+						record[lev -1] = index;
+						recordData[lev -1] = {index};
+					}
+					return is_exit;
+				}
+
+			})
+ 		}
+
+		api.getAllLayout().then(res=>{
+			
+			if(res){
+
+			
+
+				if(layoutId){
+
+					layoutId =  +layoutId;
+					findLayout(res.sub,0);
+					record.pop();
+					this.createTab(res,[0,...record],0);
+					const curview = recordData.pop();
+
+					recordData.unshift({layout_name:"我的创建",index:0,layout_id:-2});
+					$tab.datagrid("selectRow",curview.index);
+				}else{
+
+					recordData.push({layout_name:"我的创建",index:0,layout_id:-2});
+					this.createTab(res,[0],0);
+				}
+
+				this.tabCardInit(recordData);
+				
+				
+
+			}else{
+				UnitOption.tipToast("视图获取失败！",0);
+			}
+		});
+ 	}
+
+ 	createTab(res,menuIndexArr,type){
+
+		const copy_dataStr= JSON.stringify(res.sub).replace(/sub/g,"children");
+		const copy_data= JSON.parse(copy_dataStr);
+		this.search.data = copy_data ;
+
+		const catalogueArr = page.getCatalogue(JSON.parse(copy_dataStr));
+		this.addModal.reloadParCatalogCombox([{
+				"layout_name":"根目录",
+				"layout_id":-2,
+				 children:catalogueArr,
+		}]);
+
+				
+		const  allData = [res] ;
+		$ViewContainer.data("tabData",allData);
+				
+		let tabData=JSON.stringify(allData);
+		    tabData=JSON.parse(tabData);
+
+		//获取当前tab的层级
+		menuIndexArr.forEach(function(val){
+			tabData = tabData[val].sub
+		});
+
+		type===0 ? this.table.loadTab(tabData) : type === 1 ? this.catalogue.catalogueInit(tabData) 
+				:this.table.createTreeGrid(copy_data);
+ 	}
+
     styleBoxrender(menuIndexArr=[0], type = 0){
 		api.getAllLayout().then(res=>{
 
 			if(res){
-				
-				const copy_dataStr= JSON.stringify(res.sub).replace(/sub/g,"children");
-				const copy_data= JSON.parse(copy_dataStr);
-
-				this.search.data = copy_data ;
-
-				const catalogueArr = page.getCatalogue(JSON.parse(copy_dataStr));
-
-				this.addModal.reloadParCatalogCombox([{
-						"layout_name":"当前分类",
-						"layout_id":-2,
-						 children:catalogueArr,
-				}]);
-
-				
-				const  allData = [res] ;
-				
-				$ViewContainer.data("tabData",allData);
-				
-				let tabData=JSON.stringify(allData);
-				    tabData=JSON.parse(tabData);
-
-				//获取当前tab的层级
-				menuIndexArr.map(function(val){
-					tabData = tabData[val].sub
-				});
-
-				type===0 ? this.table.loadTab(tabData) : type === 1 ? this.catalogue.catalogueInit(tabData) 
-				:this.table.createTreeGrid(copy_data);
-			
+				this.createTab(res,menuIndexArr,type);
 			}else {
-
 				UnitOption.tipToast("视图获取失败！",0);
-
 			}
-				
-			
-
 		})
 			
     }
@@ -1145,17 +1234,18 @@ class Page  {
 		
 		const {layout_name,layout_id,par_id} = data ;
 
-		const fatherWin = window.parent;
-			  fatherWin.menuID = layout_id;
-			  fatherWin.menuName =layout_name;
 
-			  console.log(fatherWin.menuID);
 
-		const str = `?layout_id=${layout_id}&&par_id=${par_id}&&layout_name=${layout_name}`;
+		const str = ENV_SRC + `editTemplate.html?layout_id=${layout_id}&&par_id=${par_id}&&layout_name=${layout_name}`;
 		
-		$("#slide",fatherWin.document).animate({"width":0},500,function(){
+		$("#slide",window.parent.document).animate({"width":0},500,function(){
+			
 			$("#content",window.parent.document).addClass("no-head");
-			window.location.href="./editTemplate.html" + str ;;
+			$("#routerConter",window.parent.document).html(`<iframe frameborder="0" id="router" name="myFrameName" src="${str}"></iframe>`);
+
+		//	window.location.href="" + str ;
+
+			
 		});
     }
 
@@ -1283,14 +1373,17 @@ class Page  {
 
 				case "preView":
 
-				    const fatherWin = window.parent ;
-				
-					$("#content",fatherWin.document).addClass("no-head");
-					window.location.href="./ManageViews.html?pre="+layout_id;
+					if( data.model!="null" && data.model){
 					
-					fatherWin.menuID = layout_id;
-					fatherWin.menuName =layout_name;
+						$("#content",window.parent.document).addClass("no-head");
+						const src = ENV_SRC + "ManageViews.html?layout_id="+layout_id+"&layout_name="+layout_name+"&type=pre";
+						$("#routerConter",window.parent.document).html(`<iframe frameborder="0" id="router" name="myFrameName" src="${src}"></iframe>`);
 
+					//	window.location.href = src ;
+					
+					}else{
+						UnitOption.tipToast("该视图获没有模板存在，请去编辑器里创建！",2);
+					}
 
 					break;
 				case "issueView":

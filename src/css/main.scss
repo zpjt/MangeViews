@@ -157,19 +157,33 @@
 				}
 
 				@at-root{
-
+					#preToNews{
+						cursor: pointer;
+						&:hover{
+							color:#00a0e9;
+						}
+					}
 					.messages-ul{
 						max-height:300px;
 						overflow:auto;
 						&>li{
 							padding:4px 8px;
 							border-bottom: 1px solid rgba(0,0,0,0.15);
-							
 						}
-						p{
-							text-overflow: clip;
+						.zb-warn{
+							font-size: 16px;
+							color:#00a0e9;
+						}
+						.warn-time{
+							font-size: 12px;
+						}
+						.warn-item{
+							text-overflow:ellipsis;
 							overflow: hidden;
 	    					white-space: nowrap; 
+						}
+						.warn-item:last-child{
+							text-indent:1rem;
 						}
 					}
 

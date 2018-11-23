@@ -330,8 +330,8 @@ class ViewSetModal {
 		const htmlStr = `<div class="sel-item">
 				    <p class="s-title">表格样式:</p>
 				    <div>
-				        <span><input type="radio" class="s-radio" name="tab-style" ${checkArr[0]} value="0"><label class="m-radio-icon u-tab-lab1"></label></span>
-				        <span><input type="radio" ${checkArr[1]} class="s-radio " name="tab-style" value="1"><label class="m-radio-icon u-tab-lab2"></label></span>
+				        <span class="s-radio-box"><input type="radio" class="s-radio" name="tab-style" ${checkArr[0]} value="0"><label class="m-radio-icon u-tab-lab1"></label></span>
+				        <span class="s-radio-box"><input type="radio" ${checkArr[1]} class="s-radio " name="tab-style" value="1"><label class="m-radio-icon u-tab-lab2"></label></span>
 				    </div>
 				</div>
 				<div class="sel-item">
@@ -375,8 +375,8 @@ class ViewSetModal {
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
-								        <span><input type="radio" ${landscapeArr[0]} class="s-radio u-radio-sel" name="bar-style" checked="checked" value="0"><label class="m-radio-icon u-bar-lab1"></label></span>
-								        <span><input type="radio" ${landscapeArr[1]} class="s-radio u-radio-sel" name="bar-style" value="1"><label class="m-radio-icon u-bar-lab2"></label></span>
+								        <span class="s-radio-box"><input type="radio" ${landscapeArr[0]} class="s-radio u-radio-sel" name="bar-style" checked="checked" value="0"><label class="m-radio-icon u-bar-lab1"></label></span>
+								        <span class="s-radio-box"><input type="radio" ${landscapeArr[1]} class="s-radio u-radio-sel" name="bar-style" value="1"><label class="m-radio-icon u-bar-lab2"></label></span>
 								  </div>
 							</div>
 							<div class="sel-item">
@@ -405,8 +405,8 @@ class ViewSetModal {
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
-								        <span><input type="radio" ${landscapeArr[0]} class="s-radio u-radio-sel" name="line-style"  value="0"><label class="m-radio-icon u-line-lab1"></label></span>
-								        <span><input type="radio" ${landscapeArr[1]}  class="s-radio u-radio-sel" name="line-style" value="1"><label class="m-radio-icon u-line-lab2"></label></span>
+								        <span class="s-radio-box"><input type="radio" ${landscapeArr[0]} class="s-radio u-radio-sel" name="line-style"  value="0"><label class="m-radio-icon u-line-lab1"></label></span>
+								        <span class="s-radio-box"><input type="radio" ${landscapeArr[1]}  class="s-radio u-radio-sel" name="line-style" value="1"><label class="m-radio-icon u-line-lab2"></label></span>
 								  </div>
 							</div>
 						</div>
@@ -427,10 +427,10 @@ class ViewSetModal {
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
-								        <span><input type="radio" ${roseTypeArr[0]} class="s-radio u-radio-sel" name="pie-style"  value="1"><label class="m-radio-icon u-pie-lab1"></label></span>
-								        <span><input type="radio" ${roseTypeArr[1]}  class="s-radio u-radio-sel" name="pie-style" value="2"><label class="m-radio-icon u-pie-lab2"></label></span>
-								         <span><input type="radio" ${roseTypeArr[2]} class="s-radio u-radio-sel" checked="checked" name="pie-style"  value="3"><label class="m-radio-icon u-pie-lab3"></label></span>
-								        <span><input type="radio"  ${roseTypeArr[3]} class="s-radio u-radio-sel" name="pie-style" value="4"><label class="m-radio-icon u-pie-lab4"></label></span>
+								        <span class="s-radio-box"><input type="radio" ${roseTypeArr[0]} class="s-radio u-radio-sel" name="pie-style"  value="1"><label class="m-radio-icon u-pie-lab1"></label></span>
+								        <span class="s-radio-box"><input type="radio" ${roseTypeArr[1]}  class="s-radio u-radio-sel" name="pie-style" value="2"><label class="m-radio-icon u-pie-lab2"></label></span>
+								         <span class="s-radio-box"><input type="radio" ${roseTypeArr[2]} class="s-radio u-radio-sel" checked="checked" name="pie-style"  value="3"><label class="m-radio-icon u-pie-lab3"></label></span>
+								        <span class="s-radio-box"><input type="radio"  ${roseTypeArr[3]} class="s-radio u-radio-sel" name="pie-style" value="4"><label class="m-radio-icon u-pie-lab4"></label></span>
 								  </div>
 							</div>
 						</div>
@@ -449,8 +449,8 @@ class ViewSetModal {
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
-								        <span><input type="radio" class="s-radio u-radio-sel" name="rader-style" ${areaArr[0]} value="0"><label class="m-radio-icon u-rader-lab1"></label></span>
-								        <span><input type="radio"  class="s-radio u-radio-sel" ${areaArr[1]} name="rader-style" value="1"><label class="m-radio-icon u-rader-lab2"></label></span>
+								        <span class="s-radio-box"><input type="radio" class="s-radio u-radio-sel" name="rader-style" ${areaArr[0]} value="0"><label class="m-radio-icon u-rader-lab1"></label></span>
+								        <span class="s-radio-box"><input type="radio"  class="s-radio u-radio-sel" ${areaArr[1]} name="rader-style" value="1"><label class="m-radio-icon u-rader-lab2"></label></span>
 								  </div>
 							</div>
 						</div>
@@ -471,8 +471,8 @@ class ViewSetModal {
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
-								        <span><input type="radio" class="s-radio u-radio-sel" ${landscapeArr[0]} name="scatter-style"  value="0"><label class="m-radio-icon u-scatter-lab1"></label></span>
-								        <span><input type="radio" ${landscapeArr[1]} class="s-radio u-radio-sel" name="scatter-style" value="1"><label class="m-radio-icon u-scatter-lab2"></label></span>
+								        <span class="s-radio-box"><input type="radio" class="s-radio u-radio-sel" ${landscapeArr[0]} name="scatter-style"  value="0"><label class="m-radio-icon u-scatter-lab1"></label></span>
+								        <span class="s-radio-box"><input type="radio" ${landscapeArr[1]} class="s-radio u-radio-sel" name="scatter-style" value="1"><label class="m-radio-icon u-scatter-lab2"></label></span>
 								  </div>
 							</div>
 						</div>
@@ -677,7 +677,6 @@ class ViewSetModal {
 		common[fieldObj[type].pubDimIdField] = $("#publicDim").attr("dim-id");
 		common[fieldObj[type].pubDimNameField] = $("#publicDim").attr("dim-name");
 
-		console.log(this.dimWd.getValue(this.dimWd.box,"all"),"ssss");
 		common[fieldObj[type].pubDimValsField] = this.dimWd.getValue(this.dimWd.box,"all").map(val=>{
 		
 			const obj = {id:val.dim_value,text:val.dim_name};

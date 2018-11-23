@@ -92,7 +92,6 @@ class TemplateMap{
 	clearRefresh(view){
 
 		if(view.timer){
-			console.log("清除定时器");
 			clearInterval(view.timer);
 			view.timer = null ;
 		}

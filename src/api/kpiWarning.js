@@ -1,7 +1,7 @@
 
 require("./index.js");
 
-const {baseUrl,role_id} = window.jsp_config;
+const {baseUrl,role_id,user_id} = window.jsp_config;
 const control = "Alarm/";
 
 const URL= baseUrl+control;
@@ -18,7 +18,7 @@ class API {
 	}
 
 	getAllKpiAlarm(flag="-1"){
-		return Promise.resolve($.get(URL+"getAllKpiAlarm",{flag}));
+		return Promise.resolve($.get(URL+"getAllKpiAlarm",{flag,user_id,role_id}));
 	}
 
 	kpitree(){

@@ -246,7 +246,7 @@ module.exports=function(env,argv){
 		            aggregateTimeout: 300
 		        },
 		       // clientLogLevel: "none", // cancel console client log
-		        port: '8099', //设置端口号
+		        port: '8093', //设置端口号
 		        proxy: {
 		            '/ManageViews/connect': {
 		                target: 'ws://localhost:8080',

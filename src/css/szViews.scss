@@ -274,7 +274,7 @@ $slectColor:#aee6ff;
 			   padding-right:0;
 			}
 			.cata-info{
-				width:35%;
+				width:30%;
 				display:flex;
 				.sicon{
 					padding-right:10px;
@@ -297,10 +297,7 @@ $slectColor:#aee6ff;
 
 .issue-item{
 	z-index: 1;
-	margin-bottom:15px;
-	&:first-child{
-		z-index: 10;
-	}
+	margin-bottom:16px;
 	position: relative;
 	.search-wrap.active-search .input-box{
 		width:300px;
@@ -319,17 +316,15 @@ $slectColor:#aee6ff;
 	.active{
 		visibility:visible;
 		opacity:1;
-		
+	}
+	.time-inpbox.active{
+		width:320px;
 	}
 	&:first-child{
-		.active{
-			width:320px;
-		}
+		z-index: 2;
 	}
-	&:nth-child(2){
-		.active{
-			height:250px;
-		}
+	.org-box.active{
+		height:260px;
 	}
 
 	.item-status{
@@ -343,7 +338,6 @@ $slectColor:#aee6ff;
 	}
 }
 .org-box{
-	margin-top:10px;
 	min-width:500px;
 	height:0px;
 	transition: all .3s ease-out;
@@ -355,6 +349,7 @@ $slectColor:#aee6ff;
 	}
 	
 	.org-content{
+	    margin-top: 10px;
 		display:flex;
 		background: #fff ;
 		height: 100%;
@@ -364,11 +359,11 @@ $slectColor:#aee6ff;
 
 	}
 	.org-item:first-child{
-			width:65%;
+			width:60%;
 		//	border-right:1px solid grey;
 	}
 	.org-item:last-child{
-			width:35%;
+			width:40%;
 			overflow:auto;
 	}
 	.org-sel-item{
@@ -398,9 +393,6 @@ $slectColor:#aee6ff;
 
 /*创建模态框 */
 #add-MView{
-	.m-content{
-		width:450px;
-	}
 	.s-title{
 		width:80px;
 	}

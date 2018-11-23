@@ -42,6 +42,7 @@ const api = new ApI();
 
 /*渲染菜单*/
 class Menu{
+	static status = "view";
 
 	constructor(){
 		this.init();
@@ -160,6 +161,10 @@ class Menu{
 
 			const $this = $(this);
 
+			if($this.hasClass("par-item")){
+				return;
+			}
+
 			$(".active").removeClass("active");
 			$(".active-par").removeClass("active-par");
 
@@ -167,13 +172,27 @@ class Menu{
 			par_item.addClass("active-par");
 			$this.addClass("active");
 
-			window.menuID = $this.attr("echo-id");
-			window.menuName = $this.find(".menu-name").html();
+			const layout_id = $this.attr("echo-id"),
+				  layout_name = $this.find(".menu-name").html();
 
 			const url=$this.attr("data-url");
 
 			const iframeUrl = getUrlMethod(url);
-			 page.iframe[0].src=iframeUrl+".html";
+
+			
+
+			if(Menu.status === "menu"){
+				const src = iframeUrl+".html";
+				$("#routerConter").html(`<iframe frameborder="0" id="router" name="myFrameName" src="${src}"></iframe>`);
+				// page.iframe[0].src=src
+			
+			}else{
+
+				const src = iframeUrl+".html?layout_id="+layout_id+"&layout_name="+layout_name;
+				$("#routerConter").html(`<iframe frameborder="0" id="router" name="myFrameName" src="${src}"></iframe>`);
+
+				// page.iframe[0].src=iframeUrl+".html?layout_id="+layout_id+"&layout_name="+layout_name;
+			}
 
 		});
 	}
@@ -252,11 +271,11 @@ class SoketNews{
             	const str = data.map(val=>{
 
             		return `<li class="newItem" echo-data="${val.id}">
-            					<p>
-            					${val.name}
-            					<b>${val.time}</b>
+            					<p class="warn-item">
+            						<span class="zb-warn">${val.name}</span>
+            						<b class="warn-time">${val.time}</b>
             					</p>
-            					<p>${val.text}</p>
+            					<p class="warn-item">${val.text}</p>
 
             				</li>`
             	});
@@ -451,7 +470,7 @@ class Page{
 				$(`.menuItem[echo-id=${id_first}]`).click();
 
 			}else{
-				alert("菜单为空！");
+				this.unit.tipToast("菜单为空",2);
 				
 			}
 			
@@ -532,11 +551,13 @@ class Page{
 						$("#content").removeClass("no-head");
 						_self.renderMenu(1);
 						$(this).addClass("active-view");
+						Menu.status = "menu";
 					}else{
 
 						$("#content").addClass("no-head");
 						_self.renderMenu(0);
 						$(this).removeClass("active-view");
+						Menu.status = "view";
 					}
 				}
 				
@@ -566,12 +587,14 @@ class Page{
 					})
 				).then(res=>{
 
-					console.log(res);
+					_self.unit.tipToast("标记成功！",1);
 				})
 		});
 
 	    $("#preToNews").click(function(){
-			 page.iframe[0].src=baseUrl+"index/lists/News.html";			
+
+			 $(".menuItem[data-url='index\/lists\/News']").click();
+			 _self.news.messageEl.slideToggle();
 		});
 	}
 
