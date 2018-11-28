@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --env=production  --profile ",
     "server": "webpack-dev-server --disableHostCheck=true --open=chrome  --env=development -w",
-    "babel":"babel"
+    "babel": "babel"
   },
   "keywords": [],
   "author": "",
@@ -37,9 +37,9 @@
     "sass-loader": "^7.0.1",
     "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
-    "webpack": "^4.8.3",
-    "webpack-cli": "^0.0.6-development",
-    "webpack-dev-server": "^3.1.4",
+    "webpack": "^4.26.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10",
     "webpack-parallel-uglify-plugin": "^1.1.0"
   },
   "dependencies": {

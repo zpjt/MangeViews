@@ -256,8 +256,8 @@ module.exports=function(env,argv){
 	                    logLevel: 'debug',
 		            },
 		             '/ManageViews': {
-		             //   target: 'http://172.16.13.140:8080',
-		                target: 'http://localhost:8080',
+		                target: 'http://172.16.13.140:8080',
+		          //      target: 'http://localhost:8080',
 		                secure: false,
 		                changeOrigin:true,
 		               /* pathRewrite: {
