@@ -621,12 +621,23 @@ class AddModal{
 		 * [description]
 		 * 模态框的点击事件，用来隐藏出现的下拉框和日历
 		 */
-		 $addModal.on("click", function() {
-
+		 $addModal.on("click",".combo-inp",function(e) {
+			e.stopPropagation();
+			const $this = $(this);
 			requestAnimationFrame(function(){
-		         const $comboDrop = $(".combo-drop");
-				 $comboDrop.parent().removeClass("active");
-				 $comboDrop.hide();
+				  $addModal.find(".combo-inp").not($this).parent().removeClass("active");
+				  $addModal.find(".combo-inp").not($this).siblings().hide();
+
+		    });
+		});
+
+		 $addModal.on("click",function() {
+			
+			requestAnimationFrame(function(){
+				 const drop =  $addModal.find(".combo-drop ");
+				 drop.parent().removeClass("active");
+				 drop.hide();
+				 
 		    });
 		});
 		/**
@@ -696,7 +707,7 @@ class AddModal{
 					const count = $messageTab.datagrid("getRows").length;
 
 					 $messageTab.datagrid("appendRow", {
-						  "model_name": "模板X",
+						  "model_name": "",
         				  "model_text": "",
         				  "id":"",
 					 })
@@ -745,10 +756,22 @@ class AddModal{
 
 				     	const editorText = $messageTab.datagrid("getEditor", {index,field:"model_text"});
 				     	const editorName = $messageTab.datagrid("getEditor", {index,field:"model_name"});
-				     
-				     	if(!editorText.actions.getValue(editorText.target).trim() || !editorName.actions.getValue(editorName.target).trim()){
+
+				     	const name = editorName.actions.getValue(editorName.target).trim();
+
+
+				     	if(!editorText.actions.getValue(editorText.target).trim() || !name){
 				     		page.unit.tipToast("填写的内容不能为空！",0);
 				     		return ;
+				     	}
+
+				     	const is_repeat = $messageTab.datagrid("getRows").some(val=>{
+								return val.model_name === name ;
+				     	});
+
+				     	if(is_repeat){
+				     		page.unit.tipToast("该模板名称已经存在！",2);
+							return ;
 				     	}
 
 				    	sEditStr =`<i class="fa fa-edit"></i><span>编辑</span>`;

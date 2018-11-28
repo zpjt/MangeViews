@@ -25,6 +25,10 @@
 		animation: real-up .5s ease forwards;
 		
 	}
+	.timeItem{
+		margin-top: 4px;
+		margin-bottom: 4px;
+	}
 	@at-root{
 		.timeStyle2{
 			height: 6.5em;
@@ -59,7 +63,6 @@
 			height: 3em;
 			background: url("../../img/timeReal_line.png") center no-repeat;
 			background-size:contain;
-	//		border-radius:4px;
 			display: flex;
 			align-items: center;
 			.real-zb{

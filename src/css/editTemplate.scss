@@ -367,12 +367,17 @@ $border:#E9E9E9;
 		}
 	}
 	.zb-name{
-		max-width:200px;
-		text-align:left;
 		background:#638CCC;
-		text-overflow: ellipsis;
-	    overflow: hidden;
-	    white-space: nowrap;
+	    display:inline-flex;
+        align-items: center;
+        b{	
+        	max-width:200px;
+        	padding-left: 8px;
+        	text-align:left;
+    		text-overflow: ellipsis;
+	   		overflow: hidden;
+	   		white-space: nowrap;
+        }
 	}
 }
 
@@ -387,161 +392,167 @@ $border:#E9E9E9;
 			vertical-align: top;
 		}
 	}
-
-	
-	.zbBox{
-	
-		.cate-box{
-			height:350px;
-			padding-left:20px;
-			overflow:auto;
-		}
-
-		.sel-item{
-			margin:5px 0;
-		}
 		
-		.dim-combox{
-			margin-left:20px;
-			&>span{
-				padding-right:20px;
-			}
-		}
-		.dim-item:first-child{
-			.zb-name{
-			  margin:10px 10px 10px 0;
-			}
-		}
-		.zb-dim-combobox{
-			margin-left:10px;
-			&>span{
-				padding-right:10px;
-			}	
-		}
-		@at-root{
-			
-			.zb-box{
-				top:30px;
-				z-index:2;
-				position: absolute;
-				display:none;
-				width:360px;
-				height:436px;
-				z-index:10;
-				@include shadow-space;
-				@include init-status(0.2s);
-				&:before{
-					@include triangle(-16px,30px,8px);
-				}
-				.cate-title{
-					border-top:none;
-				}
-				#zbTree{
-				   height:360px;
-				}
-				.s-tree{
-					max-height:330px;
-				}
-				.zb-opt{
-					height:40px;
-					line-height:40px;
-					text-align:right;
-					border-top:2px solid $border;
-					&>button{
-						margin-right:20px;
-					}
-				}
-			}
-			.zb-box.active{
-				@include active;
-			}
 
-			.setBox{
+		
 
+
+			@at-root{
+
+				.zbBox{
 				
-				.m-radio-icon{
-					background-image:url("../img/view_icon.png");
-					background-repeat:no-repeat;
-					display:inline-block;
-					width: 20px;
-					height: 14px;
-					transition:transform .2s ease-out;
-					cursor: pointer;
-					&:hover{
-						transform:scale(1.2);
+					.cate-box{
+						height:350px;
+						padding-left:20px;
+						overflow:auto;
+					}
+
+					
+					.dim-combox{
+						margin-left:20px;
+						&>span{
+							padding-right:20px;
+						}
+					}
+					.dim-item[dim-id="2"]{
+						.zb-item-box{
+							display: inline-block;
+							margin:10px 10px 10px 0;
+						}
+					}
+					div.zb-dim-combobox{
+						margin-left:10px;
+						&>span{
+							padding-right:10px;
+						}	
+					}
+
+				}
+				
+				.zb-box{
+					top:30px;
+					z-index:2;
+					position: absolute;
+					display:none;
+					width:360px;
+					height:436px;
+					z-index:10;
+					@include shadow-space;
+					@include init-status(0.2s);
+					&:before{
+						@include triangle(-16px,30px,8px);
+					}
+
+
+					.cate-title{
+						border-top:none;
+					}
+					#zbTree{
+					   height:360px;
+					}
+					.s-tree{
+						max-height:330px;
+					}
+					.zb-opt{
+						height:40px;
+						line-height:40px;
+						text-align:right;
+						border-top:2px solid $border;
+						&>button{
+							margin-right:20px;
+						}
 					}
 				}
-				margin-left:15px;
-				.g-borderStyle{
-					display:flex;
-					.m-radio-icon{
-						width: 52px;
-						height: 26px;
-					}
-					&>span{
-						display:flex;
-						align-items: center;
-					}
-				}
-			
-				.m-border1{
-					background-position:0 -70px;
-				}
-				.m-border2{
-					background-position:-50px -70px;
-				}
-				.m-border3{
-					background-position:-100px -70px;
-				}
-				.u-tab-lab1{
-					background-position:0 0;
-				}
-				.u-tab-lab2{
-					background-position:-30px 0;
-				}
-				.u-bar-lab1{
-					background-position:-60px 0;
-				}
-				.u-bar-lab2{
-					background-position:-90px 0;
+				.zb-box.active{
+					@include active;
 				}
 
-				.u-line-lab1{
-					background-position:-120px 0;
-				}
-				.u-line-lab2{
-					background-position:-150px 0;
-				}
-				.u-pie-lab1{
-					background-position:0 -22px;
-				}
-				.u-pie-lab2{
-					background-position:-30px -22px;
-				}
-				.u-pie-lab3{
-					background-position:-60px -22px;
-				}
-				.u-pie-lab4{
-					background-position:-90px -22px;
-				}
-				.u-rader-lab1{
-					background-position:0 -44px;
-				}
-				.u-rader-lab2{
-					background-position:-30px -44px;
-				}
-				.u-scatter-lab1{
-					background-position:-120px -22px;
-				}
-				.u-scatter-lab2{
-					background-position:-150px -22px;
+				.setBox{
+
+					
+					.m-radio-icon{
+						background-image:url("../img/view_icon.png");
+						background-repeat:no-repeat;
+						display:inline-block;
+						width: 20px;
+						height: 14px;
+						transition:transform .2s ease-out;
+						cursor: pointer;
+						&:hover{
+							transform:scale(1.2);
+						}
+					}
+					margin-left:15px;
+					.g-borderStyle{
+						display:flex;
+						.m-radio-icon{
+							width: 52px;
+							height: 26px;
+						}
+						&>span{
+							display:flex;
+							align-items: center;
+						}
+					}
+				
+					.m-border1{
+						background-position:0 -70px;
+					}
+					.m-border2{
+						background-position:-50px -70px;
+					}
+					.m-border3{
+						background-position:-100px -70px;
+					}
+					.u-tab-lab1{
+						background-position:0 0;
+					}
+					.u-tab-lab2{
+						background-position:-30px 0;
+					}
+					.u-bar-lab1{
+						background-position:-60px 0;
+					}
+					.u-bar-lab2{
+						background-position:-90px 0;
+					}
+
+					.u-line-lab1{
+						background-position:-120px 0;
+					}
+					.u-line-lab2{
+						background-position:-150px 0;
+					}
+					.u-pie-lab1{
+						background-position:0 -22px;
+					}
+					.u-pie-lab2{
+						background-position:-30px -22px;
+					}
+					.u-pie-lab3{
+						background-position:-60px -22px;
+					}
+					.u-pie-lab4{
+						background-position:-90px -22px;
+					}
+					.u-rader-lab1{
+						background-position:0 -44px;
+					}
+					.u-rader-lab2{
+						background-position:-30px -44px;
+					}
+					.u-scatter-lab1{
+						background-position:-120px -22px;
+					}
+					.u-scatter-lab2{
+						background-position:-150px -22px;
+					}
+
 				}
 
 			}
-
-		}
+			
 		
-	}
 	
 }
 /* 实时组件模态框 */

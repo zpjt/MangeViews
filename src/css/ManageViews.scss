@@ -127,14 +127,19 @@ $themeColor:#00a0e9;
 						padding:15px;
 					}
 					.table_main{
-						padding:15px;
+						padding:15px 0;
+					    width: calc(100% - 60px);
+						overflow-x: auto;
+						overflow-y: hidden;
+
 					}
 					.timeReal_main{
 						padding:8px;
+						overflow: auto;
 					}
 					.editView_main{
 						color:black;
-						background: #fff ;
+						background: #cee1ee75 ;
     					border-radius: 8px;
     					overflow: auto;
 					}

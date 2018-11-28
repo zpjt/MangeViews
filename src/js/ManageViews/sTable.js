@@ -22,20 +22,22 @@ class STable {
 		const tabHead = this.renderTableHead(data);
 		const tabBody = this.renderTableBody(data);
 		const totalH = this.container.height();
+		const totalW = this.container.width();
 
 		const border = this.border;
 
 		const titleStr = border === "0" && chartName ? `<p class="s-table-title">${chartName}</p>` : "" ;
 		const top_add = border === "0" && chartName ? 30 :　0 ;
-		const style = border === "0" ? "" : 'padding:35px 20px 30px;';
-		const bottom_add = border === "0" ? "" : 50;
+		const style = border === "0" ? "" : border === "3" ? 'padding:34px 0 30px;' : 'padding:24px 0 30px;';
+		const bottom_add = border === "0" ? "" : 30;
 
+		border === "0" && this.container.css("width",'calc(100% - 10px)');
 
 		const str =  `
 						<div  class="s-tableBox fix-tab ${tab_style !=="0" && "border-box"|| ""}" style="${style}">
 								${titleStr}
 								<div class="tab-head">
-									<table class="tab-list ">
+									<table class="tab-list table-head"  border="${tab_style}" frame="void">
 										<thead>
 										    ${tabHead.join("")}   
 									    </thead>
@@ -54,28 +56,27 @@ class STable {
 
 
         const wrap = this.container.find(".table-body-wrap");
+        const wrapHead = this.container.find(".tab-head");
 
-        const maxH = Math.floor(totalH - this.container.find(".tab-head").height() - top_add - bottom_add);
+  		const maxH = Math.floor(totalH - wrapHead.height() - top_add - bottom_add);
         const is_overflow = maxH - wrap.children("table").height() < 0 ;
+        const is_overflowX = totalW - wrapHead.children(".tab-list").width() < 0 ;
+
+      
+
+		const add_bottom = is_overflowX ? 10 : 0 ;
+		wrap.css("height", maxH - add_bottom);	
 
         if(is_overflow){
-			wrap.css("height", maxH);	
 			this.container.find(".gutter").show();		
         }
 
-        
+        if(is_overflowX){
+    	 	this.container.children(".s-tableBox").css("width",wrapHead.children(".tab-list").width());
+        }
 
-		/*const wrap = this.container.find(".table-body-wrap");
-		const height = totalH-row_wd.length*50 ;
-		wrap.css("height", totalH - this.container.find(".tab-head").height() - 26 - top_add -bottom_add);		
-
-		const is_overflow = wrap.height() - wrap.children("table").height() > 0 ;
-
-		!is_overflow && this.container.find(".gutter").show();
-		$(window).on("resize",()=>{
-				wrap.css("height", totalH - this.container.find(".tab-head").height()-26 - top_add -bottom_add);
-				!is_overflow && this.container.find(".gutter").show();
-  		 });*/
+       
+		this.container.find(".tab-list").css({"width":"100%","height":"100%"});
 	}
 
 	getRandom(max = 500) {
@@ -122,7 +123,9 @@ class STable {
 					return wd_arr[+val];
 				});
 
-                rowData.unshift(`<th rowspan="${row_wd.length}" width="${col_wd.length*120 +col_wd.length-1 }">${titleStr.join(" / ")}</th>`);
+				//width="${col_wd.length*120 +col_wd.length-1 }"
+
+                rowData.unshift(`<th colspan="${col_wd.length}" rowspan="${row_wd.length}"  >${titleStr.join(" / ")}</th>`);
 			    //列字段的合并,第一行最后一列的第一个
 			    
 		     	if( ["1","3"].includes(total)){
@@ -154,7 +157,9 @@ class STable {
 
 				const count = rowspan[index]
 				if(  ( item + 1) % count === 1 || count === 1){
-					total.push(`<td rowspan="${count}" width="120">${val}</td>`);
+
+					//width="120"
+					total.push(`<td rowspan="${count}" >${val}</td>`);
 				}
 			
 			}else{

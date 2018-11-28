@@ -532,7 +532,7 @@ class SCombobox {
 		this.config.data = data;
 		const str = this.renderDrop().join("");
 		const $drop = $el.children(".combo-drop");
-		$drop.html(`<ul>${str}</ul>`);
+		$drop.html(`<ul class="drop-ul">${str}</ul>`);
 
 		const ids = this.updateInpBox($drop.children());
 
@@ -714,10 +714,10 @@ class SCombobox {
 
 		this.box.on("click",".combo-inp",function(e){
 
-			e.stopPropagation();
+		//	e.stopPropagation();
+
 			const $this= $(this);
 			const par = $this.parent();
-
 			const is_active = par.hasClass("active");
 
 			!is_active ? self.showDown(par) : self.hideUp(par);
@@ -895,7 +895,6 @@ class Tree{
 		this.box.unbind();
 		this.init();
 		this.handle();
-
 
 	}
 
@@ -1518,7 +1517,7 @@ class SComboTree {
 
 	changeType(checkbox,value=null,$el=this.box){
 
-		this.tree.changeType(checkbox,value);
+		this.tree.changeType(checkbox);
 		$el.find(".combo-inp").html(this.renderInpBox(checkbox));
 		this.config.validCombo && $el.children(".combo-inp").addClass("no-fill");
 
@@ -1547,7 +1546,8 @@ class SComboTree {
 		const self = this ;
 		
 		this.box.on("click",".combo-inp",function(e){
-			e.stopPropagation();
+		//	e.stopPropagation();
+
 			const $this= $(this);
 			const par = $this.parent();
 			const is_active = par.hasClass("active");

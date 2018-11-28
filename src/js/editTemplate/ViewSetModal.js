@@ -10,14 +10,10 @@ class ViewSetModal {
 	static status = "create";
 	constructor(config) {
 
-		
-
 		const { modal ,unit ,templateMap} = config ;
 		this.modal = modal ;
 		this.unit = unit;
 		this.templateMap = templateMap;
-
-
 
 		this.setMd = $("#setComponentMd");
 		this.modalType = $("#modalType");
@@ -186,6 +182,8 @@ class ViewSetModal {
 		this.$componentName.val("");
 		const icon = $(`.component-item[echo-type=${type}]`).html();
 		this.modalType.html(icon);
+	
+		this.setMd.removeClass("other");
 
 		this.viewType=type;
 	    this.viewStyleBoxTnit();
@@ -208,7 +206,7 @@ class ViewSetModal {
 		};
 		const icon = $(`.component-item[echo-type=${type}]`).html();
 		this.modalType.html(icon);
-
+		this.setMd.addClass("other");
 		this.viewType = type;
 
 		const config = {
@@ -217,7 +215,7 @@ class ViewSetModal {
 				style:"tab_style"
 			},
 			"chart":{
-				style:"tab_style",
+				style:"legend",
 				data:"graphInfo",
 			}
 		};
@@ -236,9 +234,13 @@ class ViewSetModal {
 		$(".legend-place").eq(legend - 1).prop("checked",true);
 		$(".border-style").eq(borderType - 1).prop("checked",true);
 		this.$componentName.val(chartName);
+
+		//不同的图形间的样式选择设置
 	    this.viewStyleBoxTnit(object);
+	    //下拉框设置
 	    this.upComboxStatus();
 		this.modal.show(this.setMd);
+		//设置指标树
 		this.zbComponent.sureBtnHandle(this,object,type);
 			
 	}
@@ -247,12 +249,14 @@ class ViewSetModal {
 	upComboxStatus(){
 
 		const status = this.viewType ==="table";
-
+		
 		const xAxisBox = this.xAxis.box.parent() ;
-
+		//饼图没有x轴的设置
 		this.viewType ==="pie" && xAxisBox.hide() || xAxisBox.show();
+	
 		this.xAxis.config.multiply = status;
 		this.yAxis.config.multiply = status;
+	
 		this.dimWd.config.multiply = false;
 
 	  
@@ -885,19 +889,33 @@ class ViewSetModal {
 
 			const noFill = $setMd.find(".no-fill:visible");
 			if(noFill.length){
-				unit.tipToast("请填完必填项！",2);
+				unit.tipToast("请填完属性设置必填项！",2);
 				return ;
 			}
 			self.createView();
 		});
 
-		$setMd.on("click", function() {
+		// 
+		$setMd.on("click", ".combo-inp" ,function(e) {
+			e.stopPropagation();
+			const $this = $(this);
 			requestAnimationFrame(function(){
-		         const $comboDrop = $(".combo-drop");
-				 $comboDrop.parent().removeClass("active");
-				 $comboDrop.hide();
+				 $setMd.find(".combo-inp").not($this).parent().removeClass("active");
+				 $setMd.find(".combo-inp").not($this).siblings().hide();
+
 		    });
 		});
+
+		 $setMd.on("click",function() {
+			
+			requestAnimationFrame(function(){
+				 const drop =  $setMd.find(".combo-drop ");
+				 drop.parent().removeClass("active");
+				 drop.hide();
+				 
+		    });
+		});
+
 	}
 }
 

@@ -84,6 +84,7 @@ class Chart {
 		const data = rowData.map((val, index) => {
 		
 			const value = val != "--" && val || 0;
+			
 			const unit = rowDataUnit[index];
 		
 			return {
@@ -140,7 +141,7 @@ class Chart {
 			data: data,
 		});
 
-		const radius = roseType  < 3 &&  ["10%","60%"] || ['30%', '60%'] ;
+		const radius = roseType  < 3 &&  ["10%","55%"] || ['30%', '55%'] ;
 		const roseTypeStr = roseType % 2 === 0  ? true : false ;
 		
 		const  rich = {
@@ -150,8 +151,6 @@ class Chart {
 		        padding: [3, 0]
 		    }
 		};
-
-		
 
 		return {
 			tooltip: {
@@ -209,16 +208,24 @@ class Chart {
 	 * [图例和grid位置配置]
 	 * @param  {[String]}  legend       [1:上，2：下，3：左:，4：右，5：无]
 	 * @param  {String} is_landscape [0：垂直，1：横向]
+	 * @param  {Aaaay：轴显示的情况} Axis [0：x轴，1：y轴]
 	 * @return {[type]}               [legend，is_landscape]
 	 */
-	getLegendPosition(legend,is_landscape = false) {
+	getLegendPosition(legend,is_landscape = false,Axis) {
 
 		const border = this.border;
 
-		const top = border === "3" ? "12%" : "8%";
-		const left_add = is_landscape && 16  || 0;
-		const top_add = border === "3" ? 4 :  3;
+		const top = border === "3" ? "12%" : "6%";
+		const left_add = is_landscape && 60  || 0;
+		const top_add = border === "3" ? 5 :  4;
 		const grid_top_add = border === "3" ? 8  : 6;
+
+
+		const rotateW = (this.size[0] - 1 )*0.6 + 1 ;
+		let baseLeft = Axis && Axis[1] === "1" ? 60 : 40 ;
+		baseLeft += left_add ;
+		
+		const baseRight = 30 ;
 
 		switch (legend) {
 			case "1":
@@ -232,11 +239,10 @@ class Chart {
 
 					const grid = {
 						top: grid_top_add + 20 + "%",
-						left: left_add + 10 +"%",
-						right: "10%",
+						left: baseLeft * rotateW,
+						right: baseRight * rotateW,
 						bottom: "18%",
 						containLabel: false,
-            			//width:"70%",
 					};
 
 					const center = [ "50%" , top_add + 55 + "%"];
@@ -259,8 +265,8 @@ class Chart {
 
 					const grid = {
 						top: grid_top_add + 12 + "%",
-						left: left_add + 10 +"%",
-						right: "10%",
+						left: baseLeft * rotateW,
+						right: baseRight * rotateW,
 						bottom: "32%",
 						containLabel: false,
 					};
@@ -283,9 +289,9 @@ class Chart {
 					};
 
 					const grid = {
-						left: left_add + 30 +"%",
+						left: (baseLeft + 100) * rotateW,
 						top: grid_top_add + 12 + "%",
-						right: "10%",
+						right: baseRight * rotateW,
 						bottom: "18%",
 						containLabel: false,
 					};
@@ -310,8 +316,8 @@ class Chart {
 
 					const grid = {
 						top: grid_top_add + 14 + "%",
-						right: "26%",
-						left: left_add + 10 +"%",
+						left: baseLeft * rotateW,
+						right:(baseRight +100) * rotateW,
 						bottom: "18%",
 						containLabel: false,
 					};
@@ -332,8 +338,8 @@ class Chart {
 					};
 
 					const grid = {
-						left: left_add + 10 +"%",
-						right: "10%",
+						left: baseLeft * rotateW,
+						right:(baseRight +100) * rotateW,
 						top: grid_top_add + 12 + "%",
 						bottom: "18%",
 						containLabel: false,
@@ -369,6 +375,7 @@ class Chart {
 		 */
 
 		const color =  ["#1296FB", "#8FD6FA", "#0088CC", "#06B76A", "#CBC450", "#FD8D1D"];
+		const colorleg =  color.length;
 		const {rowDimName, landscape, legend, threeD, stack ,lineType} = res[0];
 
 		const Axis = threeD.split(",");
@@ -390,12 +397,14 @@ class Chart {
 			const {contrastDimName, rowData ,rowDataUnit} = val;
 
 			legendArr[index] = contrastDimName;
+
+			const colorIndex =   index % (colorleg - 1 ) ;
 		
 			const areaStyle = lineType === "1" && landscape === "1" && {
 				normal: {
 	                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
 	                    offset: 0,
-	                    color: color[index]
+	                    color: color[colorIndex],
 	                }, {
 	                    offset: 0.8,
 	                    color: 'rgba(255,255,255,0)'
@@ -419,7 +428,8 @@ class Chart {
 				showSymbol: true,
 				symbol: 'circle',
 				symbolSize: 8,
-				barWidth: 20, //柱图宽度
+			//	barWidth: 20, //柱图宽度
+				barMaxWidth:30,
 				stack: stack === "1" ? "stack" : null,
 				data,
 			}
@@ -427,7 +437,7 @@ class Chart {
 
 		const is_landscape = lineType === "2" && landscape === "1" ;
 
-		const config = this.getLegendPosition(legend,is_landscape);
+		const config = this.getLegendPosition(legend,is_landscape,Axis);
 
 		const legendObj = Object.assign(config.legend, {
 			textStyle: { //图例文字的样式
@@ -437,7 +447,7 @@ class Chart {
 			data: legendArr,
 		});
 
-		const gridObj = Object.assign(config.grid, {});
+		const gridObj = Object.assign(config.grid,{});
 
 		const flagCategory = {
 				type: 'category',

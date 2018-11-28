@@ -298,7 +298,7 @@
 		}
 		#menu{
 			color:#A4BED7;
-			height: calc( 100% - #{$slideH  + 30 });
+			height: calc( 100% - #{$slideH  + 140 });
     		overflow-y: auto;
 			overflow-x: hidden;
 			padding-bottom:30px;
@@ -517,3 +517,5 @@ $color:#00a0e9;
 	    transform: translate3d(-66.6%,0,0);
 	}
 }
+
+

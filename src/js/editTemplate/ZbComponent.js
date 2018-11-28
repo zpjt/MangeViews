@@ -248,13 +248,14 @@ class ZbComponent {
 
 				switch (val) {
 					case "1": // 日历
-						viewSetModal.calendar.setTime([time_id]);
+						viewSetModal.calendar.changeStyle(1,[time_id]);
 						break;
 					case "2": //科室
-						viewSetModal.orgWd.setValue(orgs[0]);
+						viewSetModal.orgWd.changeType(false,orgs[0]);
 						break;
 					case wd_id:{ // 维度值
-						 pubDimValue.length && viewSetModal.dimWd.setValue(pubDimValue);
+						 viewSetModal.dimWd.config.multiply = false;
+						 pubDimValue.length && viewSetModal.dimWd.setValue(pubDimValue[0]);
 						}
 						break;
 				}
@@ -337,10 +338,10 @@ class ZbComponent {
 			str = `
 					<div class="sel-item zb-item-box">
 						<div >
-							<button class="s-btn zb-name dim-zb" echo-id="${kpi_id}">
+							<span class="s-btn zb-name dim-zb" echo-id="${kpi_id}">
 								<i class="fa fa-times-circle del-zb"></i>
 								<b>${kpi_name}</b>
-							</button>
+							</span>
 						</div>
 						<div class="sel-item zb-dim-combobox" >
 							<span >${dimName}:</span>
@@ -351,10 +352,10 @@ class ZbComponent {
 					`;
 		} else {
 			str = `<span class="zb-item-box">
-			   			<button class="s-btn zb-name" echo-id="${kpi_id}">
+			   			<span class="s-btn zb-name" echo-id="${kpi_id}">
 	   						<i class="fa fa-times-circle del-zb"></i>
 							<b>${kpi_name}</b>
-					    </button>
+					    </span>
 				    </span>`;
 		}
 
