@@ -1,0 +1,19 @@
+<html>
+<head>
+	<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<style type="text/css">
+			.b1{white-space-collapsing:preserve;}
+		  .b2{margin: 1.0in 1.25in 1.0in 1.25in;}
+		  .p1{text-align:justify;hyphenate:auto;font-family:Calibri;font-size:10pt;}
+		  .p2{text-indent:1.1666666in;text-align:justify;hyphenate:auto;font-family:Calibri;font-size:10pt;}
+		  .p3{text-align:justify;hyphenate:auto;font-family:Calibri;font-size:11pt;}
+		 .s1{color:blue;}
+		.s2{font-weight:bold;color:red;}.s3{font-size:11pt;font-weight:bold;color:red;}
+	.s4{color:black;}.s5{font-weight:bold;color:black;}
+</style>
+	<meta content="82396" name="author"></head>
+
+	<body class="b1 b2">
+		<p class="p1"></p><p class="p1"><img src="http://172.16.13.139:8080/data/web_static/file/images/0.png" style="width:5.767361in;height:0.97986114in;vertical-align:text-bottom;"></p><p class="p1"><span>如图是麻醉科奉主任从手麻系统导出的麻醉明细，不知这个明细是用手术开始时间还是结束时间进行统计的，上面圈出的两例，如果按照手术开始时间统计他们属于9月3号的病例，但是如果按照手术结束时间来统计他们属于9月4号的病例，这点区分清楚很重要。</span></p><p class="p1"><span class="s1">手术开始时间和手术结束时间对应手术麻醉的开始和结束时间。具体用那个时间主任没有给明确时间 ，只说了用麻醉时间和手术时间都可以。</span></p><p class="p1"></p><p class="p1"></p><p class="p1"></p><p class="p1"></p><p class="p1"></p><p class="p1"></p><p class="p1"></p><p class="p1"></p><p class="p1"><img src="http://172.16.13.139:8080/data/web_static/file/images/3d54.png" style="width:5.763889in;height:3.8979166in;vertical-align:text-bottom;"></p><p class="p1"><span>Sql查出的明细-----第一季度：</span><span class="s2">2643</span></p><p class="p2"><span>第二季度：</span><span class="s3">2921</span></p><p class="p3"></p><p class="p3"><span class="s4">数据跟质控报告书上不一致，可能原因：</span></p><p class="p3"><span class="s4">①我们的sql逻辑有问题；</span></p><p class="p3"><span class="s4">②医院存在部分手工录入的病例没有填入手麻系统所以我们抓不到；</span></p><p class="p3"><span class="s4">③数据同步有问题导致数据丢失所以我们抓的麻醉例数少；</span></p><p class="p3"><span class="s1">可能问题：存在掉数据问题   比如医院一月份统计一月份数据的时候是200例   但是我们三月份再去统计一月份数据的时候  可能查出来的是199    这就是掉数据现象   具体的需要去问下网络技术科存不存在掉数据现象</span></p><p class="p3"></p><p class="p3"><span class="s5">解决方案</span><span class="s4">，问医生质控报告上那个合计的例数是怎么来的？是直接从手麻系统导出来的还是另外又包含了一些没录入系统的数据，我们已经要了好几个月的明细了都能对得上。</span></p><p class="p1"></p>
+	</body>
+	</html>

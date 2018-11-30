@@ -280,10 +280,10 @@ class TimeRealMd{
 			const { dim_name ,dim_value }=  dimWd ; 
 			str = ` <div class="zb-item-box">
 						<div >
-							<button class="s-btn zb-name dim-zb" echo-id="${kpi_id}">
+							<span class="s-btn zb-name dim-zb" echo-id="${kpi_id}">
 								<i class="fa fa-times-circle del-zb"></i>
 								<b>${kpi_name}</b>
-							</button>
+							</span>
 						</div>
 						<div class="sel-item zb-dim-combobox" >
 							<span >${dim_name}:&nbsp;</span>
@@ -294,10 +294,10 @@ class TimeRealMd{
 					`;
 		} else {
 			str = `<span class="zb-item-box">
-			   			<button class="s-btn zb-name" echo-id="${kpi_id}">
+			   			<span class="s-btn zb-name" echo-id="${kpi_id}">
 	   						<i class="fa fa-times-circle del-zb"></i>
 							<b>${kpi_name}</b>
-					    </button>
+					    </span>
 				    </span>`;
 		}
 

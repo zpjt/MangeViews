@@ -428,7 +428,7 @@ class HeadOpt {
 				const size = view.attributeObj.size;
 				const type = view.attributeObj.type;
 				const id = view.attributeObj.viewID;
-				const title = type === "table" &&　view.viewData.tabInfo.chartName || view.viewData.graphInfo.chartName;
+				const title = type === "table" ?　view.viewData.tabInfo.chartName : view.viewData.graphInfo.chartName;
 
 
 				new Border($border, {

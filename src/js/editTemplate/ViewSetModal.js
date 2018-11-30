@@ -311,7 +311,7 @@ class ViewSetModal {
 								<span class="s-title">Y轴:</span>
 							    <span class="s-switch" echo-text="不显示" style="width: 100px">
 									<input type="checkbox" id="Yaixs" ${y}>
-									<label for="aixs" echo-text="显示"></label>
+									<label for="Yaixs" echo-text="显示"></label>
 								</span>
 							</div>
 						</div>`;
@@ -428,6 +428,13 @@ class ViewSetModal {
 
 		const htmlStr = `
 						<div class="sel-item">
+							<div class="sel-item">
+									<span class="s-title">标签:</span>
+								    <span class="s-switch" echo-text="不显示" style="width: 100px">
+										<input type="checkbox" id="lab_pie" ${y}>
+										<label for="lab_pie" echo-text="显示"></label>
+									</span>
+							</div>
 							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>

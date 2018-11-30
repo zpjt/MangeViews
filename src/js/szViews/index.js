@@ -430,6 +430,8 @@ class CatalogueStyle{
 
 class AddModal{
 
+	static par_id = "" ;
+
 	constructor(){
 
 		this.parCatalogCombox = $("#parName") ;
@@ -457,7 +459,7 @@ class AddModal{
 		if(Page.style !== 2){
 			const menuArr = $tabCard.data("menuArr");
 			const curId = menuArr[menuArr.length-1].layout_id;
-			this.parCatalogSel.setValue(curId);
+			type === "view" && curId === -2  ? this.parCatalogSel.clearValue() : this.parCatalogSel.setValue(curId);
 		}else{
 			this.parCatalogSel.clearValue();
 		}
@@ -581,23 +583,16 @@ class AddModal{
 			const method = $(this).attr("method");
 			const name = $inpName.val().trim();
 
-			const par_id = _self.parCatalogSel.box.find(".combo-value").val();
+			const par_id = method === "modify" ? AddModal.par_id : _self.parCatalogSel.box.find(".combo-value").val();
 
-			if($addMView.find("no-fill").length){
-				
-			 }
 
 			 if(!name || !par_id){
 				UnitOption.tipToast("请填写完整！",2);
 				return ;
 			 }
 
-
-
 			const cur_id =  $ViewContainer.attr("curid");
-		
 			const style = Page.style;
-
 			switch(method){
 				case "create":{
 					_self.addCatalogue(type,{name,par_id},style);
@@ -635,22 +630,29 @@ class AddModal{
 					break;
 				case "modify":{
 
-					api.updataName({name,id:cur_id}).then(res=>{
-							if(res){
-									const menuIndexArr = $tabCard.data("menuArr").map(val=>{
-										  return  val.index ;
-									}) ;
-									 page.styleBoxrender(menuIndexArr,style);
-									 page.modal.close($addMView);
-									 UnitOption.tipToast("重命名成功！",1);
-							}else{
-								UnitOption.tipToast("重名，换个名称！",2);
-							}
+				  api.checkName({par_id,name}).then(res=>{
 
-						}).catch(res=>{
+				  		if(res){
+									 api.updataName({name,id:cur_id}).then(res=>{
+											if(res){
+													const menuIndexArr = $tabCard.data("menuArr").map(val=>{
+														  return  val.index ;
+													}) ;
+													 page.styleBoxrender(menuIndexArr,style);
+													 page.modal.close($addMView);
+													 UnitOption.tipToast("重命名成功！",1);
+											}else{
+													 UnitOption.tipToast("重命名失败！",2);
+											}
+									});
 
-							console.log(res);
-						});
+				  		}else{
+									UnitOption.tipToast("重名，换个名称！",2);
+				  		}
+
+				  });
+
+					 
 					}
 					break;	
 				default:
@@ -1067,34 +1069,34 @@ class Page  {
 
 	}
 	
-    init(){
+  init(){
 
     	const _self = this ;
 
-		this.modal = new SModal();
-		this.table = new TableStyle();
-		this.catalogue  = new CatalogueStyle();
-		this.addModal = new AddModal();
-		this.delModal = new DelModal();
-		this.iconBox = new IconBox();
-		this.inp = new SInp();
-		this.search = new Search($("#u-search"),{
-			serachCallback:(result)=>{
-				console.log(result);
-				this.changeStyle($(".style-item").eq(2),result);
-			},
-			closeCallback:(res)=>{
-				this.table.createTreeGrid(res);	
-			},
-			keyField:"layout_name",
-			judgeRelation:(val)=>{
-				return val["layout_type"] === 1;
-			},
-			is_Arr:false,
+			this.modal = new SModal();
+			this.table = new TableStyle();
+			this.catalogue  = new CatalogueStyle();
+			this.addModal = new AddModal();
+			this.delModal = new DelModal();
+			this.iconBox = new IconBox();
+			this.inp = new SInp();
+			this.search = new Search($("#u-search"),{
+				serachCallback:(result)=>{
+					console.log(result);
+					this.changeStyle($(".style-item").eq(2),result);
+				},
+				closeCallback:(res)=>{
+					this.table.createTreeGrid(res);	
+				},
+				keyField:"layout_name",
+				judgeRelation:(val)=>{
+					return val["layout_type"] === 1;
+				},
+				is_Arr:false,
 
-		});
+			});
 
-		this.getUrlSearch();
+			this.getUrlSearch();
 	
 
  	}
@@ -1200,7 +1202,7 @@ class Page  {
 				:this.table.createTreeGrid(copy_data);
  	}
 
-    styleBoxrender(menuIndexArr=[0], type = 0){
+  styleBoxrender(menuIndexArr=[0], type = 0){
 		api.getAllLayout().then(res=>{
 
 			if(res){
@@ -1210,88 +1212,81 @@ class Page  {
 			}
 		})
 			
-    }
+  }
     
-    tabCardInit(menuArr){
+  tabCardInit(menuArr){
 		$tabCard.data("menuArr",menuArr);
 		const leg = menuArr.length;
 		const str = menuArr.map((val,ind)=>{
 			const {layout_name,index}=val;
 			const is_last = ind === leg-1;
-
 			const icon_str = !is_last && `&nbsp;&nbsp;<i class="fa fa-angle-right fa-lg">&nbsp;&nbsp;</i>` || "";
-			
 			return `<div class="card" echo-data="${index}"><span>${layout_name}</span>${icon_str}</div>` ;
 		});
 		$tabCard.html(str.join(""));
-    }
+
+   }
 
     toEdit($this,style){
 
-		const index = +$this.attr("echo-data");
-		const data = style === 1 ?  $catalogueBox.data("getData")[index] 
-		: style === 0 ? $tab.datagrid("getData").rows[index] : $treeTab.treegrid("find",index);
+			const index = +$this.attr("echo-data");
+			const data = style === 1 ?  $catalogueBox.data("getData")[index] 
+			: style === 0 ? $tab.datagrid("getData").rows[index] : $treeTab.treegrid("find",index);
+			
+			const {layout_name,layout_id,par_id} = data ;
+
+			const str = ENV_SRC + `editTemplate.html?layout_id=${layout_id}&&par_id=${par_id}&&layout_name=${layout_name}`;
 		
-		const {layout_name,layout_id,par_id} = data ;
-
-
-
-		const str = ENV_SRC + `editTemplate.html?layout_id=${layout_id}&&par_id=${par_id}&&layout_name=${layout_name}`;
-		
-		$("#slide",window.parent.document).animate({"width":0},500,function(){
+			$("#slide",window.parent.document).animate({"width":0},500,function(){
 			
 			$("#content",window.parent.document).addClass("no-head");
 			$("#routerConter",window.parent.document).html(`<iframe frameborder="0" id="router" name="myFrameName" src="${str}"></iframe>`);
-
-		//	window.location.href="" + str ;
-
-			
-		});
+			});
     }
 
     getCurTabData(menuArr,curIndex){
 		
-		let tabData = $ViewContainer.data("tabData");
-		let i = 0;
-		while(i<=curIndex){
-			tabData=tabData[menuArr[i].index].sub;
-			i++;
-		}
+			let tabData = $ViewContainer.data("tabData");
+			let i = 0;
+			while(i<=curIndex){
+				tabData=tabData[menuArr[i].index].sub;
+				i++;
+			}
     	return tabData;
     }
 
     handleCard($this){//分类选项卡
     	const menuArr = $tabCard.data("menuArr");
-		const leg =menuArr.length;
-		const index = $this.index();
+			const leg =menuArr.length;
+			const index = $this.index();
 
-		if(index=== leg-1){
-			return ;
-		}
+			if(index=== leg-1){
+				return ;
+			}
 
-		const tabData =this.getCurTabData(menuArr,index);
-		
+			const tabData =this.getCurTabData(menuArr,index);
+			
 
-		const styleIndex = $(".style-sel").index();
-		styleIndex ? this.catalogue.catalogueInit(tabData) :this.table.loadTab(tabData);
-		const newmenuArr=menuArr.slice(0,index+1);
-		this.tabCardInit(newmenuArr);
+			const styleIndex = $(".style-sel").index();
+			styleIndex ? this.catalogue.catalogueInit(tabData) :this.table.loadTab(tabData);
+			const newmenuArr=menuArr.slice(0,index+1);
+			this.tabCardInit(newmenuArr);
 
     }
     changeStyle($this,reloadData = null){
 
-		if($this.hasClass("style-sel")){
+			if($this.hasClass("style-sel")){
 
-			Page.style === 2 && reloadData && this.table.createTreeGrid(reloadData);
-		
-			return ;
-		}
+				Page.style === 2 && reloadData && this.table.createTreeGrid(reloadData);
+			
+				return ;
+			}
 
-		const type = $this.attr("sign");
+			const type = $this.attr("sign");
 
-		let index = $this.index();
+			let index = $this.index();
 
-		Page.style = index ;
+			Page.style = index ;
 
 		// 要先显示容器，不然加载出来的表格没高度
 		
@@ -1332,140 +1327,150 @@ class Page  {
     }
 
     handle(){
-		const _self = this ;
+			const _self = this ;
 
-    	$(window).on("click",function(){
-          		$(".icon-active").removeClass("icon-active");
-          		$("#catalogueContentmenu").hide();
-		});
-		
-		//切换选项卡
-		$tabCard.on("click",".card",function(){
-			const $this = $(this);
-			page.handleCard($this);
-			$("#catalogueChecAll").children("input").prop("checked",false);
+	    	$(window).on("click",function(){
+	          		$(".icon-active").removeClass("icon-active");
+	          		$("#catalogueContentmenu").hide();
+			});
+			
+			//切换选项卡
+			$tabCard.on("click",".card",function(){
+				const $this = $(this);
+				page.handleCard($this);
+				$("#catalogueChecAll").children("input").prop("checked",false);
 
-		});
+			});
 
-		//切换显示风格
-		$("#styleBox").on("click",".style-item",function(){
-			const $this = $(this);
-			page.changeStyle($this);
-		});
+			//切换显示风格
+			$("#styleBox").on("click",".style-item",function(){
+				const $this = $(this);
+				page.changeStyle($this);
+			});
 
-		//操作按钮
-		$ViewContainer.on("click",".tab-opt",function(e){
-
-
-			const type = $(this).attr("node-sign");
-			const index =Page.style === 1 ? $(this).parent().parent().attr("echo-data") : $(this).parent().attr("echo-data");
-
-			const style = Page.style;
-
-			const data = style === 1 ?  $catalogueBox.data("getData")[index] 
-			: style === 0 ? $tab.datagrid("getData").rows[index] : $treeTab.treegrid("find",index);
+			//操作按钮
+			$ViewContainer.on("click",".tab-opt",function(e){
 
 
-			const {layout_type,layout_id,layout_icon,layout_icon_name,layout_name} = data ;    
-			const last_layoutId = +$ViewContainer.attr("curId");
+				const type = $(this).attr("node-sign");
+				const index =Page.style === 1 ? $(this).parent().parent().attr("echo-data") : $(this).parent().attr("echo-data");
 
-			switch(type){
+				const style = Page.style;
 
-				case "preView":
+				const data = style === 1 ?  $catalogueBox.data("getData")[index] 
+				: style === 0 ? $tab.datagrid("getData").rows[index] : $treeTab.treegrid("find",index);
 
-					if( data.model!="null" && data.model){
-					
-						$("#content",window.parent.document).addClass("no-head");
-						const src = ENV_SRC + "ManageViews.html?layout_id="+layout_id+"&layout_name="+layout_name+"&type=pre";
-						$("#routerConter",window.parent.document).html(`<iframe frameborder="0" id="router" name="myFrameName" src="${src}"></iframe>`);
 
-					//	window.location.href = src ;
-					
-					}else{
-						UnitOption.tipToast("该视图获没有模板存在，请去编辑器里创建！",2);
-					}
+				const {layout_type,layout_id,layout_icon,layout_icon_name,layout_name,par_id} = data ;    
+				const last_layoutId = +$ViewContainer.attr("curId");
 
-					break;
-				case "issueView":
-					
-					  	api.showReleaseLayout(layout_id).then(res=>{
-							if(res){
-								
-								page.modal.show($issueMView);
-								const {user,starttime,endtime,release} = res;
-							
-							  	[].slice.call($issueMView.find(".s-switch input")).map((val,index)=>{
+				switch(type){
 
-									switch(index){
-										case 0 : //时间
-											const status =  starttime == "-1" ;
-											val.checked= status ;
+					case "preView":
 
-											if(status){
-												$(val).parent().siblings(".time-inpbox").removeClass("active");
-											}else{
-												$(val).parent().siblings(".time-inpbox").addClass("active");
-												page.addModal.calendar.setTime([starttime,endtime]);
-											}
+						if( data.model!="null" && data.model){
+						
+							$("#content",window.parent.document).addClass("no-head");
+							const src = ENV_SRC + "ManageViews.html?layout_id="+layout_id+"&layout_name="+layout_name+"&type=pre";
+							$("#routerConter",window.parent.document).html(`<iframe frameborder="0" id="router" name="myFrameName" src="${src}"></iframe>`);
 
-											break;
-										case 1 ://用户
-											const status_2 =  user[0] == "-1" ;
-											val.checked= status_2 ;
+						//	window.location.href = src ;
+						
+						}else{
+							UnitOption.tipToast("该视图获没有模板存在，请去编辑器里创建！",2);
+						}
 
-											if(status_2){
-												$(val).closest(".item-status").siblings(".org-box").removeClass("active");
-											}else{
-												$(val).closest(".item-status").siblings(".org-box").addClass("active");
+						break;
+					case "issueView":
 
-												page.addModal.orgTree.setValue(user);
-											}
-									
-											break;
-										case 2 :
-											const status_3 =  release === 1 ;
-											val.checked= status_3 ;
-											break;
-									}
-							 	 });	
-							}else{
-								
+							if(data.model=="null" || !data.model){
+									UnitOption.tipToast("该视图内容为空！",2);
+									return ;
 							}
-						});
-					break;
-				case "copyView":
 
-					
-					_self.addModal.initMD("view","copy");
+						
+						  	api.showReleaseLayout(layout_id).then(res=>{
+								if(res){
+									
+									page.modal.show($issueMView);
+									const {user,starttime,endtime,release} = res;
+								
+								  	[].slice.call($issueMView.find(".s-switch input")).map((val,index)=>{
 
-					break;
-				case "renameCata":
-				case "renameView":
-					page.modal.show($addMView);
-					$parName.parent().hide();
-					$addMBtn.attr({"method":"modify"});
-					 $inpName.removeClass("no-fill").val(layout_name);
-					break;
-				case "modViewIcon":
-				case "modCataIcon":
-					e.stopPropagation();
-					const $parContainer = $iconBox.parent();
-					const status = $parContainer.hasClass("icon-active");
-					const $iconBoxItem = $(".iconBox-item");
+										switch(index){
+											case 0 : //时间
+												const status =  starttime == "-1" ;
+												val.checked= status ;
 
-					$iconBoxItem.css("display","none");
-					$iconBoxItem.eq(2-layout_type).css("display","flex");
-					$(".icon-sel").removeClass("icon-sel");
-					$iconBox.find("."+layout_icon_name.trim()).addClass("icon-sel");
+												if(status){
+													$(val).parent().siblings(".time-inpbox").removeClass("active");
+												}else{
+													$(val).parent().siblings(".time-inpbox").addClass("active");
+													page.addModal.calendar.setTime([starttime,endtime]);
+												}
 
-				  !status || last_layoutId !== layout_id ? page.modal.show($parContainer,"icon-active") :page.modal.close($parContainer,"icon-active") ;
-					break;
-			}
+												break;
+											case 1 ://用户
+												const status_2 =  user[0] == "-1" ;
+												val.checked= status_2 ;
+
+												if(status_2){
+													$(val).closest(".item-status").siblings(".org-box").removeClass("active");
+												}else{
+													$(val).closest(".item-status").siblings(".org-box").addClass("active");
+
+													page.addModal.orgTree.setValue(user);
+												}
+										
+												break;
+											case 2 :
+												const status_3 =  release === 1 ;
+												val.checked= status_3 ;
+												break;
+										}
+								 	 });	
+								}else{
+									
+								}
+							});
+						break;
+					case "copyView":
+
+						
+						_self.addModal.initMD("view","copy");
+
+						break;
+					case "renameCata":
+					case "renameView":
+							const txt = type === "renameCata" ? "重命名目录":"重命名视图";
+						 _self.addModal.modalTit.html(txt);
+
+						 page.modal.show($addMView);
+						 $parName.parent().hide();
+						 $addMBtn.attr({"method":"modify"});
+						 $inpName.removeClass("no-fill").val(layout_name);
+						 AddModal.par_id = par_id ;
+						break;
+					case "modViewIcon":
+					case "modCataIcon":
+						e.stopPropagation();
+						const $parContainer = $iconBox.parent();
+						const status = $parContainer.hasClass("icon-active");
+						const $iconBoxItem = $(".iconBox-item");
+
+						$iconBoxItem.css("display","none");
+						$iconBoxItem.eq(2-layout_type).css("display","flex");
+						$(".icon-sel").removeClass("icon-sel");
+						$iconBox.find("."+layout_icon_name.trim()).addClass("icon-sel");
+
+					  !status || last_layoutId !== layout_id ? page.modal.show($parContainer,"icon-active") :page.modal.close($parContainer,"icon-active") ;
+						break;
+				}
 
 
-			$ViewContainer.attr("curId",layout_id);
+				$ViewContainer.attr("curId",layout_id);
 
-		});
+			});
 		
 		_self.btnBox.on("click",".s-btn",function(){
 
@@ -1475,11 +1480,11 @@ class Page  {
 			switch(sign){
 				
 				case"addView":{
-					let lev = $tabCard.data("menuArr").length;
+					/*let lev = $tabCard.data("menuArr").length;
 			    	if(lev === 1 && Page.style !==2){
 						UnitOption.tipToast("第一层只能创建目录!",2);
 						return ;
-			    	}
+			    	}*/
 					_self.addModal.initMD("view");
 					break;
 				}

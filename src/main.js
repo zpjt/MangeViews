@@ -279,13 +279,13 @@ class SoketNews{
 
             				</li>`
             	});
-				_self.messageEl.children(".messages-ul").html(str);
-				const count = data.length ;
-				if(count){
-					_self.messageTip.html(data.length).show();
-				}else{
-					_self.messageTip.hide();
-				}
+							_self.messageEl.children(".messages-ul").html(str);
+							const count = data.length ;
+							if(count){
+								_self.messageTip.show();
+							}else{
+								_self.messageTip.hide();
+							}
             }
         };
 
@@ -504,18 +504,60 @@ class Page{
 			closeFun();
 		});
 
-		/*系统操作下拉返回*/
-		const $userOptions = $("#userOpt");
-		$("#userOption").click(function(){
-			$userOptions.slideToggle();
-		});
-		
-		$("#j-news").click(function(){
-			_self.news.messageEl.slideToggle();
-		});
+	
+		/*消息框事件*/
+		$("#g-news").on("click",".handleSign",function(){
+
+			const type = $(this).prop("id");
+
+			switch(type){
+				case "closeMessage":
+				case "j-news":{
+					_self.news.messageEl.slideToggle();
+					break;
+				}
+				case"j-allMark":{/*标记所有消息*/
+							const news = _self.news.messageEl.find(".newItem");
+
+							if(!news.length){
+								return ;
+							}
+
+							_self.news.messageEl.slideToggle();
+
+						 const obj = $.map(news,function(val){
+							return {id:$(val).attr("echo-data")};
+						 });
+				
+						 Promise.resolve(
+							$.ajax({
+								method:"post",
+								url:window.jsp_config.baseUrl+"Alarm/upAlarmSendStatus",
+								contentType:"application/json",
+								data:JSON.stringify(obj),
+							})
+						).then(res=>{
+
+							_self.unit.tipToast("标记成功！",1);
+							const curMenu = $(".child-item.active").attr("data-url").includes("News");
+							if(curMenu){
+									$(".child-item.active").click();
+							}
+
+						});
+					break;
+				}
+				case "j-allMessage":{	
+					$(".menuItem[data-url='index\/lists\/News']").click();
+						 _self.news.messageEl.slideToggle();
+					break;
+				}
+			}
+
+		})
 
 		/*系统操作*/
-		$userOptions.on("click","li",function(){
+		$("#userOpt").on("click","li",function(){
 
 			const key = $(this).attr("key");
 
@@ -535,7 +577,6 @@ class Page{
 				
 				break;
 			}
-			$userOptions.slideToggle();
 		});
 
 		/*切换界面*/
@@ -565,37 +606,8 @@ class Page{
 			})()
 		);
 
-		/*标记所有消息*/
-		$("#j-allMark").click(function(){
+	
 
-				const news = _self.news.messageEl.find(".newItem");
-
-				if(!news.length){
-					return ;
-				}
-
-				const obj = $.map(news,function(val){
-					return {id:$(val).attr("echo-data")};
-				});
-				
-				 Promise.resolve(
-					$.ajax({
-						method:"post",
-						url:window.jsp_config.baseUrl+"Alarm/upAlarmSendStatus",
-						contentType:"application/json",
-						data:JSON.stringify(obj),
-					})
-				).then(res=>{
-
-					_self.unit.tipToast("标记成功！",1);
-				})
-		});
-
-	    $("#preToNews").click(function(){
-
-			 $(".menuItem[data-url='index\/lists\/News']").click();
-			 _self.news.messageEl.slideToggle();
-		});
 	}
 
 }

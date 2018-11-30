@@ -21,7 +21,7 @@ class Summernote {
 		this.handle();
 	}
 
-	init(res) {
+	init(res="") {
 
 		if (!Summernote.loading) {
 

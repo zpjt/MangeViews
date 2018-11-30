@@ -231,7 +231,6 @@ class MessageTab extends EasyUITab{
 			}),
 		    onAfterEdit:function(rowIndex, rowData, changes){
 
-		    	
 		    	const has_change = Object.keys(changes);
 		    	if(!has_change.length){
 					return ;
@@ -239,11 +238,12 @@ class MessageTab extends EasyUITab{
 				
 				const method = rowData.id && "updateAlarmModel" || "addAlarmModel" ;
 				api[method](rowData).then(res=>{
+					const txt = rowData.id && "修改" || "添加" ;
 					if(res){
 						method === "addAlarmModel" && page.addModal.getAllAlarmModel();
-						page.unit.tipToast("短信添加成功！",1);
+						page.unit.tipToast(`短信模板${txt}成功！`,1);
 					}else{
-						page.unit.tipToast("短信添加失败！",0);
+						page.unit.tipToast(`短信模板${txt}失败！`,0);
 					}
 				});	
 		    },
@@ -423,9 +423,6 @@ class AddModal{
 						this.dimCombo.setValue(dimX);
 						this.dimCombo.box.find(".no-fill").removeClass("no-fill");
 					} 　
-
-				
-
 				}
 
 				$addMBtn.removeAttr("disabled");
@@ -535,7 +532,7 @@ class AddModal{
 		api.getLayoutUserTree().then(res=>{
 			if(res){
 				this.userTreeCombo = new SComboTree($("#userTreeCombobox"),{
-					width:300,
+					width:310,
 					treeConfig:{
 						data:res.sub,
 						checkbox:true,
@@ -757,6 +754,8 @@ class AddModal{
 				     	const editorText = $messageTab.datagrid("getEditor", {index,field:"model_text"});
 				     	const editorName = $messageTab.datagrid("getEditor", {index,field:"model_name"});
 
+				     	const curItem = $messageTab.datagrid("getRows")[index];
+
 				     	const name = editorName.actions.getValue(editorName.target).trim();
 
 
@@ -765,8 +764,8 @@ class AddModal{
 				     		return ;
 				     	}
 
-				     	const is_repeat = $messageTab.datagrid("getRows").some(val=>{
-								return val.model_name === name ;
+				     	const is_repeat = $messageTab.datagrid("getRows").some((val,oIndex)=>{
+								return val.model_name === name && oIndex !== index;
 				     	});
 
 				     	if(is_repeat){
@@ -775,8 +774,8 @@ class AddModal{
 				     	}
 
 				    	sEditStr =`<i class="fa fa-edit"></i><span>编辑</span>`;
-						$this.removeClass("s-editing");
-						$messageTab.datagrid("endEdit", index);
+							$this.removeClass("s-editing");
+							$messageTab.datagrid("endEdit", index);
 				    }
 				   
 				    $this.html(sEditStr);

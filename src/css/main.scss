@@ -54,12 +54,19 @@
     }
 	
 	@at-root{
+		#user{
+			&:hover{
+				.userOpt{
+					display: block;
+				}
+			}
+		}
 		.userOpt{
 			display: none;
 			position: absolute;
 		    top: 63px;
 		    right: 34px;
-		    z-index:99;
+		    z-index:10;
 		    line-height: 26px;
 		    background: black;
 		    padding: 8px 0;
@@ -114,16 +121,14 @@
 				.message-tip{
 					position: absolute;
 					display:none;
-					width: 30px;
-					height: 30px;
-					line-height:30px;
+					width: 10px;
+					height: 10px;
 					text-align:center;
-					font-size:12px;
 					font-weight:bolder;
 					border-radius:100%;
 					background: red;
-					top:4px;
-					right:0;
+					top:12px;
+					right:18px;
 					color:white;
 				}
 				
@@ -141,7 +146,16 @@
 			    border: 1px solid rgba(0,0,0,0.15);
 			    box-shadow: 0px 6px 12px 0px rgba(0,0,0,0.18);
 			    background-clip: padding-box;
-			    padding-top:10px;
+			    padding-top:24px;
+		    .message-close{
+			    	position: absolute;
+			    	right:10px;
+			    	top:0px;
+			    	cursor: pointer;
+			    	&:hover{
+			    		color: red;
+			    	}
+		    }
 				.m-footer{
 					padding:8px;
 					display:flex;
@@ -157,7 +171,9 @@
 				}
 
 				@at-root{
-					#preToNews{
+
+
+					#j-allMessage{
 						cursor: pointer;
 						&:hover{
 							color:#00a0e9;
