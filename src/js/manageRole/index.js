@@ -17,11 +17,7 @@ class Table {
     }
 
     init(){
-
     	this.renderTemplate();
-		
-		
-
     }
 
 
@@ -150,7 +146,7 @@ class Page{
 	constructor(){
 		this.unit = new Unit();
 		this.roleMd = $("#roleMd");
-	    this.btnBox= $("#btnBox");
+		this.btnBox= $("#btnBox");
 		this.handle();
 		this.init();
 

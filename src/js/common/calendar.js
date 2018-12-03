@@ -647,31 +647,32 @@ class Calendar{
 		const rotate = this.rotate;
 		return new Array(this.style).fill("").map((val,index)=>{
 				switch(rotate){
-					case 4:
+					case 4://日
 						return {
 							year:year,
 							searson:searson,
-							mon:mon+index,
-							day:day+index,
-						}
-					case 2:
-						return {
-							year:year,
-							searson:searson+index,
 							mon:mon,
 							day:day,
 						}
-					case 3:
+					case 2://季度
+						return {
+							year:year,
+							searson:searson,
+							mon:mon,
+							day:day,
+						}
+					case 3://月
+
 						return {
 								year:year,
 								searson:searson,
-								mon:mon+index,
+								mon:mon,
 								day:day,
 							}
 						break;
-					case 1:
+					case 1://年
 						return {
-							year:year+index,
+							year:year,
 							searson:searson,
 							mon:mon,
 							day:day,

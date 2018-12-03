@@ -1,257 +1,12 @@
 import "css/hsViews.scss";
 import {api} from "api/hsViews.js";
+import {DelModal,RestModal} from "./OptModal.js";
+import {Table} from "./Table.js";
 
-import {EasyUITab} from "js/common/EasyUITab.js";
-import {Unit, SModal, SComboTree ,SInp ,Search} from "js/common/Unit.js";
-
-
-/* 
- jq 对象
- @$table：回收表格 
- */
-
- const $tableBox = $("#tabBox"),
-       $table = $("#tab"),
-       $restModal = $("#restModal");
-
-
-class Table extends EasyUITab{
-
-	constructor(unit){
-       super();
-       this.setPageHeight($tableBox,140);
-       this.unit = unit ;
-       this.handle();
-    }
-
-	tabConfig(idField){
-		const name = this.state === "layout" && "视图名称" || "图表名称" ;
-		return {
-			idField:idField,
-			tabId:"#tabBox",
-			frozenColumns: this.frozenColumns(idField,{
-				checkbox: Page.tabOptDel,
-			}),
-			columns: [
-				[{
-					field: 'layout_name',
-					title: name,
-					width: "35%",
-				}, 
-				{
-					field: 'recycle_username',
-					title: '删除人',
-					width: "15%",
-				}, 
-				{
-					field: 'updata_time',
-					title: '删除时间',
-					width: "25%",
-				},
-				
-				{
-					field: 'optBtn',
-					title: '操作',
-					align:"left",
-					width: "20%",
-					formatter: function(val, rowData,index) {
-						
-						let str = Page.tabOptStr;
-
-						return `
-								<div class="tabBtnBox" echo-data='${rowData.layout_id}' >
-										${str}
-								</div>
-							`;
-					}
-				}]
-			],
-		};
-    }
-
-    loadTab(data,type){
-    	this.state = type ;
-		this.creatTab(data,$table,this.tabConfig("layout_id"));
-    }
-
-    handle(){
-    	const _self = this ;
-		//复选框事件
-		$tableBox.on("click",".checkSingle",function(){
-			_self.checkSingleHandle($tableBox);
-		});
-		//
-		$tableBox.on("click",".tab-opt",function(){
-
-			const type =  $(this).attr("node-sign");
-			const par = $(this).parent(),
-				  id = +par.attr("echo-data");
-
-			
-			switch(type){
-				case "rest":{
-
-					const node = $table.datagrid("getData").rows.find(val=>{
-
-						return val.layout_id === id ;
-					});
-
-
-					page.restModal.setValue(node.layout_name,node.par_id,id);
-
-					break;
-				}
-				case "del":{
-
-					const obj = {ids:[id]} ;
-					page.delModal.del(obj);
-
-					break;
-					}
-				default:
-					break;
-			}
+import {Unit, SModal,SInp ,Search} from "js/common/Unit.js";
 
 
 
-		});
-    }
-
-}
-
-class DelModal{
-
-	static delArr = [];
-
-	constructor(unit){
-
-		this.unit = unit ;
-		this.confirmBtn = $("#confirmBtn");
-		this.confirmMd = $("#confirm-MView");
-		this.handle();
-	}
-
-	del(obj){
-
-		const  method = Page.state === "layout" && "delLayout" || "delchart";
-		api[method](obj).then(res=>{
-			if(!res){
-				this.unit.tipToast("删除失败！",0);
-			}else{
-				this.unit.tipToast("删除成功！",1);
-				page.getData();
-			}
-			DelModal.delArr = null ;
-		});
-	}
-
-
-	handle(){
-		
-		const _self = this;
-		// 删除模态框确认按钮
-		this.confirmBtn.click(function(){
-
-			const obj = {ids:DelModal.delArr};
-			_self.del(obj);
-			page.modal.close(_self.confirmMd);
-		})
-	
-	}
-}
-
-class RestModal{
-
-	constructor(unit,modal){
-		 this.unit = unit ;
-		 this.modal = modal ;
-		this.init();
-		this.handle();
-	}
-
-	init(){
-		this.getAllLayoutPar();
-	}
-
-	setValue(name,par_id,id){
-
-		this.optId = id ;
-		$("#name").val(name);
-		this.restCombo.tree.setSingleValue(par_id);
-		page.modal.show($restModal);
-	}
-
-	getAllLayoutPar(){
-
-		api.getAllLayoutPar().then(res=>{
-
-			if(res){
-
-				this.restCombo = new SComboTree($("#parName"),{
-					width:300,
-					treeConfig:{
-						data:res.sub,
-						"textField":"layout_name",
-						"idField":"layout_id",
-						"childIcon":"fa fa-folder-open-o",
-						"childrenField":"sub",
-						"parClick":true,
-						"judgeRelation":(val)=>{//自定义判断是目录还是文件的函数
-								return val.sub.length > 0 ;
-						 }
-					}
-				});
-				
-			}else{
-
-				this.unit.tipToast("获取目录出错！",0);
-			}
-		})
-		
-	}
-
-	handle(){
-
-		const _self = this ;
-		const unit = this.unit;
-		const modal = this.modla;
-		
-		$("#addMBtn").click(function(){
-			
-			const par_id = _self.restCombo.box.find(".combo-value").val(),
-				  name = $("#name").val();
-
-			if(!name || !par_id){
-				unit.tipToast("请填写完整！",2);
-				return ;
-			}
-		    api.checkName({par_id,name}).then(res=>{
-
-		   	  if(res){
-				const id = _self.optId;
-				api.RecycleLayout({id,par_id}).then(res=>{
-					
-					if(res){
-						unit.tipToast("还原成功！",1);
-						page.getData();
-
-						modal.hide($restModal);
-
-					}else{
-						unit.tipToast("还原失败！",0);
-					}
-				});
-
-		   	  }else{
-		   	  	unit.tipToast("此目录下已经存在该名称！",2);
-		   	  }
-		   })
-
-			
-
-		});
-	}
-}
 
 class Page{
 
@@ -261,7 +16,7 @@ class Page{
 
 	constructor(){
 		this.btnBox = $("#btnBox")
-		this.unit = new Unit();
+	
 		this.handle();
 
 		this.getRoleRes().then(res=>{
@@ -275,13 +30,43 @@ class Page{
 
 	init(){
 
-		const unit = this.unit;
-		this.table = new Table(unit);
-		
+
+		this.unit = new Unit();
 		this.modal = new SModal();
-		this.restModal = new RestModal(unit);
-		this.delModal = new DelModal(unit);
 		this.inp = new SInp();
+	
+		this.restModal = new RestModal({
+			unit:this.unit,
+			modal:this.modal,
+			reloadTab:()=>{
+				this.getData();
+			}
+		});
+
+		this.delModal = new DelModal({
+			unit:this.unit,
+			modal:this.modal,
+			reloadTab:()=>{
+				this.getData();
+			}
+		});
+
+		this.table = new Table({
+      restMSet:(name,par_id,id)=>{
+				this.restModal.setValue(name,par_id,id);
+			},
+			delMSet:(obj)=>{
+					this.delModal.del(obj);
+			},
+			getRoleResStr:()=>{
+				return {
+					 tabOptStr: Page.tabOptStr ,
+					 tabOptDel: Page.tabOptDel ,
+				};
+			}
+		});
+
+
 		this.search = new Search($("#u-search"),{
 			serachCallback:(result)=>{
 				
@@ -358,6 +143,7 @@ class Page{
 
 	handle(){
 		const _self = this ;
+		const $tableBox = $("#tabBox");
 
 		// 切换 视图与图表
 		/*$("#j-tab").on("click",".m-tab-item",function(){

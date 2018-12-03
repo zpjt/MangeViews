@@ -429,13 +429,6 @@ class ViewSetModal {
 		const htmlStr = `
 						<div class="sel-item">
 							<div class="sel-item">
-									<span class="s-title">标签:</span>
-								    <span class="s-switch" echo-text="不显示" style="width: 100px">
-										<input type="checkbox" id="lab_pie" ${y}>
-										<label for="lab_pie" echo-text="显示"></label>
-									</span>
-							</div>
-							<div class="sel-item">
 							      <p class="s-title">展示样式:</p>
 								  <div>
 								        <span class="s-radio-box"><input type="radio" ${roseTypeArr[0]} class="s-radio u-radio-sel" name="pie-style"  value="1"><label class="m-radio-icon u-pie-lab1"></label></span>
