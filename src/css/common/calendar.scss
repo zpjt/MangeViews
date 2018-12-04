@@ -77,7 +77,8 @@ $slectColor:#aee6ff;
 	}
 	.sel-time-inp{
 			background: #0080bb;
-			width: 178px;
+		//	width: 178px;
+			width: 150px;
 			display: inline-block;
 			height: 28px;
 			text-align: center;
@@ -93,8 +94,8 @@ $slectColor:#aee6ff;
 	display:flex;
 	.calendar-view{
 		width:100%;
-		min-width:260px;
-		padding:0 10px;	
+		min-width:240px;
+		//padding:0 10px;	
 		position: relative;
 	}
 	.s-calendar-content{
@@ -257,11 +258,11 @@ $slectColor:#aee6ff;
 	
 .s-calendar-time{
 	height:30px;
-	
 	border-bottom:1px solid $themeColor;
 	display:flex;
 	justify-content: space-between;
 	align-items: center;
+	padding: 0 10px;
 	.time-box{
 		cursor: pointer;
 		.timeType{

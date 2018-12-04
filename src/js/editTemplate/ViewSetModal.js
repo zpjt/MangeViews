@@ -2,7 +2,6 @@ import {ZbComponent} from "./ZbComponent.js" ;
 import {api } from "api/editTemplate.js";
 import {SCombobox, SModal, Calendar, Tree, SComboTree} from "js/common/Unit.js";
 
-
 /**
  * 模态框组件
  */
@@ -43,7 +42,7 @@ class ViewSetModal {
 		});
 
 		this.xAxis = new SCombobox($("#XAxis"), {
-			width: 300,
+			width: 340,
 			"prompt": "请选择横轴维度...",
 			"multiply": true,
 			clickCallback: function(node, _this, status) {
@@ -74,7 +73,7 @@ class ViewSetModal {
 		});
 
 		this.yAxis = new SCombobox($("#YAxis"), {
-			width: 300,
+			width: 340,
 			"prompt": "请选择纵轴维度...",
 			"multiply": true,
 			clickCallback: (node, _this, status) => {
@@ -93,7 +92,7 @@ class ViewSetModal {
 		});
 
 		this.dimWd = new SCombobox($("#dimWd"), {
-			width: 300,
+			width: 340,
 			"prompt": "请选择主题维度...",
 			"dropIcon":"sicon sicon-kpi",
 			"multiply": false,
@@ -111,6 +110,7 @@ class ViewSetModal {
 
 			this.orgWd = new SComboTree($("#orgWd"), {
 				"prompt": "请选择科室...",
+				width:340,
 				treeConfig: {
 					"clickAndCheck": true,
 					data: orgTree,
@@ -866,18 +866,6 @@ class ViewSetModal {
 		const self = this;
 		const $setMd = this.setMd;
 		const unit = self.unit;
-		// tab切换
-		$setMd.on("click", ".m-tab", function(e) {
-			e.stopPropagation();
-			const index = $(this).index();
-
-			if (index==2) {
-				const sels = self.zbComponent.zbTree.getValue("id");
-				sels.length && $setMd.addClass("other") || unit.tipToast("请先选择指标！",2);
-			} else {
-				$setMd.removeClass("other");
-			}
-		});
 
 		// 模态框确定按钮操作
 		self.$viewSure.click(function() {

@@ -167,8 +167,8 @@ class ZbComponent {
 								}
 
 								const dimItem = zbArr.map(val => this.renderZb(val, {key, dimName}));
-
-								return `<div class="dim-item" dim-id="${dimId}" dim-name="${dimName}">
+								const dimClass = dimId !== "2" && "dim-wdItem" || "";
+								return `<div class="dim-item ${dimClass}" dim-id="${dimId}" dim-name="${dimName}">
 													${dimItem.join("")}
 										  </div>`;
 					});
@@ -292,7 +292,7 @@ class ZbComponent {
 											textField: "dim_name",
 											idField: "dim_value",
 											defaultVal:dimVal,
-											
+											width:300,
 										});
 					});	
 				
@@ -314,6 +314,7 @@ class ZbComponent {
 											data: data,
 											textField: "dim_name",
 											idField: "dim_value",
+											width:300,
 										});
 									});
 
@@ -336,7 +337,7 @@ class ZbComponent {
 
 		if (key !== "dim_2") {
 			str = `
-					<div class="sel-item zb-item-box">
+					<div class=" zb-item-box">
 						<div >
 							<span class="s-btn zb-name dim-zb" echo-id="${kpi_id}">
 								<i class="fa fa-times-circle del-zb"></i>

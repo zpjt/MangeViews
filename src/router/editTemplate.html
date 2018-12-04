@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>编辑模板</title>
-    <script src="assert/js/modernizr.custom.63321.js"></script>
     <link rel="stylesheet" href="assert/css/normalize.css">
     <link rel="stylesheet" href="assert/font/css/font-awesome.min.css">
     <link rel="stylesheet" href="assert/sekin-font/style.css">
@@ -191,34 +190,18 @@
         </div>
     </div>
     <!-- 数据选择模态框 -->
-    <div class="s-modal s-effect-2" id="setComponentMd">
+    <div class="s-modal s-effect-1" id="setComponentMd">
         <div class="m-content">
             <div class="m-title">
                 <span class="view-logo">
 					<b>所选组件：</b>
 					<span id="modalType"></span>
                 </span>
-                <div class="g-tab-box">
-                    <span class="m-tab">
-						指标选择
-						
-
-					</span>
-                    <span class="tab-progress">
-						
-					</span>
-                    <span class="m-tab">
-						属性选择
-						
-					</span>
-                    
-                </div>
                 <span class="m-close m-close-icon">
 					<i  class="fa fa-times fa-lg"></i>
 				</span>
             </div>
             <div class="m-action set-component">
-                <div class="wrap">
                     <div class="zbBox">
                         <div class="sel-item">
                             <p class="s-title " style="width:100px">选择监测指标:</p>
@@ -239,16 +222,26 @@
                             </div>
                         </div>
                         <div class="cata-item">
-                            <p class="cate-title">所选指标名称:</p>
+                             <div class="cate-title">
+                                <span>所选指标名称:</span>
+                                <span class="cate-slide">
+                                    <i class="fa fa-angle-double-up"></i>     
+                                </span>
+                            </div>
                             <div class="cate-box" id="selZbs">
                             </div>
                         </div>
                     </div>
                     <div class="setBox">
                         <div class="cata-item">
-                            <p class="cate-title">属性设置:</p>
+                            <div class="cate-title">
+                                <span>属性设置:</span>
+                                <span class="cate-slide">
+                                    <i class="fa fa-angle-double-up"></i>     
+                                </span>
+                            </div>
                             <div class="cate-box">
-                                <div class="sel-item">
+                                <div >
                                     <div class="sel-item">
                                         <p class="s-title">横轴维度:</p>
                                         <div class="s-comboBox" id="XAxis">
@@ -260,7 +253,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="sel-item">
+                                <div >
                                     <div class="sel-item">
                                         <p class="s-title">时间筛选:</p>
                                         <div  class="calendar-time">
@@ -275,7 +268,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="sel-item">
+                                <div >
                                     <div class="sel-item">
                                         <p class="s-title">组件名称:</p>
                                         <div class="s-inp-box">
@@ -291,7 +284,12 @@
                             </div>
                         </div>
                         <div class="cata-item">
-                            <p class="cate-title">样式设置:</p>
+                            <div class="cate-title">
+                                <span>样式设置:</span>
+                                <span class="cate-slide">
+                                    <i class="fa fa-angle-double-up"></i>     
+                                </span>
+                            </div>
                             <div class="cate-box" id="viewStyleBox">
                             </div>
                             <div class="cate-box" id="g-commomBox">
@@ -317,7 +315,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
             <div class="m-foot">
                 <button class="s-btn s-borIn" id="viewSure">预 览</button>
@@ -329,19 +326,19 @@
 
 
      <!-- 编辑器模态框 -->
-    <div class="s-modal s-effect-2" id="editViewMd" >
+    <div class="s-modal s-effect-1" id="editViewMd" >
         <div class="m-content">
             <div class="m-title">
                 <span class="view-logo">
                     <b>所选组件：</b>
                     <span class="sicon sicon-text"></span>
                 </span>
-                <span class="m-tit">编辑器</span>
+               <!--  <span class="m-tit">编辑器</span> -->
                 <span class="m-close m-close-icon">
                     <i  class="fa fa-times fa-lg"></i>
                 </span>
             </div>
-            <div class="m-action" style="height:500px;" id="editBox">
+            <div class="m-action" style="height:478px;" id="editBox">
                 
                
 
@@ -355,8 +352,8 @@
     </div>
 
       <!--实时组件模态框 -->
-    <div class="s-modal s-effect-2" id="timeRealMd" >
-        <div class="m-content" style="overflow:initial;width: 950px">
+    <div class="s-modal s-effect-1" id="timeRealMd" >
+        <div class="m-content" >
 
             <div class="m-title">
                 <span class="view-logo">
@@ -365,12 +362,12 @@
                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
                    </span>
                 </span>
-                <span class="m-tit">实时组件</span>
+           <!--      <span class="m-tit">实时组件</span> -->
                 <span class="m-close m-close-icon">
                     <i  class="fa fa-times fa-lg"></i>
                 </span>
             </div>
-            <div class="m-action g-realBox" style="height:500px;" >
+            <div class="m-action g-realBox" >
                  <div class="g-zb">
                       <div class="sel-item">
                             <p class="s-title " style="width:100px">选择监测指标:</p>
@@ -392,7 +389,12 @@
                             </div>
                         </div>
                         <div class="cata-item">
-                            <p class="cate-title">所选指标名称:</p>
+                              <div class="cate-title">
+                                <span>所选指标名称:</span>
+                                <span class="cate-slide">
+                                    <i class="fa fa-angle-double-up"></i>     
+                                </span>
+                            </div>
                             <div class="cate-box" id="realSelZbs">
                             </div>
                         </div>
@@ -400,7 +402,13 @@
                  <div class="g-set">
                    
                             <div class="cata-item">
-                                <p class="cate-title">条件设置:</p>
+                                <p class="cate-title"></p>
+                                 <div class="cate-title">
+                                    <span>条件设置:</span>
+                                    <span class="cate-slide">
+                                        <i class="fa fa-angle-double-up"></i>     
+                                    </span>
+                                </div>
                                 <div class="cate-box" >
                                   
                                     <div class="sel-item" >
@@ -446,7 +454,12 @@
                             </div>
 
                             <div class="cata-item">
-                                <p class="cate-title">样式设置:</p>
+                                  <div class="cate-title">
+                                    <span>样式设置:</span>
+                                    <span class="cate-slide">
+                                        <i class="fa fa-angle-double-up"></i>     
+                                    </span>
+                                </div>
                                 <div class="cate-box" >
                                     <div class="sel-item">
                                         <p class="s-title">样式:</p>
@@ -478,6 +491,7 @@
             </g>
         </defs>
     </svg>
+
     <div id="g-templateDom" style="display: none"></div>
     <div class="g-tip-toast" id="tipToast"></div>
     

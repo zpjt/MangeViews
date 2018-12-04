@@ -37,10 +37,10 @@ $duration:.3s;
     		border-image: linear-gradient(to top, #F80, #2ED);
     		border-image-slice: 10; */
 		box-shadow: 2px 2px 27px #ddd;
-		&>div{
+		/* &>div{
 			width:100%;
 			box-sizing: border-box;
-		}
+		} */
 	}
 	.m-title{
 		position: relative;
@@ -49,6 +49,7 @@ $duration:.3s;
 		line-height:$height;
 		border-bottom: 1px solid $themeColor;
 		cursor:move;
+		box-sizing: border-box;
 	}
 	
 	.m-close-icon{

@@ -155,6 +155,17 @@ class Page{
 			resiziEl.hide();
 		});
 
+		/*面板收缩*/
+		$(".cate-slide").click(function(){
+
+				const $this = $(this);
+				$this.hasClass("rotate-slide") ? $this.removeClass("rotate-slide") : $this.addClass("rotate-slide");
+
+				const mianContent = $this.parent().siblings(".cate-box").slideToggle();
+
+
+		})
+
 	}
 }
 

@@ -418,9 +418,9 @@ class ChangeView{
 
 		const {newEl,oldEl} = boxObj;
 
-	/*	if(!oldEl.hasClass("view-fill")){
+		if(!oldEl.hasClass("view-fill")){ //要是这个变化的盒子里面没有组件就不用重新加载了
 			return ;
-		}*/
+		}
 
 		const {templateMap} = this.config;
 
@@ -515,7 +515,7 @@ class TemplateView  extends ChangeView {
 	   this.startPointY=null;
 	   this.cellSize = null ;
 
-	   this.changeStatus = false ;
+	  // this.changeStatus = false ;
 	   this.init();
        this.handle();
 	}
@@ -806,7 +806,7 @@ class TemplateView  extends ChangeView {
 		const roateX = Math.round(curWid / minWidth);
 		const roateY = Math.round(curHei / minHeight);
 	
-		this.changeStatus = false ;
+		//this.changeStatus = false ;
 
        const $activeView = $(".view-active"); 
 	   const view = this.config.templateMap.viewsMap.get($activeView[0]);
@@ -845,7 +845,7 @@ class TemplateView  extends ChangeView {
 
 		const {attributeObj:{point:point_1}} = view_1;
 
-		if( point_1[2] === name){
+		if( point_1[2] === name){//自己与自己交换
 			return;
 		}
 
@@ -901,12 +901,13 @@ class TemplateView  extends ChangeView {
 				const $this = $(this);
 
 				/**
-				 * [type 只有左边的组件被设置过type,被拖拽放下的时候会被获取到类型，如果如果拖拽时，获取不到类型，说明拖拽的不是左侧的组件]
-				 * @type {[table,line，....]}
+				 * [type :拖拽的是组件的图标是，为组件的类型，拖拽的是组件盒子时，为组件的位置point+"@",其他条件为空]
+				 * 具体的图标拖拽事件看ViewComponent.js
+				 * @type {[table,line，....],[t-left,t-middle...]}
 				 */
 				const type = ev.dataTransfer.getData("type");
 
-				if(type.includes("@")){
+				if(type.includes("@")){ //拖拽的是组件盒子
 
 					_me.replaceView($this,type);
 						
@@ -914,7 +915,7 @@ class TemplateView  extends ChangeView {
 				}
 
 
-				if(!type || $this.hasClass("view-fill")){
+				if(!type || $this.hasClass("view-fill")){//拖拽的是左侧的组件图标
 					return ;
 				}
 
@@ -932,7 +933,7 @@ class TemplateView  extends ChangeView {
 
 				const has_fill = ev.target.classList.contains("view-fill");
 				
-				if(!has_fill){
+				if(!has_fill){//不拖拽空的组件
 					return ;
 				}
 				const view = _me.config.templateMap.viewsMap.get(ev.target);
@@ -984,26 +985,40 @@ class TemplateView  extends ChangeView {
 			 _self.showResizeBox($this);
 		});
 
+
+
+
 		this.resiziEl.on("mousedown",".u-resize-icon",function(e){
 			const $this= $(this);
 			const type = $this.attr("sign");
 
 			_self.resiziEl.attr("echo-direction",type);
 
-			_self.gLayout[0].onmousemove= _self.throttle(function(isFirst){
+		/*	_self.gLayout[0].onmousemove= _self.throttle(function(isFirst){
 
 				_self.move(isFirst,type);
 
-			} ,60);
-			
-			_self.changeStatus = true;
+			} ,60);*/
 
+			_self.gLayout.on("mousemove",function(e){
+
+					_self.move(e,type);
+
+			}).one("mouseup",function(){
+
+					_self.gLayout.off("mousemove");
+						_self.changeViewSize();
+
+			});
+
+			
+			//_self.changeStatus = true;
 			_self.startPointX=e.clientX;
-	  		_self.startPointY=e.clientY;
+	  	_self.startPointY=e.clientY;
 			
 		});
 
-		_self.gLayout.on("mouseup",function(){
+	/*	_self.gLayout.on("mouseup",function(){
 				
 			_self.gLayout[0].onmousemove = null;
 			
@@ -1012,7 +1027,8 @@ class TemplateView  extends ChangeView {
 				_self.changeViewSize();
 			}
 			
-		});
+		});*/
+
 
 		$(window).on("resize",function(){
 			_self.getInitCellSize();

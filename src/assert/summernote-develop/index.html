@@ -6,6 +6,11 @@
   <link href="bootstrap.min.css" rel="stylesheet">
   <link href="summernote.css" rel="stylesheet">
   <link href="codemirror.css" rel="stylesheet">
+  <style>
+    .panel{
+      margin-bottom: 0;
+    }
+  </style>
 </head>
 <body>
   <div id="summernote"><p></p></div>
@@ -13,15 +18,18 @@
   <script src="bootstrap.min.js"></script> 
    <script src="codemirror.js"></script>
   <script src="summernote.js"></script>
+  <script src="lang/summernote-zh-CN.js"></script>
+
   <script>
 
     window.$summernote = $('#summernote');
 
     $(document).ready(function() {
        const edit = $summernote.summernote({
-        height:400,
-        minHeight:300,
+        height:360,
         focus:true,
+        lang: 'zh-CN',
+        disableResizeEditor:true,
        });
     });
   </script>
