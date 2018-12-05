@@ -9,7 +9,8 @@ class STable {
 		this.border = border ;
 		this.size = size;
 		this.container = $el;
-		this.init(data_copy);
+		this.fixColumn = [];
+		this.init(data_copy);	
 
 	}
 	
@@ -55,28 +56,31 @@ class STable {
 		this.container.html(str);
 
 
-        const wrap = this.container.find(".table-body-wrap");
-        const wrapHead = this.container.find(".tab-head");
+      const wrap = this.container.find(".table-body-wrap");
+      const wrapHead = this.container.find(".tab-head");
 
   		const maxH = Math.floor(totalH - wrapHead.height() - top_add - bottom_add);
-        const is_overflow = maxH - wrap.children("table").height() < 0 ;
-        const is_overflowX = totalW - wrapHead.children(".tab-list").width() < 0 ;
+  		// 判断x.y方向有没有超出
+      const is_overflow = maxH - wrap.children("table").height() < 0 ;
+      const is_overflowX = totalW - wrapHead.children(".tab-list").width() < 0 ;
 
-      
+			const add_bottom = is_overflowX ? 10 : 0 ;
+			wrap.css("height", maxH - add_bottom);	
 
-		const add_bottom = is_overflowX ? 10 : 0 ;
-		wrap.css("height", maxH - add_bottom);	
+      if(is_overflow){
+					this.container.find(".gutter").show();		
+      }
 
-        if(is_overflow){
-			this.container.find(".gutter").show();		
-        }
-
-        if(is_overflowX){
-    	 	this.container.children(".s-tableBox").css("width",wrapHead.children(".tab-list").width());
-        }
-
+      if(is_overflowX){
+  	 		this.container.children(".s-tableBox").css("width",wrapHead.children(".tab-list").width());
+  	// 		this.getFixColumn();
+      }
+       // 表格初始时不是跟随容器的大小来渲染，根据自身的内容大小渲染，渲染后得到宽和高，
+       // 然后给父容器设置对应的高和宽，再把表格变成宽高100%，使两个表格表现的一致大小
        
-		this.container.find(".tab-list").css({"width":"100%","height":"100%"});
+			this.container.find(".tab-list").css({"width":"100%","height":"100%"});
+
+			is_overflowX && this.getFixColumn();
 	}
 
 	getRandom(max = 500) {
@@ -117,55 +121,91 @@ class STable {
 			},[]);
 
 
-			if(item === 0){ // 加第一个td的标题
+				if(item === 0){ // 加第一个td的标题
 				
-				const titleStr = col_wd.map(val=>{
-					return wd_arr[+val];
-				});
+					const titleStr = col_wd.map(val=>{
+						return wd_arr[+val];
+					});
+					const headFirst = `<th class="firstTd" colspan="${col_wd.length}" rowspan="${row_wd.length}"  >${titleStr.join(" / ")}</th>`;
 
-				//width="${col_wd.length*120 +col_wd.length-1 }"
 
-                rowData.unshift(`<th colspan="${col_wd.length}" rowspan="${row_wd.length}"  >${titleStr.join(" / ")}</th>`);
-			    //列字段的合并,第一行最后一列的第一个
-			    
-		     	if( ["1","3"].includes(total)){
-		     		 const lastIndex = rowData.length;
-					rowData[lastIndex]=`<th rowspan="${rowLeg}">合计</th>`;
-		     	}
-				rowData.push(`<th class="gutter" rowspan="${rowLeg}"></th>`);
+					this.fixColumn.push(titleStr.join(" / "));
+
+     		 rowData.unshift(headFirst);
+		    //列字段的合并,第一行最后一列的第一个
+		    
+	     	if( ["1","3"].includes(total)){
+	     		 const lastIndex = rowData.length;
+				rowData[lastIndex]=`<th rowspan="${rowLeg}">合计</th>`;
+	     	}
+			rowData.push(`<th class="gutter" rowspan="${rowLeg}"></th>`);
+
 			}
-
-		
-
-
 			return `<tr>${rowData.join("")}</tr>`;
-		
 
 		});
-
 
 		return TableHeadArr ;
 	}
 
-	renderRow(row,item,rowspan){
+	getFixColumn(){
+
+			const {tab_style} = this.config;
+
+			const container = this.container;
+
+			const firstTd = container.find(".firstTd");
+			const head = this.fixColumn.shift();
+			const height = firstTd.height();
+			const width = firstTd.innerWidth();
+
+			const tableStr_1 = `
+														<table class="tab-list fixColumn-box" border="${tab_style}" style="width:${width}px">
+															<tr><td style="height:${height}px;">${head}</td></tr> 
+														</table>
+												
+												`;
+			const tableStr_2 = `
+					<table class="tab-list fixColumn-box" border="${tab_style}" style="width:${width}px">
+						${this.fixColumn.join("")}
+					</table>
+			
+			`;
+			container.find(".tab-head").append(tableStr_1);
+			container.find(".table-body-wrap ").append(tableStr_2);
+
+
+
+			container.scroll(function(e) {
+				const  scrollLeft = e.target.scrollLeft;
+				container.find(".fixColumn-box").css("transform",`translateX(${scrollLeft}px)`)
+			});
+
+	}
+
+	renderRow(row,item,rowspan,bgClass){
+
+		let itemColumn = "";
 
 		return row.reduce((total,val,index)=>{
 
 			let str = null;
 			
-			if(index < rowspan.length){
+			if(index < rowspan.length){ //是列头
 
 				const count = rowspan[index]
-				if(  ( item + 1) % count === 1 || count === 1){
-
-					//width="120"
-					total.push(`<td rowspan="${count}" >${val}</td>`);
+				if(  ( item + 1) % count === 1 || count === 1){//是列头的第一个，第二个是重复的就是要被合并
+					const tdStr = `<td rowspan="${count}" >${val}</td>`;
+					total.push(tdStr);
+					itemColumn += tdStr
 				}
-			
+			  index ===  rowspan.length-1 && this.fixColumn.push(`<tr class="${bgClass}">${itemColumn}</tr>`);
 			}else{
-
+				
 				total.push(`<td>${val}</td>`)	;	
 			}
+
+
 			return total ;
 
 		},[]);
@@ -175,7 +215,7 @@ class STable {
 		const { row_wd,col_wd,total,tab_style} = this.config;
 	 	const data =_data.slice(row_wd.length);
 		const rowspanArr = this.rowspanCount(data);
-		const totalArr = ["2","3"].includes(total) && data.pop().splice(col_wd.length) || null;
+		const totalArr = ["2","3"].includes(total) ? data.pop().splice(col_wd.length) : null;
 
 		let colorCount = 0 ;
 		const tabStyle = tab_style === "0" ;
@@ -185,7 +225,7 @@ class STable {
 
 				const bgClass = tab_style ==="0" ? ( colorCount % 2 === 0  &&　`tr-bg1` || `tr-bg2` ) : "";
 
-				return `<tr class="${bgClass}">${this.renderRow(row,item,rowspanArr).join("")}</tr>`;
+				return `<tr class="${bgClass}">${this.renderRow(row,item,rowspanArr,bgClass).join("")}</tr>`;
 		
 		});
 		
@@ -198,6 +238,8 @@ class STable {
 			});
 
 			tabBodyArr.push(`<tr class="${tab_style ==="0" ? "foot-bg" : ""}"><td colspan="${col_wd.length}">合计</td>${totalStr.join("")}</tr>`);	
+
+			this.fixColumn.push(`<tr class="${tab_style ==="0" ? "foot-bg" : ""}"><td colspan="${col_wd.length}">合计</td></tr>`);
 		
 		}
 		

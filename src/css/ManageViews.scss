@@ -22,31 +22,29 @@ $themeColor:#00a0e9;
 }
 .editView_main{
 	word-wrap: break-word;
-	line-height: 1.2rem;
+	//line-height: 1.2rem;
 	p{
 		//text-align: initial;
 		margin:10px;
-		
 	}
 	h1{
 		font-size: 24px;
-		margin:20px;	
+		margin:20px 10px;	
 	}
 	h2{
 		font-size: 22px;
-		margin:16px;	
+		margin:16px 10px;	
 	}
 	h3{
 		font-size: 18px;
-		margin:14px;	
+		margin:14px 10px;	
 	}
 	h4{
-		margin:14px;
 		margin:10px;
 	}
 	h5{
 		font-size: 12px;
-		margin:8px;
+		margin:8px 10px;
 	}
 }
 .manage-views{

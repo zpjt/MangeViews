@@ -545,7 +545,7 @@ class Calendar{
 					<div class="showSel-box">
 						${this.renderTimeStr().join("")}
 					</div>
-					${this.hasInp?`<div> <button class="s-btn calendar-opt">确定</button> <button class="s-btn calendar-opt">取消</button> </div>`:""}
+					${this.hasInp?`<div> <button class="s-btn calendar-opt">确定</button></div>`:""}
 					
 				</div>
 
@@ -629,13 +629,10 @@ class Calendar{
 		 	   }
  				
  			  const watchTime = this.time && this.rotate === 4 && "&nbsp;&nbsp;"+timeWatch.join(" : ") || "";
-
-
 		 	  
-				return `
-						${index===1 ? "<span >&nbsp;-&nbsp;&nbsp;</span>" :""}<span class="sel-time-inp">${year+showStr+watchTime}</span>
+			//	return ` ${index===1 ? "<span >&nbsp;-&nbsp;&nbsp;</span>" :""}<span class="sel-time-inp">${year+showStr+watchTime}</span> `;
 
-						`;
+						return ` <span class="sel-time-inp">${year+showStr+watchTime}</span> `;
 
 		 });
 		 this.value = value;

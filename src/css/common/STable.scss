@@ -11,6 +11,10 @@
 	//	width: auto;
 		background:#3996a7a1;
 		border-radius:4px 4px 0  0;
+			position: relative;
+			.fixColumn-box{
+			background:#3996a7;
+			}
 	}
 	.table-body-wrap {
 	//	width: auto;
@@ -26,6 +30,18 @@
 		.tr-bg2{
 			background:#2f9f6f73;
 		}
+
+		.fixColumn-box{
+			.tr-bg1{
+			background:#1998df;
+		}
+		.tr-bg2{
+			background:#2f9f6f;
+		}
+		.foot-bg{
+			background:#3996a7;
+		}
+	}
 
 	}
 	.tab-list{
@@ -64,6 +80,15 @@
 		overflow-x: hidden;
 		margin-top: -1px;
 		box-sizing:border-box;
+		position: relative;
+	}
+
+	.fixColumn-box{
+		position: absolute;
+		top: 0px;
+		//left:-4px;
+		height: 100%;
+
 	}
 
 }
@@ -78,7 +103,7 @@
 	}
 	.tab-head{
 		border:2px solid #3996a7a1;
-		border-bottoms:none;
+		border-bottom:none;
 	}
 	table.table-head{
 		width: auto;
@@ -110,3 +135,4 @@
 // border-bottom: 1px solid green;
 
 }
+

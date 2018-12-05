@@ -317,7 +317,8 @@ class ChangeView{
 
 	
 		const resiziEl = this.resiziEl ;
-		const [directionY ,directionX]= resiziEl.attr("echo-direction").split("-");
+		//	const [directionY ,directionX]= resiziEl.attr("echo-direction").split("-");
+		const [directionY ,directionX]= 	TemplateView.resizeEldirection.split("-");
 		
 		//获取dom对应的Map里的数据	
 		const {templateMap} = this.config;
@@ -499,6 +500,8 @@ class TemplateView  extends ChangeView {
 			"b-left","b-middle","b-right",
 		];
 
+	static resizeEldirection = "" ;
+
 
 	constructor($el,config) {
 
@@ -607,8 +610,8 @@ class TemplateView  extends ChangeView {
 	 	}
 
 		const $viewTemplate = $("#viewTemplate");
-		const minWidth =  $viewTemplate.width()    / 3 + 10;
-		const minHeight = $viewTemplate.height()   / 3 + 10;
+		const minWidth =  Math.ceil($viewTemplate.width()/ 3)  + 10;
+		const minHeight = Math.ceil($viewTemplate.height()/ 3)  + 10;
 		const minTop = +$viewTemplate.css("paddingTop").match(/\d+/g)[0];
 		const minLeft = +$viewTemplate.css("paddingLeft").match(/\d+/g)[0];
 
@@ -653,23 +656,18 @@ class TemplateView  extends ChangeView {
 		_api[_typeObj.getDataUrl](viewID).then(res=>{
 
 
-
 				if(!res){
-
 					this.config.unit.tipToast("没数据！",2);
 					$dom.removeClass("view-fill");
 					templateMap.remove($dom);
-					
 				}else{
 
 					const viewTitle =_type === "editView" ? "" :  res[_typeObj.configName].chartName;
-
 					const result = _type === "editView" ? res.assembly_data : res ;
-
 					templateMap.initAdd($dom,viewTitle,result);
 				}
 		}).catch(res=>{
-
+				alert(res);
 				this.config.unit.tipToast("组件获取出错,已删掉错误的组件！",0);
 				templateMap.remove($dom);
 		});
@@ -805,10 +803,17 @@ class TemplateView  extends ChangeView {
 
 		const roateX = Math.round(curWid / minWidth);
 		const roateY = Math.round(curHei / minHeight);
+
+	//	const _x = curWid / minWidth  ;
+	//	const _y = curHei / minHeight  ;
+	//	const intX = Math.floor(_x);
+	//	const intY = Math.floor(_y);
+	//	const roateX = _x - intX > 0.2 ? intX + 1 : intX;
+	//	const roateY = _y - intY > 0.2 ? intY + 1 : intY;
 	
 		//this.changeStatus = false ;
 
-       const $activeView = $(".view-active"); 
+     const $activeView = $(".view-active"); 
 	   const view = this.config.templateMap.viewsMap.get($activeView[0]);
 	   const size = view.attributeObj.size;
 
@@ -985,20 +990,14 @@ class TemplateView  extends ChangeView {
 			 _self.showResizeBox($this);
 		});
 
-
-
-
-		this.resiziEl.on("mousedown",".u-resize-icon",function(e){
+		
+	  $(".u-resize-icon").on("mousedown",function(e){
 			const $this= $(this);
 			const type = $this.attr("sign");
+			//记录拖到的方向
+			//_self.resiziEl.attr("echo-direction",type);
 
-			_self.resiziEl.attr("echo-direction",type);
-
-		/*	_self.gLayout[0].onmousemove= _self.throttle(function(isFirst){
-
-				_self.move(isFirst,type);
-
-			} ,60);*/
+			TemplateView.resizeEldirection = type;
 
 			_self.gLayout.on("mousemove",function(e){
 
@@ -1007,34 +1006,25 @@ class TemplateView  extends ChangeView {
 			}).one("mouseup",function(){
 
 					_self.gLayout.off("mousemove");
-						_self.changeViewSize();
+					_self.changeViewSize();
 
 			});
 
-			
-			//_self.changeStatus = true;
 			_self.startPointX=e.clientX;
 	  	_self.startPointY=e.clientY;
 			
 		});
 
-	/*	_self.gLayout.on("mouseup",function(){
-				
-			_self.gLayout[0].onmousemove = null;
-			
-			if(_self.changeStatus){
-			
-				_self.changeViewSize();
-			}
-			
-		});*/
+		_self.gLayout.on("mouseup",function(){
+			_self.resiziEl.hide();
+		});
+
 
 
 		$(window).on("resize",function(){
 			_self.getInitCellSize();
 		});
 		
-
 		$templateBox.on("click",".btn-handle",function(){
 			$(this).toggleClass("active");
 		});

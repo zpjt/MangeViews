@@ -67,13 +67,13 @@ class Table extends EasyUITab{
 				},
 				{
 					field: 'send_status',
-					title: '状态',
+					title: '消息状态',
 					align:"center",
 					width: "8%",
 					formatter:function(val){
 
-						const status = val === "1" && "运行中" || "关闭" ;
-						const color = val === "1" && "#00A0E9" || "red" ;
+						const status = val === "1" && "未读" || "已读" ;
+						const color = val === "1" &&  "red" || "#00A0E9";
 
 						return `<b style="color:${color}">${status}</b>` ;
 					}
