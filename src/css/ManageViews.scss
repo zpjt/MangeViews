@@ -20,11 +20,13 @@ $themeColor:#00a0e9;
 		}
 	}
 }
+h1, h2, h3, h4, h5, h6{
+	line-height: 1.4em;
+}
 .editView_main{
 	word-wrap: break-word;
-	//line-height: 1.2rem;
+	line-height: 1.4em;
 	p{
-		//text-align: initial;
 		margin:10px;
 	}
 	h1{
@@ -126,10 +128,7 @@ $themeColor:#00a0e9;
 					}
 					.table_main{
 						padding:15px 0;
-					    width: calc(100% - 60px);
-						overflow-x: auto;
-						overflow-y: hidden;
-
+				    width: calc(100% - 60px);
 					}
 					.timeReal_main{
 						padding:8px;

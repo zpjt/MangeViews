@@ -508,15 +508,25 @@ class SCombobox {
 			"validCombo":true,
 			"dropFormatter":null,
 			"multiply":false,
-			"defaultVal":"",
+			"defaultVal":[],
 			 clickCallback:function(){},
 			 width:260,
 			 textarea:false,
 		}
 
+	
+
 		this.config = Object.assign({},defaultConfig,config);
 		this.box = $el ;
-		this.selValue = this.config.defaultVal;
+
+			if(!Array.isArray(this.config.defaultVal)){
+
+				alert("不是array");
+			}
+
+
+
+		this.selValue =  this.config.defaultVal;
 		this.init();
  		this.handle();
 	}
@@ -525,19 +535,22 @@ class SCombobox {
 		const {width} = this.config;
 		this.box.css({"width":width});
 		this.box.html(this.initRender());
-	    this.selValue.length　&& this.updateInpBox(this.box.find(".drop-ul"));
+	  this.selValue.length　&& this.setValue(this.selValue);
 	}
 
 	loadData(data,$el=this.box){
+
+
+
 		this.config.data = data;
-		const str = this.renderDrop().join("");
+		const str = this.renderDrop(this.selValue).join("");
 		const $drop = $el.children(".combo-drop");
 		$drop.html(`<ul class="drop-ul">${str}</ul>`);
 
-		const ids = this.updateInpBox($drop.children());
+	//	this.setValue(this.selValue,$el);
 
 
-		!ids.length &&  this.config.validCombo && $el.children(".combo-inp").addClass("no-fill");
+		!this.selValue.length &&  this.config.validCombo && $el.children(".combo-inp").addClass("no-fill");
 
 	}
 	
@@ -566,16 +579,24 @@ class SCombobox {
 
 	   const $drop = $el.children(".combo-drop").children("ul");
 
-	   if(this.config.multiply){
-
+	   const {data,idField,textField,multiply} = this.config;
+	   let txts = null ;
+	   if(multiply){
 	   	 	$drop.html(this.renderDrop(values));
-	 
+	   	 	this.selValue = values;
+	   	 	txts = values.map(val=>{
+					const node =	data.find(item=>val==item[idField]);
+					return node[textField];
+			});
+
 	   }else{
-	
-			$drop.children(`li[echo-id=${values}]`).addClass("active").siblings().removeClass("active");
+		 	$drop.children(`li[echo-id=${values}]`).addClass("active").siblings().removeClass("active");
+		 		this.selValue = [values];
+		 		const node = data.find(val=>val[idField]==values);
+		 		txts = [node[textField]];
 	   }
 
-	  this.updateInpBox($drop);
+	   this.updateInpValue($drop,txts);
 
 	}
 
@@ -600,50 +621,71 @@ class SCombobox {
 	clearValue($el=this.box){
 
 		const $inp = $el.find(".combo-value");
-		this.selValue = "" ;
+		this.selValue = [] ;
 		$inp.val(null);
 		$inp.siblings(".combo-text").val(null);
 		this.config.validCombo && $inp.parent().addClass("no-fill");
 		$el.find(".active").removeClass("active");
 			
 	}
-	updateInpBox($drop){
+	updateInpValue($drop,txt){
 		
 		const inpBox = $drop.parent().siblings();
-        const comboText = inpBox.children(".combo-text"),
-        	  comboValue=inpBox.children(".combo-value");
+    const comboText = inpBox.children(".combo-text"),
+	 				comboValue = inpBox.children(".combo-value");
+		const vals = this.selValue;
 
-        const {data,idField,textField,multiply,validCombo} = this.config;
 
-		const txts = [];
-		const ids = $.map($drop.children(".active"),(val,index)=>{
-				
-				const $val = $(val);
-			    const id  = $val.attr("echo-id");
-				const node = txts[index] = data.find(val=>val[idField] == id);
-				txts[index] = node &&　node[textField] || "";
+		comboText.val(txt.join(","));
+		comboValue.val(vals.join(","));
 
-				return id;
-		});
-		this.selValue = ids;
-		comboText.val(txts.join(","));
-		comboValue.val(ids.join(","));
-
-		if(validCombo){
-			!ids.join(",") ? inpBox.addClass("no-fill") :inpBox.removeClass("no-fill");
+		if(this.config.validCombo){
+			!vals.join(",") ? inpBox.addClass("no-fill") :inpBox.removeClass("no-fill");
 		}
-
-		return this.selValue ;
 	}
 
-    renderInpBox(){
+	updateInpBox($drop,node,status){
+		
+    const {data,idField,textField,multiply} = this.config;
+    const ids = this.selValue ;
+
+		let txts = null ;
+
+		if(multiply){
+
+
+
+			txts = ids.map(val=>{
+					const node =	data.find(item=>val==item[idField]);
+					return node[textField];
+			});
+
+			if(status){ //增加
+				this.selValue.push(node[idField]);
+				txts.push(node[textField]);
+			}else{//移除
+				const oIndex = this.selValue.findIndex(val=>val==node[idField]);
+				this.selValue.splice(oIndex,1);
+				txts.splice(oIndex,1);
+			}
+
+		}else{
+			this.selValue = [node[idField]];
+			txts= [node[textField]];
+		}
+
+		this.updateInpValue($drop,txts);
+
+	}
+
+  renderInpBox(){
 
     	const {textarea , multiply ,prompt,slideIcon} = this.config;
     	const selValue = this.selValue;
 
     	const value = Array.isArray(selValue) ? selValue.join(","): selValue;
 
-		const htmlType = (textarea || multiply) && `<textarea  class="s-textarea combo-text" placeholder="${prompt}" readOnly="readOnly"></textarea>` || `<input type="text" class="s-inp combo-text" placeholder="${prompt}" readOnly="readOnly"/>`;
+		  const htmlType = (textarea || multiply) && `<textarea  class="s-textarea combo-text" placeholder="${prompt}" readOnly="readOnly"></textarea>` || `<input type="text" class="s-inp combo-text" placeholder="${prompt}" readOnly="readOnly"/>`;
 
     	return `
 					${htmlType}
@@ -651,7 +693,7 @@ class SCombobox {
 					<span class="slide-icon ${slideIcon}">
 					</span>
 				`
-    }
+  }
 
 	renderDrop(values=this.selValue){
 
@@ -680,34 +722,37 @@ class SCombobox {
 			e.stopPropagation();
 
 			const $this= $(this);
-			let status = null ;
+			let status = null ; // true 增加，false移除
 			const is_self = $this.hasClass("active");
 
 			if(self.config.multiply){
-				 is_self &&  $this.removeClass("active")|| $this.addClass("active");
-				 status	= !is_self;
+				 is_self &&  $this.removeClass("active") || $this.addClass("active");
+				 status	= !is_self; 
 			}else{
 				
-				if(is_self){
-					return ;
-				}
+				if(is_self){ //单选的时候，又点击到自己什么都不做！
+						return ;
+				 }
 
 				status = self.getValue();
 				$this.addClass("active").siblings().removeClass("active");
 				
-			}
+			};
+
+			//获取node数据
+			const id = $this.attr("echo-id");
+			const node = self.config.data.find(val=>{
+				return val[self.config.idField] == id ;
+			});
+
 			// 更新inp里所选择的值
 			const par = $this.parent();
-			self.updateInpBox(par);
+			self.updateInpBox(par,node,status);
 
 			//单选时，关闭下拉框
 			!self.config.multiply && self.hideUp(self.box);
 
 			//回调函数
-			const id = $this.attr("echo-id");
-			const node = self.config.data.find(val=>{
-				return val[self.config.idField] == id ;
-			});
 			self.config.clickCallback(node,self,status);
 
 		});

@@ -8,19 +8,15 @@
 		text-align: center;	
 	}
 	.tab-head{
-	//	width: auto;
 		background:#3996a7a1;
-		border-radius:4px 4px 0  0;
-			position: relative;
-			.fixColumn-box{
+		position: relative;
+		.fixColumn-box{
 			background:#3996a7;
-			}
+		}
 	}
 	.table-body-wrap {
-	//	width: auto;
 		border-radius:0 0 8px  8px;
 		height: 100%;
-
 		tr:hover{
 			background:#72e9e2eb;
 		}
@@ -32,21 +28,23 @@
 		}
 
 		.fixColumn-box{
+			background:#3f8794;
 			.tr-bg1{
 			background:#1998df;
+			}
+			.tr-bg2{
+				background:#2f9f6f;
+			}
+			.foot-bg{
+				background:#3996a7;
+			}
+			
 		}
-		.tr-bg2{
-			background:#2f9f6f;
-		}
-		.foot-bg{
-			background:#3996a7;
-		}
-	}
 
 	}
 	.tab-list{
-	//	width: 100%;
-	//	height: 100%;
+		//	width: 100%;
+		//	height: 100%;
 		border-collapse: collapse;
 		border-spacing: 0;
 		table-layout:fixed;
@@ -61,12 +59,11 @@
 			min-width: 80px;
 			text-align: center;	
 			vertical-align: middle;
-		//	border: none;
 			padding: 10px 4px;
 		}
 		.gutter{
-			width: 9px;
-			min-width: 9px;
+			width: 8px;
+			min-width: 8px;
 			display:none;
 		}	
 		.foot-bg{
@@ -78,7 +75,6 @@
 		width:100%;
 		overflow: auto;
 		overflow-x: hidden;
-		margin-top: -1px;
 		box-sizing:border-box;
 		position: relative;
 	}
@@ -86,27 +82,19 @@
 	.fixColumn-box{
 		position: absolute;
 		top: 0px;
-		//left:-4px;
 		height: 100%;
-
+		
 	}
-
 }
 
 .border-box{
-	.table-body-wrap {
 		border:2px solid #3996a7a1;
-		border-top:none;
-	}
-	table.table-body{
-		width: auto;
-	}
-	.tab-head{
-		border:2px solid #3996a7a1;
-		border-bottom:none;
-	}
-	table.table-head{
-		width: auto;
+		border-radius:4px 4px 0  0;
+	
+	.fixColumn-box{
+		td{
+				border: 1px solid  #31646e;
+			}
 	}
 	td{
 		border: 1px solid #3996a7a1;
@@ -115,14 +103,19 @@
 		border: 1px solid #3996a7a1;
 	}
 }
+.fix-tab{
+	
+//	height: 100%;
+	overflow-x: auto;
+  overflow-y: hidden;
+}
 		
-.fix-tab:before{
+/* .fix-tab:before{
  content: "";
  position: absolute;
  top:0;
  bottom:0;
  right: 0;
- //border-right: 1px solid green;
 
 }
 .fix-tab:after{
@@ -132,7 +125,5 @@
  width: 100%;
  top: -1px;
  height: 0;
-// border-bottom: 1px solid green;
-
-}
+} */
 

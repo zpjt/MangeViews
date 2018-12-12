@@ -80,11 +80,13 @@ class ZbComponent {
 	relaodXYCombo(viewSetModal,specialWd,yAxisData,commonObj){
 
 		viewSetModal.wd_arr = specialWd; // 用于在 viewSetModal类里使用
+
+			let yData ,xData ;
 		
 		if(commonObj){//是修改回填
 						
 		
-			let yData ,xData ;
+		
 			if(viewSetModal.viewType !== "pie"){
 				const {xAxis,yAxis} = commonObj ;
 				yData = yAxisData.filter(val=>!xAxis.includes(val.id));
@@ -99,12 +101,46 @@ class ZbComponent {
 			viewSetModal.xAxis.loadData(xData);
 			this.setCommonVal(commonObj,viewSetModal);
 	
-		}else{//是新建
+		}else{//是新建 和再次修改
 
-			viewSetModal.yAxis.loadData(yAxisData);
-			viewSetModal.xAxis.loadData(viewSetModal.wd_arr);
+
+
+			if(viewSetModal.viewType !== "pie"){
+
+				const wd_id = viewSetModal.viewType === "table" && "4" || "3";
+				const yAxis = viewSetModal.yAxis.selValue;
+		  	const xAxis = viewSetModal.xAxis.selValue;
+				yData = yAxisData.filter(val=>!xAxis.includes(val.id));
+				xData = viewSetModal.wd_arr.filter(val=>!yAxis.includes(val.id));
+
+				if(yAxis.includes(wd_id) && !yData.includes(wd_id)){
+					viewSetModal.yAxis.clearValue();
+				}
+
+				if(xAxis.includes(wd_id) && !xData.includes(wd_id)){
+						viewSetModal.xAxis.clearValue();
+				}
+		
+			}else{
+
+				yData = yAxisData;
+				xData = viewSetModal.wd_arr;
+				const yAxis = viewSetModal.yAxis.selValue;
+
+				if(yAxis.includes("3") && !yData.includes("3")){
+						viewSetModal.yAxis.clearValue();
+				}
+
+			}
+
+			viewSetModal.yAxis.loadData(yData);
+			viewSetModal.xAxis.loadData(xData);
+
+			
+
+			
+
 		}
-
 	}
 	/**
 	 * [classifyZb description]
@@ -143,10 +179,15 @@ class ZbComponent {
 				const specialWd = viewSetModal.viewType === "table" ?
 				     [...wd_arr_common, {"id": "3", "text": "指标"}, {"id": "4", "text": "维度值"}] :
 				     [...wd_arr_common, { "id": "3", "text": "维度值" }];
+
+				!publicDim &&	 specialWd.pop();//去掉维度值选项,让yAxisData与它同步
+
 				
 				let yAxisData = viewSetModal.viewType !== "table" ?
 					 this.isOneZb ? [{"id":"4","text":"指标"}] : [...specialWd,{"id":"4","text":"指标"}]
 					 : specialWd;
+
+			
 
 				//获取分类好了的指标数组
 				let htmlStr;
@@ -175,7 +216,6 @@ class ZbComponent {
 					 htmlStr = zbObj.join("") ;
 
 				 	 this.publicDimEl.hide();
-					 specialWd.pop();//去掉维度值选项
 					 this.relaodXYCombo(viewSetModal,specialWd,yAxisData,commonObj);//重新加载下拉框
 				
 				}else{
@@ -231,9 +271,9 @@ class ZbComponent {
 	
 		}else{
 			viewSetModal.yAxis.setValue(yAxis);
-			viewSetModal.xAxis.setValue(xAxis);
+			viewSetModal.viewType !=="pie" && viewSetModal.xAxis.setValue(xAxis);
 
-			sel_arr = viewSetModal.viewType==="pie" && [xAxis] || [xAxis,yAxis];
+			sel_arr = viewSetModal.viewType==="pie" && [yAxis] || [xAxis,yAxis];
 			 arr = ["1","2","3","4"].filter(val=>!sel_arr.includes(val));
 		}
 

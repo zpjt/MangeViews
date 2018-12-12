@@ -29,29 +29,35 @@ class STable {
 
 		const titleStr = border === "0" && chartName ? `<p class="s-table-title">${chartName}</p>` : "" ;
 		const top_add = border === "0" && chartName ? 30 :　0 ;
-		const style = border === "0" ? "" : border === "3" ? 'padding:34px 0 30px;' : 'padding:24px 0 30px;';
-		const bottom_add = border === "0" ? "" : 30;
+	
+	//	const style = border === "0" ? "" : border === "3" ? 'padding:34px 0 30px;' : 'padding:24px 0 30px;';
+		const style = border === "0" ? "" : border === "3" ? 'margin:34px 0 30px;' : 'margin:24px 0 30px;';
+
+
+		const bottom_add = border === "0" ? "" :border === "3" ? 34 : 30;
 
 		border === "0" && this.container.css("width",'calc(100% - 10px)');
-
+	
 		const str =  `
-						<div  class="s-tableBox fix-tab ${tab_style !=="0" && "border-box"|| ""}" style="${style}">
-								${titleStr}
-								<div class="tab-head">
-									<table class="tab-list table-head"  border="${tab_style}" frame="void">
-										<thead>
-										    ${tabHead.join("")}   
-									    </thead>
-									</table>
-								</div>
-								
-								<div class="table-body-wrap ">
-									   <table  border="${tab_style}" class="tab-list table-body" frame="void">
-											${tabBody.join("")}
+							<div class="fix-tab  ${tab_style !=="0" && "border-box"|| ""}" style="${style}">
+									<div  class="s-tableBox  " >
+											${titleStr}
+											<div class="tab-head">
+												<table class="tab-list table-head"  border="${tab_style}" frame="void">
+													<thead>
+													    ${tabHead.join("")}   
+												    </thead>
+												</table>
+											</div>
+											
+											<div class="table-body-wrap ">
+												   <table  border="${tab_style}" class="tab-list table-body" frame="void">
+														${tabBody.join("")}
 
-									   </table>
+												   </table>
+											</div>
+									</div>
 								</div>
-							</div>
 					`
 		this.container.html(str);
 
@@ -64,7 +70,7 @@ class STable {
       const is_overflow = maxH - wrap.children("table").height() < 0 ;
       const is_overflowX = totalW - wrapHead.children(".tab-list").width() < 0 ;
 
-			const add_bottom = is_overflowX ? 10 : 0 ;
+			const add_bottom = is_overflowX ? 16 : 0 ;
 			wrap.css("height", maxH - add_bottom);	
 
       if(is_overflow){
@@ -72,8 +78,7 @@ class STable {
       }
 
       if(is_overflowX){
-  	 		this.container.children(".s-tableBox").css("width",wrapHead.children(".tab-list").width());
-  	// 		this.getFixColumn();
+  	 		this.container.find(".s-tableBox").css("width",wrapHead.children(".tab-list").width());
       }
        // 表格初始时不是跟随容器的大小来渲染，根据自身的内容大小渲染，渲染后得到宽和高，
        // 然后给父容器设置对应的高和宽，再把表格变成宽高100%，使两个表格表现的一致大小
@@ -156,17 +161,17 @@ class STable {
 
 			const firstTd = container.find(".firstTd");
 			const head = this.fixColumn.shift();
-			const height = firstTd.height();
+			const height = firstTd.innerHeight();
 			const width = firstTd.innerWidth();
 
 			const tableStr_1 = `
-														<table class="tab-list fixColumn-box" border="${tab_style}" style="width:${width}px">
-															<tr><td style="height:${height}px;">${head}</td></tr> 
+														<table class="tab-list fixColumn-box" border="${tab_style}" style="width:${width}px;height:${height}px" frame="void">
+															<tr><td >${head}</td></tr> 
 														</table>
 												
 												`;
 			const tableStr_2 = `
-					<table class="tab-list fixColumn-box" border="${tab_style}" style="width:${width}px">
+					<table class="tab-list fixColumn-box" border="${tab_style}" style="width:${width}px" frame="void">
 						${this.fixColumn.join("")}
 					</table>
 			
@@ -176,9 +181,11 @@ class STable {
 
 
 
-			container.scroll(function(e) {
+			container.find(".fix-tab").scroll(function(e) {
 				const  scrollLeft = e.target.scrollLeft;
-				container.find(".fixColumn-box").css("transform",`translateX(${scrollLeft}px)`)
+
+
+				container.find(".fixColumn-box").css("transform",`translateX(${scrollLeft}px)`);
 			});
 
 	}

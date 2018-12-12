@@ -34,7 +34,13 @@ class RestPassword{
 							this.unit.tipToast("密码修改失败！",0);
 						}else{
 							this.modal.close(this.restMd);
-							this.unit.tipToast("密码修改成功！",1);
+							this.unit.tipToast("密码修改成功,将会重新登录！",1);
+							const {baseUrl,resourse} = window.jsp_config;
+							if(resourse){
+								window.location.href=baseUrl+"login/logOut";
+							}else{
+								window.location.href="login.html";
+							}
 						}
 
 				})

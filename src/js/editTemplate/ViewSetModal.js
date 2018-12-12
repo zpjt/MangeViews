@@ -258,12 +258,12 @@ class ViewSetModal {
 		this.yAxis.config.multiply = status;
 	
 		this.dimWd.config.multiply = false;
-
-	  
+	
+    this.xAxis.clearValue();
+    this.yAxis.clearValue();
 
 		if(ViewSetModal.status === "create"){
-		    this.xAxis.clearValue();
-		    this.yAxis.clearValue();
+		  
 			this.dimWd.clearValue();
 			this.orgWd.changeType(false);
 			this.calendar.changeStyle(1);
